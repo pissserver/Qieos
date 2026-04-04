@@ -4,7 +4,7 @@ include '../sessions/session.php';
 $order_id = $_GET['id'];
 
 $user = mysqli_query($conn, "
-    SELECT * FROM users WHERE email = '".$_SESSION['email']."'
+    SELECT * FROM users WHERE email = '" . $_SESSION['email'] . "'
 ")->fetch_assoc();
 
 $order = mysqli_query($conn, "
@@ -22,14 +22,14 @@ $details = mysqli_query($conn, "
 
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <title>Struk Pembelian - Cartify</title>
     <link
         rel="icon"
         sizes="120x120"
-        href="../assets/img/brand/cartify2.png"
-    />
+        href="../assets/img/brand/cartify2.png" />
 
     <style>
         body {
@@ -38,17 +38,21 @@ $details = mysqli_query($conn, "
             margin: 0;
 
             display: flex;
-            justify-content: center;  /* tengah horizontal */
-            align-items: center;      /* tengah vertical */
-            height: 80vh;            /* full tinggi layar */
-            background: #f5f5f5;      /* optional biar kelihatan */
+            justify-content: center;
+            /* tengah horizontal */
+            align-items: center;
+            /* tengah vertical */
+            height: 80vh;
+            /* full tinggi layar */
+            background: #f5f5f5;
+            /* optional biar kelihatan */
         }
 
         .receipt {
             width: 300px;
             background: #fff;
             padding: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
         .center {
@@ -56,7 +60,7 @@ $details = mysqli_query($conn, "
         }
 
         .center p {
-            margin:5px 0;
+            margin: 5px 0;
         }
 
         hr {
@@ -91,7 +95,7 @@ $details = mysqli_query($conn, "
                 box-shadow: none;
             }
         }
-        
+
         /* @page {
             size: 58mm auto;
             margin: 0;
@@ -110,14 +114,14 @@ $details = mysqli_query($conn, "
 
         <hr>
 
-        <?php while($d = mysqli_fetch_assoc($details)) { ?>
-        <div class="item">
-            <div><?= $d['product_name'] ?></div>
-            <div class="row">
-                <span><?= $d['qty'] ?> x <?= number_format($d['price']) ?></span>
-                <span>Rp <?= number_format($d['subtotal']) ?></span>
+        <?php while ($d = mysqli_fetch_assoc($details)) { ?>
+            <div class="item">
+                <div><?= $d['product_name'] ?></div>
+                <div class="row">
+                    <span><?= $d['qty'] ?> x <?= number_format($d['price']) ?></span>
+                    <span>Rp <?= number_format($d['subtotal']) ?></span>
+                </div>
             </div>
-        </div>
         <?php } ?>
 
         <hr>
@@ -132,11 +136,12 @@ $details = mysqli_query($conn, "
     </div>
 
     <script>
-    window.onload = function() {
-        setTimeout(() => {
-            window.print();
-        }, 300); // delay biar render dulu
-    };
+        window.onload = function() {
+            setTimeout(() => {
+                window.print();
+            }, 300); // delay biar render dulu
+        };
     </script>
 </body>
+
 </html>

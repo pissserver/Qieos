@@ -31,7 +31,7 @@
         min-width: 18px;
         text-align: center;
 
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     }
 
     .modal-body {
@@ -67,7 +67,7 @@
         padding: 15px;
         border-radius: 18px;
         background: #fff;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
         transition: 0.3s;
     }
 
@@ -124,7 +124,8 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        min-width: 110px; /* penting biar simetris */
+        min-width: 110px;
+        /* penting biar simetris */
         justify-content: center;
     }
 
@@ -147,7 +148,8 @@
     /* RIGHT */
     .cart-right {
         text-align: right;
-        min-width: 140px; /* biar harga panjang tetap rapi */
+        min-width: 140px;
+        /* biar harga panjang tetap rapi */
     }
 
     .cart-subtotal {
@@ -234,6 +236,7 @@
             opacity: 0;
             transform: translateY(10px);
         }
+
         to {
             opacity: 1;
             transform: translateY(0);
@@ -247,7 +250,7 @@
         padding: 14px 18px;
         border-radius: 14px;
         background: #1F2937;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
         width: fit-content;
         backdrop-filter: blur(8px);
         transition: all 0.3s ease;
@@ -255,7 +258,7 @@
 
     .omzet-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
     }
 
     .omzet-icon {
@@ -287,10 +290,12 @@
             transform: scale(1);
             text-shadow: 0 0 0px rgba(250, 204, 21, 0);
         }
+
         50% {
             transform: scale(1.15);
             text-shadow: 0 0 12px rgba(250, 204, 21, 0.9);
         }
+
         100% {
             transform: scale(1);
             text-shadow: 0 0 0px rgba(250, 204, 21, 0);
@@ -340,13 +345,11 @@
 </style>
 
 <nav
-    class="navbar navbar-top navbar-expand navbar-dashboard navbar-dark ps-0 pe-0 pb-0"
->
+    class="navbar navbar-top navbar-expand navbar-dashboard navbar-dark ps-0 pe-0 pb-0">
     <div class="container-fluid px-0">
         <div
             class="d-flex justify-content-between w-100"
-            id="navbarSupportedContent"
-        >
+            id="navbarSupportedContent">
             <!-- Cart button -->
             <div class="d-flex align-items-center">
                 <div class="cart-btn position-relative" onclick="openCart()">
@@ -358,20 +361,20 @@
             </div>
 
             <!-- Info Omzet -->
-            <?php 
-                // Hitung omzet hari ini
-                $today = date('Y-m-d');
-                $omzetQuery = $conn->prepare("SELECT SUM(total) as omzet FROM orders WHERE DATE(tanggal)=? AND status_payment!='cancelled'");
-                $omzetQuery->bind_param("s", $today);
-                $omzetQuery->execute();
-                $omzetResult = $omzetQuery->get_result();
-                $omzet = 0;
-                if($omzetResult && $omzetResult->num_rows > 0){
-                    $omzet = $omzetResult->fetch_assoc()['omzet'];
-                    if ($omzet === null) {
-                        $omzet = 0;
-                    }
-                }                    
+            <?php
+            // Hitung omzet hari ini
+            $today = date('Y-m-d');
+            $omzetQuery = $conn->prepare("SELECT SUM(total) as omzet FROM orders WHERE DATE(tanggal)=? AND status_payment!='cancelled'");
+            $omzetQuery->bind_param("s", $today);
+            $omzetQuery->execute();
+            $omzetResult = $omzetQuery->get_result();
+            $omzet = 0;
+            if ($omzetResult && $omzetResult->num_rows > 0) {
+                $omzet = $omzetResult->fetch_assoc()['omzet'];
+                if ($omzet === null) {
+                    $omzet = 0;
+                }
+            }
             ?>
             <div class="omzet-card">
                 <div class="omzet-icon">
@@ -387,7 +390,7 @@
             <ul class="navbar-nav align-items-center">
                 <li class="nav-item dropdown ms-lg-3">
                     <a class="nav-link dropdown-toggle pt-1 px-0"
-                    href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 
                         <!-- Card kecil untuk profile -->
                         <div class="card shadow-sm border-0 d-flex flex-row align-items-center px-2 py-2" style="background: #1F2937;">
@@ -473,14 +476,14 @@
 
     function addToCart(id, name, price) {
         let qty = parseInt(document.getElementById('qty-' + id).value);
-        if(qty == 0) return Swal.fire('Tambahkan qty produk terlebih dahulu!','','warning');
+        if (qty == 0) return Swal.fire('Tambahkan qty produk terlebih dahulu!', '', 'warning');
 
         let product = document.querySelector(`#product-${id}`);
         let img = product.querySelector('.product-img').src;
 
         let existing = cart.find(item => item.id == id);
 
-        if(existing) {
+        if (existing) {
             existing.qty += qty;
         } else {
             cart.push({
@@ -649,14 +652,14 @@
 
     // Checkout
     function checkout() {
-        if(cart.length === 0){
-            return Swal.fire('Keranjang kosong','','warning');
+        if (cart.length === 0) {
+            return Swal.fire('Keranjang kosong', '', 'warning');
         }
 
         // Ambil nama pelanggan dari input
         let customerName = document.querySelector('input[name="customer_name"]').value.trim();
-        if(customerName === ''){
-            return Swal.fire('Isi nama pelanggan terlebih dahulu','','warning');
+        if (customerName === '') {
+            return Swal.fire('Isi nama pelanggan terlebih dahulu', '', 'warning');
         }
 
         // Gabungkan data cart + nama pelanggan
@@ -666,52 +669,52 @@
         };
 
         fetch('../pages/checkout.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        })
-        .then(res => res.json())
-        .then(res => {
-            if(res.status === 'success'){
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(res => {
+                if (res.status === 'success') {
 
-                Swal.fire('Berhasil!', 'Pesanan berhasil dibuat', 'success');
+                    Swal.fire('Berhasil!', 'Pesanan berhasil dibuat', 'success');
 
-                const receiptUrl = `../pages/receipt.php?id=${res.order_id}`;
+                    const receiptUrl = `../pages/receipt.php?id=${res.order_id}`;
 
-                // 🔥 buka struk di tab baru (blank)
-                window.open(receiptUrl, '_blank');
+                    // 🔥 buka struk di tab baru (blank)
+                    window.open(receiptUrl, '_blank');
 
-                // 🔥 SHARE otomatis (Android)
-                if (navigator.share) {
-                    navigator.share({
-                        title: 'Struk Pembelian',
-                        text: 'Berikut struk pembelian',
-                        url: receiptUrl
-                    }).catch(err => console.log(err));
+                    // 🔥 SHARE otomatis (Android)
+                    if (navigator.share) {
+                        navigator.share({
+                            title: 'Struk Pembelian',
+                            text: 'Berikut struk pembelian',
+                            url: receiptUrl
+                        }).catch(err => console.log(err));
+                    }
+
+                    cart = [];
+                    localStorage.clear();
+                    updateCart();
+                    updateOmzet();
+
+                    if (window.location.pathname.includes('/order.php')) {
+                        loadPage(1);
+                    }
+
+                    let modal = bootstrap.Modal.getInstance(document.getElementById('cartModal'));
+                    modal.hide();
+
+                } else {
+                    Swal.fire('Error', res.message, 'error');
                 }
-
-                cart = [];
-                localStorage.clear();
-                updateCart();
-                updateOmzet();
-
-                if (window.location.pathname.includes('/order.php')) {
-                    loadPage(1);
-                }
-
-                let modal = bootstrap.Modal.getInstance(document.getElementById('cartModal'));
-                modal.hide();
-
-            } else {
-                Swal.fire('Error', res.message, 'error');
-            }
-        })
+            })
     }
 
     // Update Omzet
-    function updateOmzet(){
+    function updateOmzet() {
         fetch('../components/data/get-omzet.php')
             .then(res => res.json())
             .then(data => {
