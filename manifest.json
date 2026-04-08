@@ -1,0 +1,22 @@
+{
+    "name": "Kasir App",
+    "short_name": "Cartify",
+    "start_url": "/cartify/",
+    "scope": "/cartify/",
+    "display": "fullscreen",
+    "background_color": "#ffffff",
+    "theme_color": "#000000",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "/cartify/assets/img/brand/cartify2.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/cartify/assets/img/brand/cartify2.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
