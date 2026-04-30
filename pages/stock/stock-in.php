@@ -2,24 +2,71 @@
 include '../../sessions/session.php';
 ?>
 
-<style>
-    .dataTables_wrapper .dataTables_length,
-    .dataTables_wrapper .dataTables_filter {
-        margin-bottom: 10px;
-    }
-
-    .dataTables_length select {
-        min-width: 70px;
-        padding-right: 20px;
-    }
-</style>
-
 <!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <title>Pembelian Stok - Qieos</title>
     <?php include '../../script/headscript.php'; ?>
+
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-soft: #eef2ff;
+            --dark: #0f172a;
+            --muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        .card-modern {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        .header-title {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .header-sub {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .form-control {
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary-soft);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            border: none;
+            border-radius: 10px;
+        }
+
+        .badge-soft {
+            background: var(--primary-soft);
+            color: var(--primary);
+            padding: 6px 10px;
+            border-radius: 8px;
+        }
+
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter {
+            margin-bottom: 10px;
+        }
+
+        .dataTables_length select {
+            min-width: 70px;
+            padding-right: 20px;
+        }
+    </style>
 </head>
 
 <body>
@@ -28,176 +75,137 @@ include '../../sessions/session.php';
 <main class="content">
 <?php include '../../components/navbar.php'; ?>
 
-<div class="row mt-5">
-<div class="col-12">
-<div class="card border-0 shadow">
+<div class="container-fluid mt-4">
 
-    <div class="card-header">
-        <h5 class="mb-0">Pembelian Stok</h5>
-        <small class="text-muted">Barang masuk ke Gudang Stok (FIFO)</small>
+    <!-- HEADER -->
+    <div class="mb-4">
+        <h4 class="header-title">
+            <i class="fas fa-dolly-flatbed me-2 text-primary"></i>
+            Pembelian Stok
+        </h4>
+        <div class="header-sub">
+            Barang masuk ke Gudang Stok (FIFO System)
+        </div>
     </div>
 
-    <div class="card-body">
+    <!-- FORM -->
+    <div class="card card-modern p-4 mb-4">
         <form id="form-stock" action="stock-action.php?action=stock_in" method="POST" enctype="multipart/form-data">
 
+            <div class="mb-3">
+                <span class="badge-soft">Informasi Produk</span>
+            </div>
+
             <div class="row">
-
-                <!-- Nama Produk -->
                 <div class="col-md-3 mb-3">
-                    <label class="form-label">Nama Produk</label>
-                    <input type="text" name="product_name" placeholder="Masukkan nama produk" class="form-control" required>
+                    <input type="text" name="product_name" class="form-control" placeholder="Nama Produk" required>
                 </div>
 
-                <!-- Kode Produk -->
                 <div class="col-md-3 mb-3">
-                    <label class="form-label">Kode Produk</label>
-                    <input type="text" name="code" placeholder="Masukkan kode produk" class="form-control" required>
+                    <input type="text" name="code" class="form-control" placeholder="Kode Produk" required>
                 </div>
 
-                <!-- Kategori -->
                 <div class="col-md-3 mb-3">
-                    <label class="form-label">Kategori</label>
                     <select name="category" class="form-control" required>
-                        <option value="">Pilih Kategori</option>
+                        <option value="">Kategori</option>
                         <option value="makanan">Makanan</option>
                         <option value="minuman">Minuman</option>
                         <option value="jajanan">Jajanan</option>
                     </select>
                 </div>
 
-                <!-- Qty -->
                 <div class="col-md-3 mb-3">
-                    <label class="form-label">Jumlah (Qty)</label>
-                    <input type="number" name="qty" placeholder="Masukkan jumlah" class="form-control" min="1" required>
+                    <input type="file" name="photo" class="form-control">
                 </div>
-
-                <!-- Satuan -->
-                <div class="col-md-3 mb-3">
-                    <label class="form-label">Satuan</label>
-                    <input type="text" name="unit" placeholder="Masukkan satuan (misal: pcs, kg)" class="form-control" required>
-                </div>
-
-                <!-- Harga Beli -->
-                <div class="col-md-3 mb-3">
-                    <label class="form-label">Harga Beli</label>
-                    <input type="number" name="buy_price" placeholder="Masukkan harga beli" class="form-control" min="0" required>
-                </div>
-
-                <!-- Harga Jual -->
-                <div class="col-md-3 mb-3">
-                    <label class="form-label">Harga Jual</label>
-                    <input type="number" name="sell_price" placeholder="Masukkan harga jual" class="form-control" min="0" required>
-                </div>
-
-                <!-- Gambar -->
-                <div class="col-md-3 mb-3">
-                    <label class="form-label">Gambar</label>
-                    <input type="file" name="photo" placeholder="Pilih gambar" class="form-control" accept="image/*">
-                </div>
-
-                <!-- Catatan -->
-                <div class="col-md-12 mb-3">
-                    <label class="form-label">Catatan</label>
-                    <textarea name="note" placeholder="Masukkan catatan" class="form-control"></textarea>
-                </div>
-
             </div>
 
-            <hr>
+            <div class="mb-3 mt-4">
+                <span class="badge-soft">Detail Stok</span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <input type="number" name="qty" class="form-control" placeholder="Qty" required>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <input type="text" name="unit" class="form-control" placeholder="Satuan (pcs/karton)" required>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <input type="number" name="buy_price" class="form-control" placeholder="Harga Beli" required>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <input type="number" name="sell_price" class="form-control" placeholder="Harga Jual" required>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <textarea name="note" class="form-control" placeholder="Catatan"></textarea>
+            </div>
 
             <div class="text-end">
-                <button type="submit" class="btn btn-primary">
-                    Simpan Pembelian
+                <button class="btn btn-primary">
+                    <i class="fas fa-save me-1"></i> Simpan
                 </button>
             </div>
 
         </form>
     </div>
 
-</div>
-</div>
-</div>
-
-<!-- LIST STOK GUDANG (rekap) -->
-<div class="card border-0 shadow mt-4 mb-5">
-    <div class="card-header">
-        <h6 class="mb-0">Stok Gudang (Rekap FIFO)</h6>
+    <!-- TABLE -->
+    <div class="card card-modern p-3 mb-5">
+        <div id="table-stock"></div>
     </div>
 
-    <div class="card-body table-responsive">
-        <div class="card-body table-responsive">
-            <div id="table-stock"></div>
-        </div>
-    </div>
 </div>
 
 </main>
 
     <?php include '../../script/footscript.php'; ?>
 
-    <!-- Ajax action -->
-    <script>
-        document.getElementById("form-stock").addEventListener("submit", function(e) {
-            e.preventDefault();
+<script>
+    document.getElementById("form-stock").addEventListener("submit", function(e) {
+        e.preventDefault();
 
-            let formData = new FormData(this);
+        let formData = new FormData(this);
 
-            fetch(this.action, {
-                method: "POST",
-                body: formData
-            })
-            .then(res => res.text()) // 🔥 ubah dulu ke text
-            .then(data => {
-                console.log("RESPONSE:", data); // 🔥 lihat di console
-
-                try {
-                    let json = JSON.parse(data);
-
-                    if (json.status === "success") {
-                        Swal.fire("Berhasil", json.msg, "success");
-                        this.reset();
-                        loadTable();
-                    } else {
-                        Swal.fire("Error", json.msg, "error");
-                    }
-
-                } catch (e) {
-                    console.error("Bukan JSON:", data);
-                    Swal.fire("Error", "Response bukan JSON", "error");
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                Swal.fire("Error", "Fetch gagal", "error");
-            });
+        fetch(this.action, {
+            method: "POST",
+            body: formData
+        })
+        .then(res => res.json())
+        .then(res => {
+            if(res.status === "success"){
+                Swal.fire("Berhasil", res.msg, "success");
+                this.reset();
+                loadTable();
+            } else {
+                Swal.fire("Error", res.msg, "error");
+            }
         });
-    </script>
+    });
 
-    <!-- Reload table -->
-    <script>
-        function loadTable() {
-            fetch('stock-table.php')
-            .then(res => res.text())
-            .then(html => {
-                document.getElementById("table-stock").innerHTML = html;
+    function loadTable() {
+        fetch('stock-table.php')
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById("table-stock").innerHTML = html;
 
-                setTimeout(() => {
-                    if ($.fn.DataTable.isDataTable('#stockTable')) {
-                        $('#stockTable').DataTable().destroy();
-                    }
+            setTimeout(() => {
+                $('#stockTable').DataTable({
+                    pageLength: 5,
+                    lengthMenu: [5, 10, 25, 50],
+                    responsive: true,
+                    autoWidth: false
+                });
+            }, 100);
+        });
+    }
 
-                    $('#stockTable').DataTable({
-                        pageLength: 5,
-                        lengthMenu: [5, 10, 25, 50],
-                        responsive: true,
-                        autoWidth: false
-                    });
+    loadTable();
+</script>
 
-                }, 100);
-            });
-        }
-
-        loadTable();
-    </script>
 </body>
 </html>

@@ -166,6 +166,7 @@
                 </a>
             </div>
         </div>
+
         <ul class="nav flex-column pt-3 pt-md-0">
             <li class="nav-item">
                 <a
@@ -204,7 +205,7 @@
             </li>
 
             <li class="nav-item <?= ($current_page == 'stock-list.php') ? 'active' : ''; ?>">
-                <a href="/qieos/pages/stock-list.php" class="nav-link">
+                <a href="/qieos/pages/stock/stock-list.php" class="nav-link">
                     <span class="sidebar-icon">
                         <i class="fas fa-warehouse me-2"></i>
                     </span>
@@ -213,7 +214,7 @@
             </li>
 
             <li class="nav-item <?= ($current_page == 'stock-transfer.php') ? 'active' : ''; ?>">
-                <a href="/qieos/pages/stock-transfer.php" class="nav-link">
+                <a href="/qieos/pages/stock/stock-transfer.php" class="nav-link">
                     <span class="sidebar-icon">
                         <i class="fas fa-exchange-alt me-2"></i>
                     </span>
@@ -225,7 +226,7 @@
             <li class="nav-title">GUDANG PENJUALAN</li>
 
             <li class="nav-item <?= ($current_page == 'sales-stock.php') ? 'active' : ''; ?>">
-                <a href="/qieos/pages/sales-stock.php" class="nav-link">
+                <a href="/qieos/pages/sales/sales-stock.php" class="nav-link">
                     <span class="sidebar-icon">
                         <i class="fas fa-store me-2"></i>
                     </span>
@@ -233,7 +234,7 @@
                 </a>
             </li>
 
-            <li class="nav-item <?= ($current_page == 'catalog.php') ? 'active' : ''; ?>">
+            <!-- <li class="nav-item <?= ($current_page == 'catalog.php') ? 'active' : ''; ?>">
                 <a href="/qieos/pages/catalog.php" class="nav-link">
                     <span class="sidebar-icon">
                         <i class="fas fa-box me-2"></i>
@@ -249,34 +250,10 @@
                     </span>
                     <span>Pesanan</span>
                 </a>
-            </li>
-
-            <!-- PRODUK MANAGEMENT -->
-            <!-- <li class="nav-title">PRODUK</li>
-
-            <li class="nav-item <?= ($current_page == 'product-add.php' || $current_page == 'product-edit.php') ? 'active' : ''; ?>">
-                <a href="/qieos/pages/product-add.php" class="nav-link">
-                    <span class="sidebar-icon">
-                        <i class="fas fa-plus-circle me-2"></i>
-                    </span>
-                    <span>Kelola Produk</span>
-                </a>
-            </li> -->
-
-            <!-- KEUANGAN -->
-            <!-- <li class="nav-title">KEUANGAN</li>
-
-            <li class="nav-item <?= ($current_page == 'cashout.php') ? 'active' : ''; ?>">
-                <a href="../pages/cashout.php" class="nav-link">
-                    <span class="sidebar-icon">
-                        <i class="fas fa-wallet me-2"></i>
-                    </span>
-                    <span>Pengeluaran</span>
-                </a>
             </li> -->
 
             <!-- LAPORAN -->
-            <li class="nav-title">LAPORAN</li>
+            <!-- <li class="nav-title">LAPORAN</li>
 
             <li class="nav-item <?= ($current_page == 'report-sales.php') ? 'active' : ''; ?>">
                 <a href="/qieos/pages/report-sales.php" class="nav-link">
@@ -302,30 +279,6 @@
                         <i class="fas fa-coins me-2"></i>
                     </span>
                     <span>Laba Bersih</span>
-                </a>
-            </li>
-
-            <!-- <li class="nav-item <?php echo ($current_page == 'report-page.php') ? 'active' : ''; ?>">
-                <a href="../pages/report-page.php" class="nav-link">
-                    <span class="sidebar-icon">
-                        <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zm3.707 1.707a1 1 0 00-1.414-1.414l-3
-                            3a1 1 0 001.414 1.414l3-3zM11
-                            7h4a1 1 0 110
-                            2h-4a1 1
-                            0
-                            110-2zm0
-                            4h4a1
-                            1
-                            0
-                            110
-                            2h-4a1
-                            1
-                            0
-                            110-2z" />
-                        </svg>
-                    </span>
-                    <span class="sidebar-text">Laporan</span>
                 </a>
             </li> -->
         </ul>
