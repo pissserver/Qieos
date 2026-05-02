@@ -23,10 +23,11 @@
         }
 
         /* cek produk */
-        $cek = mysqli_query($conn, "SELECT * FROM products WHERE name='$name' LIMIT 1");
+        $cek = mysqli_query($conn, "SELECT * FROM products WHERE code='$code' LIMIT 1");
         if(mysqli_num_rows($cek)){
             $p = mysqli_fetch_assoc($cek);
             $product_id = $p['id'];
+            mysqli_query($conn, "UPDATE products SET sell_price='$sell_price', photo='$photo_name' WHERE id=$product_id");
         } else {
             mysqli_query($conn, "INSERT INTO products (name,code,category,sell_price,photo)
             VALUES ('$name','$code','$category','$sell_price','$photo_name')");

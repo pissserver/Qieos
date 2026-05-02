@@ -48,13 +48,23 @@ include '../../sessions/session.php';
             background: #f8fafc;
             cursor: pointer;
         }
+
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter {
+            margin-bottom: 10px;
+        }
+
+        .dataTables_length select {
+            min-width: 70px;
+            padding-right: 20px;
+        }
     </style>
 </head>
 
 <body>
-<?php include '../../components/sidebar.php'; ?>
+<?php include '../components/sidebar.php'; ?>
 <main class="content">
-<?php include '../../components/navbar.php'; ?>
+<?php include '../components/navbar.php'; ?>
 
 <div class="container-fluid mt-4">
 
@@ -186,7 +196,9 @@ function loadDetail(id){
 $(document).ready(function(){
     $('#stockTable').DataTable({
         pageLength: 5,
-        responsive: true
+        lengthMenu: [5, 10, 25, 50],
+        responsive: true,
+        autoWidth: false
     });
 });
 </script>

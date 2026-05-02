@@ -70,10 +70,10 @@ include '../../sessions/session.php';
 </head>
 
 <body>
-<?php include '../../components/sidebar.php'; ?>
+<?php include '../components/sidebar.php'; ?>
 
 <main class="content">
-<?php include '../../components/navbar.php'; ?>
+<?php include '../components/navbar.php'; ?>
 
 <div class="container-fluid mt-4">
 
