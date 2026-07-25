@@ -402,6 +402,20 @@
                         <span>Staff Kasir</span>
                     </a>
                 </li>
+
+                <!-- LAINNYA -->
+                <li class="nav-title">LAINNYA</li>
+
+                <li
+                    class="nav-item <?= ($current_page == 'update.php') ? 'active' : ''; ?>"
+                >
+                    <a href="/qieos/pages/other/update.php" class="nav-link">
+                        <span class="sidebar-icon">
+                            <i class="fas fa-rocket me-2"></i>
+                        </span>
+                        <span>Update</span>
+                    </a>
+                </li>
             <?php } ?>
 
             <?php if ($user['role'] == 'staff kasir') { ?>
@@ -459,6 +473,20 @@
                             <i class="fas fa-chart-bar me-2"></i>
                         </span>
                         <span>Penjualan & Tenant</span>
+                    </a>
+                </li>
+
+                <!-- LAINNYA -->
+                <li class="nav-title">LAINNYA</li>
+
+                <li
+                    class="nav-item <?= ($current_page == 'update.php') ? 'active' : ''; ?>"
+                >
+                    <a href="/qieos/pages/other/update.php" class="nav-link">
+                        <span class="sidebar-icon">
+                            <i class="fas fa-rocket me-2"></i>
+                        </span>
+                        <span>Update</span>
                     </a>
                 </li>
             <?php } ?>

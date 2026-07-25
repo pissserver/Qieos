@@ -499,21 +499,21 @@ include '../../sessions/session.php';
         }
 
         .update-modal{
-
             width:650px;
             max-width:92%;
 
-            height:700px; 
+            height:700px;
             max-height:90vh;
 
             background:#fff;
-
             border-radius:24px;
+
+            display:flex;
+            flex-direction:column;
 
             overflow:hidden;
 
-            box-shadow:
-                0 30px 80px rgba(0,0,0,.30);
+            box-shadow:0 30px 80px rgba(0,0,0,.30);
 
             animation:showUpdate .35s ease;
         }
@@ -531,6 +531,7 @@ include '../../sessions/session.php';
 
             position:relative;
 
+            flex-shrink:0;
         }
 
         .update-icon{
@@ -593,13 +594,20 @@ include '../../sessions/session.php';
         }
 
         .update-body{
+            flex:1;
 
             padding:30px;
+            padding-bottom:40px;
 
-            max-height:60vh;
+            overflow-y:auto;
+            overflow-x:hidden;
 
-            overflow:auto;
+            scrollbar-width:none;
+            -ms-overflow-style:none;
+        }
 
+        .update-body::-webkit-scrollbar{
+            display:none;
         }
 
         .update-item{
@@ -697,6 +705,32 @@ include '../../sessions/session.php';
             }
 
         }
+
+        @media (max-width:768px){
+
+            .update-modal{
+                width:95%;
+                height:90vh;
+                border-radius:20px;
+            }
+
+            .update-body{
+                padding:24px;
+                padding-bottom:60px; /* ruang bawah */
+            }
+
+        }
+
+        /* Scrolling table overflow */
+        @media (max-width: 768px){
+
+            .table-mobile{
+                overflow-x: auto;
+                white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+
+        }
     </style>
 </head>
 
@@ -742,6 +776,7 @@ include '../../sessions/session.php';
 
                 <div class="mt-4 px-4">
                     <!-- Button Add -->
+                    <?php if($user['role'] == 'developer') : ?>
                     <div id="btnContainer" style="display:none;">
                         <button
                             type="button"
@@ -751,9 +786,10 @@ include '../../sessions/session.php';
                             Tambah Log Update
                         </button>
                     </div>
+                    <?php endif; ?>
                     
                     <!-- TABLE -->
-                    <div>
+                    <div class="table-mobile">
                         <table class="table table-hover align-middle" id="stockTable">
                             <thead>
                                 <tr style="font-size:13px;color:#64748b;">
@@ -772,7 +808,7 @@ include '../../sessions/session.php';
                                 *
                             FROM updates
                             WHERE deleted_at IS NULL
-                            ORDER BY update_date DESC
+                            ORDER BY id DESC, update_date DESC
                             ");
                             while($d=mysqli_fetch_assoc($q)): ?>
 
@@ -845,6 +881,7 @@ include '../../sessions/session.php';
                                         <i class="fas fa-eye"></i>
                                     </button>
 
+                                    <?php if($user['role'] == 'developer') : ?>
                                     <button class="action-btn btn-edit editUpdateBtn" data-id="<?= $d['id'] ?>">
                                         <i class="fas fa-edit"></i>
                                     </button>
@@ -855,6 +892,7 @@ include '../../sessions/session.php';
                                         data-version="<?= $d['update_version'] ?>">
                                         <i class="fas fa-trash"></i>
                                     </button>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
 
@@ -984,6 +1022,7 @@ include '../../sessions/session.php';
             lengthMenu:[[5,10,25,50],[5,10,25,50]],
             responsive: true,
             autoWidth: false,
+            order: [],
             language:{
                 search:"",
                 searchPlaceholder:"Cari log update...",
