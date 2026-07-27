@@ -84,3 +84,36 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+
+<!-- Simplebar Autoscroll Sidebar -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        setTimeout(() => {
+
+            const active = document.querySelector("#sidebarMenu .nav-item.active");
+
+            if (!active) return;
+
+            // Cari elemen scroll milik SimpleBar
+            const scrollContent = document.querySelector(
+                "#sidebarMenu .simplebar-content-wrapper"
+            );
+
+            if (!scrollContent) return;
+
+            const top =
+                active.offsetTop -
+                scrollContent.clientHeight / 2 +
+                active.clientHeight / 2;
+
+            scrollContent.scrollTo({
+                top: top,
+                behavior: "auto" // bisa diganti "smooth"
+            });
+
+        }, 100);
+
+    });
+</script>
