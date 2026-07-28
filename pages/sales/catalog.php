@@ -994,6 +994,7 @@ $query = mysqli_query($conn,
                             <option value="makanan">🍔 Makanan</option>
                             <option value="minuman">🥤 Minuman</option>
                             <option value="jajanan">🍪 Jajanan</option>
+                            <option value="pelengkap">🍽️ Pelengkap</option>
 
                         </select>
 

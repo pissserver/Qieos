@@ -1,5 +1,5 @@
 <?php
-include '../../../script/connection.php';
+include '../../../sessions/session.php';
 
 // AMBIL PARAMETER
 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
@@ -83,9 +83,11 @@ function tanggalIndo($date)
                     </button>
 
                     <?php if ($row['status_payment'] !== 'paid'): ?>
+                        <?php if ($user['role'] === 'developer'): ?>
                         <button class="btn-soft btn-cancel" onclick="cancelOrder(<?= $row['id']; ?>, '<?= $row['code']; ?>')">
                             Cancel
                         </button>
+                        <?php endif; ?>
 
                         <button class="btn-soft btn-pay" onclick="payOrder(<?= $row['id']; ?>, '<?= $row['code']; ?>')">
                             Bayar
