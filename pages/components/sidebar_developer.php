@@ -19,6 +19,15 @@
     </a>
 </li>
 
+<li class="nav-item <?= ($current_page == 'additional.php') ? 'active' : ''; ?>">
+    <a href="/qieos/pages/purchasing/additional.php" class="nav-link">
+        <span class="sidebar-icon">
+            <i class="fas fa-box-open me-2"></i>
+        </span>
+        <span>Produk Tambahan</span>
+    </a>
+</li>
+
 <!-- GUDANG STOK (SUMBER BARANG / FIFO) -->
 <li class="nav-title">GUDANG STOK</li>
 

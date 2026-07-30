@@ -995,6 +995,7 @@ $query = mysqli_query($conn,
                             <option value="minuman">🥤 Minuman</option>
                             <option value="jajanan">🍪 Jajanan</option>
                             <option value="pelengkap">🍽️ Pelengkap</option>
+                            <option value="additional">➕ Tambahan</option>
 
                         </select>
 
@@ -1047,7 +1048,7 @@ $query = mysqli_query($conn,
 
                             <div class="stock-badge" id="stock-<?php echo $row['id']; ?>">
                                 <i class="fas fa-cube"></i>
-                                <?php echo $row['stock']; ?> Stok
+                                <?php echo $row['category'] !== 'additional' ? $row['stock'] : 'Tanpa' ; ?> Stok
                             </div>
 
                             <div class="price-floating">
