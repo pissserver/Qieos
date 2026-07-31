@@ -506,6 +506,7 @@ include '../../sessions/session.php';
                     LEFT JOIN purchase_items pi
                         ON pi.product_id=p.id
                         AND pi.deleted_at IS NULL
+                    WHERE p.category != 'additional'
                     GROUP BY p.id
                     ORDER BY p.name ASC
                     ");

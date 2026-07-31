@@ -864,14 +864,19 @@
         modal.show();
     }
 
-    function addToCart(btn, id, name, price){
+    function addToCart(btn, id, name, price, category){
 
-        let input = document.getElementById('qty-' + id);
-        let qty = parseInt(input.value || 0);
+        let qty = 1;
+        let input = null;
 
-        if(qty <= 0){
-            Swal.fire('Tambahkan qty produk terlebih dahulu!', '', 'warning');
-            return;
+        if (category !== 'additional') {
+            input = document.getElementById('qty-' + id);
+            qty = parseInt(input.value || 0);
+
+            if(qty <= 0){
+                Swal.fire('Tambahkan qty produk terlebih dahulu!', '', 'warning');
+                return;
+            }
         }
 
         let img = btn.closest('.product-item')
@@ -880,20 +885,28 @@
         let existing = cart.find(item => item.id == id);
 
         if(existing){
-            existing.qty += qty;
+            if (category !== 'additional') {
+                existing.qty += qty;
+            } else {
+                Swal.fire(name + ' sudah ditambahkan!', '', 'warning');
+                return;
+            }
         } else {
             cart.push({
                 id,
                 name,
                 price,
                 qty,
-                photo: img
+                photo: img,
+                category
             });
         }
 
         updateCart();
 
-        input.value = 0;
+        if (input) {
+            input.value = 0;
+        }
 
         Swal.fire({
             icon:'success',
@@ -947,9 +960,6 @@
         cart.forEach((item, index) => {
             let subtotal = item.qty * item.price;
 
-            // 🔥 HITUNG TOTAL QTY
-            // count += item.qty;
-
             total += subtotal;
 
             html += `
@@ -964,21 +974,36 @@
 
                             <div class="cart-meta">
                                 <span class="badge-price">
-                                    Rp ${item.price.toLocaleString()}
+                                    Rp ${Number(item.price).toLocaleString('id-ID', {
+                                        minimumFractionDigits: 0,
+                                        maximumFractionDigits: 0
+                                    })}
                                 </span>
 
-                                <span class="badge-qty">
-                                    Qty: ${item.qty}
-                                </span>
+                                ${
+                                    item.category !== 'additional'
+                                    ? `
+                                        <span class="badge-qty">
+                                            Qty: ${item.qty}
+                                        </span>
+                                    `
+                                    : ''
+                                }
                             </div>
                         </div>
                     </div>
 
                     <!-- CENTER -->
                     <div class="cart-qty">
-                        <button onclick="changeQty(${index}, -1)">-</button>
-                        <span>${item.qty}</span>
-                        <button onclick="changeQty(${index}, 1)">+</button>
+                        ${
+                            item.category !== 'additional'
+                            ? `
+                                <button onclick="changeQty(${index}, -1)">-</button>
+                                <span>${item.qty}</span>
+                                <button onclick="changeQty(${index}, 1)">+</button>
+                            `
+                            : ''
+                        }
                     </div>
 
                     <!-- RIGHT -->

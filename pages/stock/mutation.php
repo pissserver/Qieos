@@ -440,7 +440,7 @@ include '../../sessions/session.php';
     <div class="row">
         <div class="col-md-7">
             <!-- Main Table -->
-            <div class="section-card mb-4 mt-4">
+            <div class="section-card mb-5 mt-4">
                 <div class="panel-header panel-primary">
                     <div class="panel-left">
                         <div class="panel-icon">
@@ -486,6 +486,7 @@ include '../../sessions/session.php';
                                 AND pi.deleted_at IS NULL
                             LEFT JOIN sales_stock ss
                                 ON ss.product_id=p.id
+                            WHERE p.category != 'additional'
                             GROUP BY p.id
                             ORDER BY p.name ASC
                             ");

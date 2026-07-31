@@ -1076,6 +1076,7 @@ $query = mysqli_query($conn,
                                 <?php echo ucwords(strtolower($row['name'])); ?>
                             </h4>
 
+                            <?php if($row['category'] !== 'additional'): ?>
                             <p class="product-desc">
                                 <?php if($row['stock'] > 0): ?>
                                     <i class="fas fa-circle text-success"></i>
@@ -1125,8 +1126,9 @@ $query = mysqli_query($conn,
                                 <?php endif; ?>
 
                             </div>
+                            <?php endif; ?>
 
-                            <?php if($row['stock'] > 0): ?>
+                            <?php if($row['stock'] > 0 || $row['category'] === 'additional'): ?>
 
                             <button
                                 class="btn-checkout"
@@ -1134,7 +1136,8 @@ $query = mysqli_query($conn,
                                     this,
                                     '<?php echo $row['id']; ?>',
                                     '<?php echo addslashes($row['name']); ?>',
-                                    <?php echo $row['sell_price']; ?>
+                                    '<?php echo $row['sell_price']; ?>',
+                                    '<?php echo $row['category']; ?>'
                                 )">
 
                                 <i class="fas fa-cart-plus"></i>

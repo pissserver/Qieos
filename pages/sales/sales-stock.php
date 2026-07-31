@@ -233,6 +233,7 @@
                                             $q = mysqli_query($conn,"
                                                 SELECT id,name,code
                                                 FROM products
+                                                WHERE category != 'additional'
                                                 ORDER BY name ASC
                                             ");
 
