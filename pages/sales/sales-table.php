@@ -273,7 +273,7 @@
             $statusClass='stock-low';
             $statusIcon='fa-triangle-exclamation';
         }else{
-            $statusText='Aman';
+            $statusText='Ready';
             $statusClass='stock-success';
             $statusIcon='fa-circle-check';
         }

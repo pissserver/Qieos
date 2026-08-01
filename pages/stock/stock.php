@@ -581,7 +581,7 @@ include '../../sessions/session.php';
 
                                 <span class="stock-badge stock-success">
                                     <i class="fas fa-check-circle me-1"></i>
-                                    Aman
+                                    Ready
                                 </span>
 
                             <?php endif; ?>

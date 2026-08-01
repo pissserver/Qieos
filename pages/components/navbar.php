@@ -633,7 +633,7 @@
             min-height:auto;
         }
 
-        .brand-content{
+        .premium-brand{
             display:none;
         }
 
@@ -698,6 +698,20 @@
     </div>
 
     <div class="premium-actions">
+        <!-- WHAT'S NEW -->
+        <div
+            class="premium-action-btn"
+            data-bs-toggle="modal"
+            data-bs-target="#whatsNewModal">
+
+            <i class="fas fa-bullhorn"></i>
+
+            <span class="cart-badge" style="font-size:8px;">
+                NEW
+            </span>
+
+        </div>
+        
         <?php if ($user['role'] == 'developer' || $user['role'] == 'staff kasir') { ?>
         
         <!-- CART -->
