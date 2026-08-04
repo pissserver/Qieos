@@ -6,11 +6,24 @@ header('Content-Type: application/json');
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 if ($id <= 0) {
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'ID tidak valid.'
-    ]);
-    exit;
+    $q = mysqli_query($conn, "
+        SELECT id
+        FROM updates
+        WHERE deleted_at IS NULL
+        ORDER BY id DESC, update_date DESC
+        LIMIT 1
+    ");
+    
+    if ($q && mysqli_num_rows($q) > 0) {
+        $latestUpdate = mysqli_fetch_assoc($q);
+        $id = $latestUpdate['id'];
+    } else {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Tidak ada update tersedia.'
+        ]);
+        exit;
+    }
 }
 
 // ==============================

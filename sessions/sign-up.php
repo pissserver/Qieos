@@ -1,44 +1,44 @@
-<style>
-    .login-title{
-        font-size: 34px;
-        font-weight: 700;
-        letter-spacing: -0.8px;
-        color:#1e293b;
-        margin-bottom:8px;
-    }
-
-    .login-subtitle{
-        font-size:15px;
-        font-weight:400;
-        color:#64748b;
-        margin-bottom:0;
-        letter-spacing:0.3px;
-    }
-
-    .login-title-wrap{
-        position:relative;
-        display:inline-block;
-    }
-
-    .login-title-wrap::after{
-        content:'';
-        width:60px;
-        height:4px;
-        border-radius:50px;
-        background:linear-gradient(90deg,#60a5fa,#facc15);
-        display:block;
-        margin:14px auto 0;
-    }
-</style>
-
 <!doctype html>
 <html lang="en">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-        <title>Buat Akun - Cartify</title>
+        <title>Buat Akun - Qieos</title>
         
         <?php include '../script/headscript.php'; ?>
+        
+        <style>
+            .login-title{
+                font-size: 34px;
+                font-weight: 700;
+                letter-spacing: -0.8px;
+                color:#1e293b;
+                margin-bottom:8px;
+            }
+
+            .login-subtitle{
+                font-size:15px;
+                font-weight:400;
+                color:#64748b;
+                margin-bottom:0;
+                letter-spacing:0.3px;
+            }
+
+            .login-title-wrap{
+                position:relative;
+                display:inline-block;
+            }
+
+            .login-title-wrap::after{
+                content:'';
+                width:60px;
+                height:4px;
+                border-radius:50px;
+                background:linear-gradient(90deg,#60a5fa,#facc15);
+                display:block;
+                margin:14px auto 0;
+            }
+        </style>
     </head>
 
     <body>
@@ -148,7 +148,6 @@
                                                 placeholder="Username"
                                                 id="username"
                                                 name="username"
-                                                autofocus
                                                 required
                                             />
                                         </div>

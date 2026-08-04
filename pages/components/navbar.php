@@ -686,6 +686,269 @@
         }
 
     }
+
+    /* Update Overlay Styles */
+    .update-overlay{
+        position:fixed;
+        inset:0;
+
+        display:none;
+
+        justify-content:center;
+        align-items:center;
+
+        background:rgba(7,15,30,.45);
+        backdrop-filter:blur(10px);
+
+        z-index:999999;
+    }
+
+    .update-modal{
+        width:650px;
+        max-width:92%;
+
+        height:700px;
+        max-height:90vh;
+
+        background:#fff;
+        border-radius:24px;
+
+        display:flex;
+        flex-direction:column;
+
+        overflow:hidden;
+
+        box-shadow:0 30px 80px rgba(0,0,0,.30);
+
+        animation:showUpdate .35s ease;
+    }
+
+    .update-header{
+
+        padding:35px;
+
+        text-align:center;
+
+        color:white;
+
+        background:
+            linear-gradient(135deg,#4338ca,#7c3aed);
+
+        position:relative;
+
+        flex-shrink:0;
+    }
+
+    .update-icon{
+
+        width:72px;
+        height:72px;
+
+        margin:auto;
+
+        border-radius:50%;
+
+        display:flex;
+        justify-content:center;
+        align-items:center;
+
+        font-size:34px;
+
+        background:rgba(255,255,255,.18);
+
+        margin-bottom:15px;
+
+    }
+
+    .update-header h4{
+
+        font-size:28px;
+
+        font-weight:700;
+
+        margin-bottom:15px;
+
+    }
+
+    .update-meta{
+
+        display:flex;
+
+        justify-content:center;
+
+        gap:12px;
+
+        flex-wrap:wrap;
+
+    }
+
+    .update-meta span{
+
+        padding:8px 16px;
+
+        border-radius:999px;
+
+        font-weight:600;
+
+        font-size:13px;
+
+    }
+
+    #updateTitle {
+        color: #fff;
+    }
+
+    .update-body{
+        flex:1;
+
+        padding:30px;
+        padding-bottom:40px;
+
+        overflow-y:auto;
+        overflow-x:hidden;
+
+        scrollbar-width:none;
+        -ms-overflow-style:none;
+    }
+
+    .update-body::-webkit-scrollbar{
+        display:none;
+    }
+
+    .update-item{
+
+        display:flex;
+
+        gap:18px;
+
+        align-items:flex-start;
+
+        padding:15px 18px;
+
+        border-radius:14px;
+
+        background:#f8fafc;
+
+        margin-bottom:12px;
+
+        transition:.25s;
+
+    }
+
+    .update-item:hover{
+
+        transform:translateX(5px);
+
+        background:#eef4ff;
+
+    }
+
+    .update-item:last-child{
+
+        border:none;
+
+    }
+
+    .update-item i{
+
+        color:#10b981;
+
+        font-size:20px;
+
+        margin-top:2px;
+
+    }
+
+    .closeUpdate{
+
+        position:absolute;
+
+        right:20px;
+        top:20px;
+
+        width:42px;
+        height:42px;
+
+        border:none;
+
+        border-radius:50%;
+
+        background:rgba(255,255,255,.18);
+
+        color:white;
+
+        transition:.25s;
+
+    }
+
+    .closeUpdate:hover{
+
+        background:white;
+
+        color:#4f46e5;
+
+        transform:rotate(90deg);
+
+    }
+
+    @keyframes showUpdate{
+
+        0%{
+
+            opacity:0;
+
+            transform:scale(.85);
+
+        }
+
+        100%{
+
+            opacity:1;
+
+            transform:scale(1);
+
+        }
+
+    }
+
+    @media (max-width:768px){
+
+        .update-modal{
+            width:95%;
+            height:90vh;
+            border-radius:20px;
+        }
+
+        .update-body{
+            padding:24px;
+            padding-bottom:60px;
+        }
+
+    }
+
+    .stock-badge{
+        padding:8px 14px;
+        border-radius:10px;
+        font-weight:700;
+    }
+
+    .stock-success{
+        background:#dcfce7;
+        color:#166534;
+    }
+
+    .stock-danger{
+        background:#fee2e2;
+        color:#991b1b;
+    }
+
+    .unit-badge{
+        padding:8px 14px;
+        border-radius:10px;
+        background:#f8fafc;
+        border:1px solid #e2e8f0;
+        font-weight:600;
+    }
 </style>
 
 <nav class="premium-navbar">
@@ -701,8 +964,7 @@
         <!-- WHAT'S NEW -->
         <div
             class="premium-action-btn"
-            data-bs-toggle="modal"
-            data-bs-target="#whatsNewModal">
+            id="whatsNewBtn">
 
             <i class="fas fa-bullhorn"></i>
 
@@ -868,6 +1130,47 @@
     </div>
 </div>
 
+<!-- Update Overlay -->
+<div class="update-overlay" id="updateOverlay">
+    <div class="update-modal">
+        <div class="update-header">
+            <div>
+                <div class="update-icon">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <h4 id="updateTitle"></h4>
+                <div class="update-meta">
+                    <span id="updateVersion"></span>
+                    <span id="updateType" style="color: #000;"></span>
+                    <span id="updateDate"></span>
+                </div>
+            </div>
+            <button class="closeUpdate">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="update-body">
+            <h6 class="mb-3">
+                <i class="fas fa-sparkles me-2"></i>
+                What's New
+            </h6>
+            <div id="updateDetailList" class="mb-5"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).on("click", ".closeUpdate", function () {
+        $("#updateOverlay").fadeOut(150);
+    });
+
+    $(document).on("click", "#updateOverlay", function (e) {
+        if (e.target === this) {
+            $(this).fadeOut(150);
+        }
+    });
+</script>
+
 <?php if ($user['role'] == 'developer' || $user['role'] == 'staff kasir') { ?>
 <script>
     // Load cart from localStorage
@@ -877,6 +1180,37 @@
         let modal = new bootstrap.Modal(document.getElementById('cartModal'));
         modal.show();
     }
+
+    // Show Latest Update Details
+    function showLatestUpdate() {
+        $.get("/qieos/pages/other/update-detail.php", function(res) {
+            if (res.status != "success") {
+                Swal.fire("Error", "Tidak dapat memuat update terbaru", "error");
+                return;
+            }
+
+            $("#updateTitle").text(res.update_name);
+            $("#updateVersion").html(`<span class="stock-badge">${res.update_version}</span>`);
+            $("#updateType").html(res.badge);
+            $("#updateDate").text(res.update_date);
+
+            let html = "";
+            res.details.forEach(function(item) {
+                html += `
+                    <div class="update-item">
+                        <i class="fas fa-check-circle"></i>
+                        <div>${item.description}</div>
+                    </div>
+                `;
+            });
+
+            $("#updateDetailList").html(html);
+            $("#updateOverlay").css("display","flex").hide().fadeIn(200);
+        }, "json");
+    }
+
+    // Attach event to Whats New button
+    document.getElementById("whatsNewBtn").addEventListener("click", showLatestUpdate);
 
     function addToCart(btn, id, name, price, category){
 

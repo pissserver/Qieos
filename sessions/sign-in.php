@@ -1,36 +1,3 @@
-<style>
-    .login-title{
-        font-size: 34px;
-        font-weight: 700;
-        letter-spacing: -0.8px;
-        color:#1e293b;
-        margin-bottom:8px;
-    }
-
-    .login-subtitle{
-        font-size:15px;
-        font-weight:400;
-        color:#64748b;
-        margin-bottom:0;
-        letter-spacing:0.3px;
-    }
-
-    .login-title-wrap{
-        position:relative;
-        display:inline-block;
-    }
-
-    .login-title-wrap::after{
-        content:'';
-        width:60px;
-        height:4px;
-        border-radius:50px;
-        background:linear-gradient(90deg,#60a5fa,#facc15);
-        display:block;
-        margin:14px auto 0;
-    }
-</style>
-
 <!doctype html>
 <html lang="en">
     <head>
@@ -39,6 +6,39 @@
         <title>Login - Qieos</title>
 
         <?php include '../script/headscript.php'; ?>
+        
+        <style>
+            .login-title{
+                font-size: 34px;
+                font-weight: 700;
+                letter-spacing: -0.8px;
+                color:#1e293b;
+                margin-bottom:8px;
+            }
+
+            .login-subtitle{
+                font-size:15px;
+                font-weight:400;
+                color:#64748b;
+                margin-bottom:0;
+                letter-spacing:0.3px;
+            }
+
+            .login-title-wrap{
+                position:relative;
+                display:inline-block;
+            }
+
+            .login-title-wrap::after{
+                content:'';
+                width:60px;
+                height:4px;
+                border-radius:50px;
+                background:linear-gradient(90deg,#60a5fa,#facc15);
+                display:block;
+                margin:14px auto 0;
+            }
+        </style>
     </head>
 
     <body>
@@ -70,8 +70,6 @@
                                             <h1 class="login-title">Selamat Datang</h1>
                                             <p class="login-subtitle">Login akun Qieos anda</p>
                                         </div>
-                                    </div>
-
                                 <?php
                                     if(isset($_GET['success'])){
                                         $success = $_GET['success'];
@@ -109,12 +107,7 @@
                                                     viewBox="0 0 20 20"
                                                     xmlns="http://www.w3.org/2000/svg"
                                                 >
-                                                    <path
-                                                        d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"
-                                                    ></path>
-                                                    <path
-                                                        d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"
-                                                    ></path>
+                                                    <path fill-rule="evenodd" d="M10 2a4 4 0 100 8 4 4 0 000-8zM4 15a6 6 0 1112 0v1H4v-1z" clip-rule="evenodd"></path>
                                                 </svg>
                                             </span>
                                             <input
@@ -128,7 +121,6 @@
                                                 required
                                             />
                                         </div>
-                                    </div>
                                     <!-- End of Form -->
                                     <div class="form-group">
                                         <!-- Form -->
@@ -165,25 +157,21 @@
                                                 <span class="input-group-text">
                                                     <i class="fa fa-eye" id="togglePassword" style="cursor: pointer;"></i>
                                                 </span>
-                                            </div>
-                                        </div>
-                                        <!-- End of Form -->
+                                    <!-- End of Form -->
                                         <div
-                                            class="d-flex justify-content-between align-items-top mb-4"
+                                    class="d-flex justify-content-between align-items-top mb-4"
                                         >
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="remember" id="remember" <?php echo (isset($_COOKIE['username'])) ? 'checked' : ''; ?> />
-                                                <label class="form-check-label mb-0" for="remember">Ingat saya</label>
-                                            </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="remember" id="remember" <?php echo (isset($_COOKIE['username'])) ? 'checked' : ''; ?> />
+                                            <label class="form-check-label mb-0" for="remember">Ingat saya</label>
+                                        </div>
                                             <div>
                                                 <a
-                                                    href="forgot-password.php"
-                                                    class="small text-right"
-                                                    >Lupa password?</a
+                                                href="forgot-password.php"
+                                                class="small text-right"
+                                                >Lupa password?</a
                                                 >
                                             </div>
-                                        </div>
-                                    </div>
                                     <div class="d-grid">
                                         <button
                                             type="submit"
@@ -203,11 +191,6 @@
                                             >Buat akun</a
                                         >
                                     </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </section>
         </main>
 
