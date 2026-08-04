@@ -1169,17 +1169,6 @@
             $(this).fadeOut(150);
         }
     });
-</script>
-
-<?php if ($user['role'] == 'developer' || $user['role'] == 'staff kasir') { ?>
-<script>
-    // Load cart from localStorage
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
-
-    function openCart() {
-        let modal = new bootstrap.Modal(document.getElementById('cartModal'));
-        modal.show();
-    }
 
     // Show Latest Update Details
     function showLatestUpdate() {
@@ -1211,6 +1200,17 @@
 
     // Attach event to Whats New button
     document.getElementById("whatsNewBtn").addEventListener("click", showLatestUpdate);
+</script>
+
+<?php if ($user['role'] == 'developer' || $user['role'] == 'staff kasir') { ?>
+<script>
+    // Load cart from localStorage
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    function openCart() {
+        let modal = new bootstrap.Modal(document.getElementById('cartModal'));
+        modal.show();
+    }
 
     function addToCart(btn, id, name, price, category){
 
