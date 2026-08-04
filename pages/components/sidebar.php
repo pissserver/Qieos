@@ -3,180 +3,376 @@
 ?>
 
 <style>
+    :root {
+        --sidebar-width: 280px;
+        --sidebar-collapsed-width: 80px;
+        --sidebar-bg: linear-gradient(180deg, #0a0e27 0%, #1a1f3a 50%, #0a0e27 100%);
+        --sidebar-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        --accent-blue: #4f7cff;
+        --accent-purple: #7c3aed;
+        --text-primary: #ffffff;
+        --text-secondary: #94a3b8;
+        --hover-bg: rgba(255, 255, 255, 0.06);
+        --active-bg: linear-gradient(135deg, #4f7cff, #7c3aed);
+    }
+
+    body {
+        --content-margin-left: var(--sidebar-width);
+    }
+
+    /* ===== SIDEBAR CONTAINER ===== */
     .sidebar {
-        background:
-            linear-gradient(
-                135deg,
-                #081120,
-                #0f1f3a,
-                #081120
-            );
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: var(--sidebar-width);
+        background: var(--sidebar-bg);
+        box-shadow: var(--sidebar-shadow);
+        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 1000;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
     }
-    
-    .sidebar-footer {
-        padding: 20px 16px;
-        text-align: center;
+
+    .sidebar.collapsed {
+        width: var(--sidebar-collapsed-width);
+    }
+
+    .sidebar.collapsed .sidebar-text,
+    .sidebar.collapsed .sidebar-logo-text,
+    .sidebar.collapsed .nav-title {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    .sidebar.collapsed .version-badge span,
+    .sidebar.collapsed .version-badge small {
+        display: none;
+    }
+
+    /* ===== SIDEBAR HEADER ===== */
+    .sidebar-header {
+        padding: 24px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        min-height: 80px;
+    }
+
+    .sidebar-logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+        overflow: hidden;
+    }
+
+    .sidebar-logo-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: var(--active-bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 20px;
+        flex-shrink: 0;
+        box-shadow: 0 4px 12px rgba(79, 124, 255, 0.3);
+    }
+
+    .sidebar-logo-text {
+        display: flex;
+        flex-direction: column;
+        transition: opacity 0.2s, visibility 0.2s;
+    }
+
+    .sidebar-logo-text h4 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.5px;
+    }
+
+    .sidebar-logo-text span {
+        font-size: 11px;
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+
+    .sidebar-toggle {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .sidebar-toggle:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: rotate(180deg);
+    }
+
+    /* ===== SIDEBAR MENU ===== */
+    .sidebar-menu {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 16px 12px;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    }
+
+    .sidebar-menu::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .sidebar-menu::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .sidebar-menu::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+    }
+
+    .sidebar-menu::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* ===== NAV TITLE ===== */
+    .nav-title {
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--text-secondary);
+        margin: 20px 0 8px 12px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        transition: opacity 0.2s, visibility 0.2s;
+        white-space: nowrap;
+    }
+
+    .nav-title:first-child {
+        margin-top: 0;
+    }
+
+    /* ===== NAV ITEMS ===== */
+    .nav {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .nav-item {
+        margin-bottom: 4px;
+    }
+
+    .nav-link {
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        border-radius: 12px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
+        overflow: hidden;
+        white-space: nowrap;
     }
 
-    /* subtle animated divider */
-    .sidebar-footer::before {
+    .nav-link::before {
         content: '';
-        display: block;
-        height: 1px;
-        width: 75%;
-        margin: 0 auto 16px;
-        background: linear-gradient(
-            90deg,
-            transparent,
-            rgba(120, 180, 255, 0.15),
-            rgba(120, 180, 255, 0.8),
-            rgba(120, 180, 255, 0.15),
-            transparent
-        );
-        background-size: 200% 100%;
-        animation: lineFlow 3s linear infinite;
-        opacity: 0.9;
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3px;
+        height: 0;
+        background: var(--active-bg);
+        border-radius: 0 3px 3px 0;
+        transition: height 0.3s;
     }
 
-    @keyframes lineFlow {
-        0% { background-position: 0% 0; }
-        100% { background-position: 200% 0; }
+    .nav-link:hover {
+        background: var(--hover-bg);
+        color: var(--text-primary);
+        transform: translateX(4px);
     }
 
-    /* premium animated badge */
+    .nav-item.active .nav-link {
+        background: var(--active-bg);
+        color: var(--text-primary);
+        box-shadow: 0 4px 12px rgba(79, 124, 255, 0.25);
+    }
+
+    .nav-item.active .nav-link::before {
+        height: 60%;
+    }
+
+    .sidebar-icon {
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+        flex-shrink: 0;
+        font-size: 18px;
+    }
+
+    .sidebar-text {
+        transition: opacity 0.2s, visibility 0.2s;
+        white-space: nowrap;
+    }
+
+    /* ===== SIDEBAR FOOTER ===== */
+    .sidebar-footer {
+        padding: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
     .version-badge {
         position: relative;
         display: inline-flex;
         align-items: center;
         gap: 8px;
-
-        padding: 8px 18px;
+        padding: 10px 18px;
         border-radius: 999px;
-
-        color: #eaf2ff;
-        font-size: 12px;
-        letter-spacing: 0.5px;
-
-        background: rgba(15, 18, 30, 0.65);
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
-
-        z-index: 1;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         overflow: hidden;
-
-        transform: translateY(0);
-        animation: floatBadge 4s ease-in-out infinite;
-
-        box-shadow:
-            0 10px 30px rgba(0, 0, 0, 0.45),
-            inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        transition: all 0.3s;
     }
 
-    /* floating motion */
-    @keyframes floatBadge {
-        0%   { transform: translateY(0px); }
-        50%  { transform: translateY(-4px); }
-        100% { transform: translateY(0px); }
-    }
-
-    /* animated gradient border */
     .version-badge::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        padding: 1px;
-        border-radius: 999px;
-
-        background: linear-gradient(
-            120deg,
-            #4b6cb7,
-            #8ec5fc,
-            #182848,
-            #4b6cb7
-        );
-
-        background-size: 300% 300%;
-        animation: gradientMove 6s ease infinite;
-
-        -webkit-mask: 
-            linear-gradient(#000 0 0) content-box, 
-            linear-gradient(#000 0 0);
-        -webkit-mask-composite: xor;
-        mask-composite: exclude;
-
-        pointer-events: none;
-    }
-
-    @keyframes gradientMove {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-    }
-
-    /* inner shine */
-    .version-badge::after {
         content: '';
         position: absolute;
-        top: -50%;
-        left: -60%;
-        width: 60%;
-        height: 200%;
-        background: linear-gradient(
-            120deg,
-            transparent,
-            rgba(255,255,255,0.10),
-            transparent
-        );
-        transform: rotate(20deg);
-        animation: shine 5s infinite;
+        inset: 0;
+        background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        transform: translateX(-100%);
+        animation: shimmer 3s infinite;
     }
 
-    @keyframes shine {
-        0%   { left: -80%; opacity: 0; }
-        20%  { opacity: 1; }
-        50%  { opacity: 0.6; }
-        100% { left: 130%; opacity: 0; }
+    @keyframes shimmer {
+        100% {
+            transform: translateX(100%);
+        }
     }
 
     .version-badge span {
         font-weight: 600;
-        color: #ffffff;
+        color: var(--text-primary);
+        font-size: 13px;
+        transition: all 0.2s;
     }
 
     .version-badge small {
-        opacity: 0.7;
+        color: var(--text-secondary);
         font-weight: 500;
-    }
-
-    /* hover micro-interaction */
-    .version-badge:hover {
-        transform: translateY(-6px) scale(1.03);
-        box-shadow:
-            0 15px 40px rgba(0, 0, 0, 0.55),
-            0 0 25px rgba(120, 160, 255, 0.25);
-    }
-
-    .nav-title {
         font-size: 11px;
-        font-weight: 700;
-        color: rgba(210, 220, 240, 0.45);
-        margin: 15px 10px 5px;
-        letter-spacing: 1.6px;
-        text-transform: uppercase;
+        transition: all 0.2s;
+    }
+
+    .sidebar.collapsed .version-badge {
+        padding: 10px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+    }
+
+    .version-badge:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-2px);
+    }
+
+    /* ===== MOBILE NAVBAR ===== */
+    .navbar-theme-primary {
+        background: var(--sidebar-bg);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .mobile-user-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 991.98px) {
+        .sidebar {
+            transform: translateX(-100%);
+            width: var(--sidebar-width);
+        }
+
+        .sidebar.show {
+            transform: translateX(0);
+        }
+
+        .sidebar-toggle {
+            display: none;
+        }
+
+        body {
+            --content-margin-left: 0;
+        }
+    }
+
+    @media (min-width: 992px) {
+        .navbar-theme-primary {
+            display: none;
+        }
+
+        .collapse-close {
+            display: none;
+        }
+
+        .user-card {
+            display: none !important;
+        }
+    }
+
+    /* ===== CONTENT OFFSET ===== */
+    .content {
+        margin-left: var(--content-margin-left);
+        transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .sidebar.collapsed ~ .content {
+        margin-left: var(--sidebar-collapsed-width);
+    }
+
+    @media (max-width: 991.98px) {
+        .content {
+            margin-left: 0 !important;
+        }
     }
 </style>
 
-<nav class="navbar navbar-dark navbar-theme-primary px-4 col-12 d-lg-none">
+<!-- Mobile Navbar -->
+<nav class="navbar navbar-dark navbar-theme-primary px-3 d-lg-none">
     <a class="navbar-brand me-lg-5" href="/qieos/pages/dashboard.php">
-        <img
-            class="navbar-brand-dark"
-            src="/qieos/assets/img/brand/qieos.png"
-            alt="Qieos Logo" />
-        <img
-            class="navbar-brand-light"
-            src="/qieos/assets/img/brand/qieos.png"
-            alt="Qieos Logo" />
+        <img class="navbar-brand-dark" src="/qieos/assets/img/brand/qieos.png" alt="Qieos Logo" />
     </a>
     <div class="d-flex align-items-center">
         <button
@@ -192,85 +388,52 @@
     </div>
 </nav>
 
-<nav
-    id="sidebarMenu"
-    class="sidebar d-lg-block bg-gray-800 text-white collapse"
-    data-simplebar>
-    <div class="sidebar-inner px-4 pt-3">
-        <div
-            class="user-card d-flex d-md-none align-items-center justify-content-between justify-content-md-center pb-4">
-            <div class="d-flex align-items-center">
-                <div class="avatar-lg me-4">
-                    <img
-                        src="<?php echo $user['photo'] ? '/qieos/assets/img/uploads/' . $user['photo'] : '/qieos/assets/img/default-avatar.jpg'; ?>"
-                        class="card-img-top rounded-circle border-white"
-                        alt="Your Image" />
-                </div>
-                <div class="d-block">
-                    <h2 class="h5 mb-3">Hi, <?php echo $user['fullname'] != '' ? $user['fullname'] : $_SESSION['username']; ?></h2>
-                    <a
-                        href="/qieos/sessions/logout.php"
-                        class="btn btn-secondary btn-sm d-inline-flex align-items-center">
-                        <svg
-                            class="icon icon-xxs me-1"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                        </svg>
-                        Sign Out
-                    </a>
-                </div>
+<!-- Collapsible Sidebar Container -->
+<div class="sidebar" id="sidebarMenu">
+    <!-- Header -->
+    <div class="sidebar-header">
+        <a href="/qieos/pages/dashboard.php" class="sidebar-logo">
+            <div class="sidebar-logo-icon">
+                <i class="fas fa-layer-group"></i>
             </div>
-            <div class="collapse-close d-md-none">
-                <a
-                    href="#sidebarMenu"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#sidebarMenu"
-                    aria-controls="sidebarMenu"
-                    aria-expanded="true"
-                    aria-label="Toggle navigation">
-                    <svg
-                        class="icon icon-xs"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            fill-rule="evenodd"
-                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                            clip-rule="evenodd"></path>
-                    </svg>
-                </a>
+            <div class="sidebar-logo-text">
+                <h4>Qieos</h4>
+                <span>POS Management</span>
+            </div>
+        </a>
+        <button class="sidebar-toggle" id="sidebarToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+
+    <!-- Mobile User Card -->
+    <div class="mobile-user-card d-lg-none">
+        <div class="d-flex align-items-center">
+            <img
+                src="<?php echo $user['photo'] ? '/qieos/assets/img/uploads/' . $user['photo'] : '/qieos/assets/img/default-avatar.jpg'; ?>"
+                class="rounded-circle"
+                style="width: 40px; height: 40px; object-fit: cover; margin-right: 12px;"
+                alt="User" />
+            <div>
+                <h6 class="mb-0 text-white" style="font-size: 14px; font-weight: 600;">
+                    <?php echo $user['fullname'] != '' ? $user['fullname'] : $_SESSION['username']; ?>
+                </h6>
+                <small class="text-secondary" style="font-size: 12px;">
+                    <?php echo ucwords(strtolower($user['role'])); ?>
+                </small>
             </div>
         </div>
+        <a href="/qieos/sessions/logout.php" class="btn btn-sm btn-danger w-100 mt-2" style="background: #ef4444; border: none;">
+            <i class="fas fa-sign-out-alt me-1"></i> Logout
+        </a>
+    </div>
 
-        <ul class="nav flex-column pt-3 pt-md-0">
-            <li class="nav-item">
-                <a
-                    href="/qieos/pages/dashboard.php"
-                    class="nav-link d-flex align-items-center">
-                    <span class="sidebar-icon">
-                        <img
-                            src="/qieos/assets/img/brand/qieos.png"
-                            width="150"
-                            alt="Qieos Logo" />
-                    </span>
-                </a>
-            </li>
-
-            <li class="nav-title">OVERVIEW</li>
-
+    <!-- Menu -->
+    <div class="sidebar-menu">
+        <ul class="nav flex-column">
             <li class="nav-item <?php echo ($current_page == 'dashboard.php') ? 'active' : ''; ?>">
-                <!-- <a href="/qieos/pages/dashboard.php" class="nav-link"> -->
                 <a href="/qieos/pages/coming-soon.php" class="nav-link">
-                    <span class="sidebar-icon">
-                        <i class="fas fa-dashboard me-2"></i>
-                    </span>
+                    <span class="sidebar-icon"><i class="fas fa-th-large"></i></span>
                     <span class="sidebar-text">Dashboard</span>
                 </a>
             </li>
@@ -285,32 +448,23 @@
                 <li class="nav-title">PURCHASING</li>
 
                 <li class="nav-item <?= ($current_page == 'list.php') ? 'active' : ''; ?>">
-                    <!-- <a href="/qieos/pages/purchasing/list.php" class="nav-link"> -->
                     <a href="/qieos/pages/coming-soon.php" class="nav-link">
-                        <span class="sidebar-icon">
-                            <i class="fas fa-file-alt me-3"></i>
-                        </span>
-                        <span>Daftar Belanja</span>
+                        <span class="sidebar-icon"><i class="fas fa-file-alt"></i></span>
+                        <span class="sidebar-text">Daftar Belanja</span>
                     </a>
                 </li>
 
                 <li class="nav-item <?= ($current_page == 'purchase.php') ? 'active' : ''; ?>">
-                    <!-- <a href="/qieos/pages/purchasing/purchase.php" class="nav-link"> -->
                     <a href="/qieos/pages/coming-soon.php" class="nav-link">
-                        <span class="sidebar-icon">
-                            <i class="fas fa-cart-plus me-2"></i>
-                        </span>
-                        <span>Input Pembelian</span>
+                        <span class="sidebar-icon"><i class="fas fa-cart-plus"></i></span>
+                        <span class="sidebar-text">Input Pembelian</span>
                     </a>
                 </li>
 
                 <li class="nav-item <?= ($current_page == 'additional.php') ? 'active' : ''; ?>">
-                    <!-- <a href="/qieos/pages/purchasing/additional.php" class="nav-link"> -->
                     <a href="/qieos/pages/coming-soon.php" class="nav-link">
-                        <span class="sidebar-icon">
-                            <i class="fas fa-box-open me-2"></i>
-                        </span>
-                        <span>Produk Tambahan</span>
+                        <span class="sidebar-icon"><i class="fas fa-box-open"></i></span>
+                        <span class="sidebar-text">Produk Tambahan</span>
                     </a>
                 </li>
 
@@ -318,32 +472,23 @@
                 <li class="nav-title">GUDANG STOK</li>
 
                 <li class="nav-item <?= ($current_page == 'stock.php') ? 'active' : ''; ?>">
-                    <!-- <a href="/qieos/pages/stock/stock.php" class="nav-link"> -->
                     <a href="/qieos/pages/coming-soon.php" class="nav-link">
-                        <span class="sidebar-icon">
-                            <i class="fas fa-warehouse me-2"></i>
-                        </span>
-                        <span>Stok Gudang</span>
+                        <span class="sidebar-icon"><i class="fas fa-warehouse"></i></span>
+                        <span class="sidebar-text">Stok Gudang</span>
                     </a>
                 </li>
 
                 <li class="nav-item <?= ($current_page == 'mutation.php') ? 'active' : ''; ?>">
-                    <!-- <a href="/qieos/pages/stock/mutation.php" class="nav-link"> -->
                     <a href="/qieos/pages/coming-soon.php" class="nav-link">
-                        <span class="sidebar-icon">
-                            <i class="fas fa-truck-ramp-box me-2"></i>
-                        </span>
-                        <span>Mutasi Stok</span>
+                        <span class="sidebar-icon"><i class="fas fa-truck-ramp-box"></i></span>
+                        <span class="sidebar-text">Mutasi Stok</span>
                     </a>
                 </li>
 
                 <li class="nav-item <?= ($current_page == 'transfer.php') ? 'active' : ''; ?>">
-                    <!-- <a href="/qieos/pages/stock/transfer.php" class="nav-link"> -->
                     <a href="/qieos/pages/coming-soon.php" class="nav-link">
-                        <span class="sidebar-icon">
-                            <i class="fas fa-exchange-alt me-2"></i>
-                        </span>
-                        <span>Transfer ke Penjualan</span>
+                        <span class="sidebar-icon"><i class="fas fa-exchange-alt"></i></span>
+                        <span class="sidebar-text">Transfer ke Penjualan</span>
                     </a>
                 </li>
 
@@ -352,19 +497,15 @@
 
                 <li class="nav-item <?= ($current_page == 'registration.php') ? 'active' : ''; ?>">
                     <a href="/qieos/pages/tenant/registration.php" class="nav-link">
-                        <span class="sidebar-icon">
-                            <i class="fas fa-pen-to-square me-2"></i>
-                        </span>
-                        <span>Pendaftaran Tenant</span>
+                        <span class="sidebar-icon"><i class="fas fa-pen-to-square"></i></span>
+                        <span class="sidebar-text">Pendaftaran Tenant</span>
                     </a>
                 </li>
 
                 <li class="nav-item <?= ($current_page == 'tenant.php' || $current_page == 'tenant-detail.php') ? 'active' : ''; ?>">
                     <a href="/qieos/pages/tenant/tenant.php" class="nav-link">
-                        <span class="sidebar-icon">
-                            <i class="fas fa-store me-2"></i>
-                        </span>
-                        <span>Tenant</span>
+                        <span class="sidebar-icon"><i class="fas fa-store"></i></span>
+                        <span class="sidebar-text">Tenant</span>
                     </a>
                 </li>
 
@@ -372,21 +513,16 @@
                 <li class="nav-title">LAPORAN</li>
 
                 <li class="nav-item <?= ($current_page == 'report.php') ? 'active' : ''; ?>">
-                    <!-- <a href="/qieos/pages/management/administrator.php" class="nav-link"> -->
                     <a href="/qieos/pages/coming-soon.php" class="nav-link">
-                        <span class="sidebar-icon">
-                            <i class="fas fa-chart-line me-2"></i>
-                        </span>
-                        <span>Laporan Penjualan</span>
+                        <span class="sidebar-icon"><i class="fas fa-chart-line"></i></span>
+                        <span class="sidebar-text">Laporan Penjualan</span>
                     </a>
                 </li>
 
                 <li class="nav-item <?= ($current_page == 'report-tenant.php') ? 'active' : ''; ?>">
                     <a href="/qieos/pages/report/report-tenant.php" class="nav-link">
-                        <span class="sidebar-icon">
-                            <i class="fas fa-chart-line me-2"></i>
-                        </span>
-                        <span>Laporan Tenant</span>
+                        <span class="sidebar-icon"><i class="fas fa-chart-line"></i></span>
+                        <span class="sidebar-text">Laporan Tenant</span>
                     </a>
                 </li>
 
@@ -394,36 +530,26 @@
                 <li class="nav-title">MANAJEMEN USER</li>
 
                 <li class="nav-item <?= ($current_page == 'administrator.php') ? 'active' : ''; ?>">
-                    <!-- <a href="/qieos/pages/management/administrator.php" class="nav-link"> -->
                     <a href="/qieos/pages/coming-soon.php" class="nav-link">
-                        <span class="sidebar-icon">
-                            <i class="fas fa-users me-2"></i>
-                        </span>
-                        <span>Administrator</span>
+                        <span class="sidebar-icon"><i class="fas fa-users"></i></span>
+                        <span class="sidebar-text">Administrator</span>
                     </a>
                 </li>
 
                 <li class="nav-item <?= ($current_page == 'cashier.php') ? 'active' : ''; ?>">
-                    <!-- <a href="/qieos/pages/management/cashier.php" class="nav-link"> -->
                     <a href="/qieos/pages/coming-soon.php" class="nav-link">
-                        <span class="sidebar-icon">
-                            <i class="fas fa-users me-2"></i>
-                        </span>
-                        <span>Staff Kasir</span>
+                        <span class="sidebar-icon"><i class="fas fa-users"></i></span>
+                        <span class="sidebar-text">Staff Kasir</span>
                     </a>
                 </li>
 
                 <!-- LAINNYA -->
                 <li class="nav-title">LAINNYA</li>
 
-                <li
-                    class="nav-item <?= ($current_page == 'update.php') ? 'active' : ''; ?>"
-                >
+                <li class="nav-item <?= ($current_page == 'update.php') ? 'active' : ''; ?>">
                     <a href="/qieos/pages/other/update.php" class="nav-link">
-                        <span class="sidebar-icon">
-                            <i class="fas fa-rocket me-2"></i>
-                        </span>
-                        <span>Update</span>
+                        <span class="sidebar-icon"><i class="fas fa-rocket"></i></span>
+                        <span class="sidebar-text">Update</span>
                     </a>
                 </li>
             <?php } ?>
@@ -433,32 +559,23 @@
                 <li class="nav-title">PENJUALAN</li>
 
                 <li class="nav-item <?= ($current_page == 'sales-stock.php') ? 'active' : ''; ?>">
-                    <!-- <a href="/qieos/pages/sales/sales-stock.php" class="nav-link"> -->
                     <a href="/qieos/pages/coming-soon.php" class="nav-link">
-                        <span class="sidebar-icon">
-                            <i class="fas fa-store me-2"></i>
-                        </span>
-                        <span>Stok Penjualan</span>
+                        <span class="sidebar-icon"><i class="fas fa-store"></i></span>
+                        <span class="sidebar-text">Stok Penjualan</span>
                     </a>
                 </li>
 
                 <li class="nav-item <?= ($current_page == 'catalog.php') ? 'active' : ''; ?>">
-                    <!-- <a href="/qieos/pages/sales/catalog.php" class="nav-link"> -->
                     <a href="/qieos/pages/coming-soon.php" class="nav-link">
-                        <span class="sidebar-icon">
-                            <i class="fas fa-book-open me-2"></i>
-                        </span>
-                        <span>Katalog Produk</span>
+                        <span class="sidebar-icon"><i class="fas fa-book-open"></i></span>
+                        <span class="sidebar-text">Katalog Produk</span>
                     </a>
                 </li>
 
                 <li class="nav-item <?= ($current_page == 'order.php') ? 'active' : ''; ?>">
-                    <!-- <a href="/qieos/pages/sales/order.php" class="nav-link"> -->
                     <a href="/qieos/pages/coming-soon.php" class="nav-link">
-                        <span class="sidebar-icon">
-                            <i class="fas fa-receipt me-3"></i>
-                        </span>
-                        <span>Pesanan</span>
+                        <span class="sidebar-icon"><i class="fas fa-receipt"></i></span>
+                        <span class="sidebar-text">Pesanan</span>
                     </a>
                 </li>
 
@@ -467,10 +584,8 @@
 
                 <li class="nav-item <?= ($current_page == 'tenant.php' || $current_page == 'tenant-detail.php') ? 'active' : ''; ?>">
                     <a href="/qieos/pages/tenant/tenant.php" class="nav-link">
-                        <span class="sidebar-icon">
-                            <i class="fas fa-store me-2"></i>
-                        </span>
-                        <span>Daftar Tenant</span>
+                        <span class="sidebar-icon"><i class="fas fa-store"></i></span>
+                        <span class="sidebar-text">Daftar Tenant</span>
                     </a>
                 </li>
 
@@ -479,24 +594,18 @@
 
                 <li class="nav-item <?= ($current_page == 'recap.php') ? 'active' : ''; ?>">
                     <a href="/qieos/pages/recap/recap.php" class="nav-link">
-                        <span class="sidebar-icon">
-                            <i class="fas fa-chart-bar me-2"></i>
-                        </span>
-                        <span>Penjualan & Tenant</span>
+                        <span class="sidebar-icon"><i class="fas fa-chart-bar"></i></span>
+                        <span class="sidebar-text">Penjualan & Tenant</span>
                     </a>
                 </li>
 
                 <!-- LAINNYA -->
                 <li class="nav-title">LAINNYA</li>
 
-                <li
-                    class="nav-item <?= ($current_page == 'update.php') ? 'active' : ''; ?>"
-                >
+                <li class="nav-item <?= ($current_page == 'update.php') ? 'active' : ''; ?>">
                     <a href="/qieos/pages/other/update.php" class="nav-link">
-                        <span class="sidebar-icon">
-                            <i class="fas fa-rocket me-2"></i>
-                        </span>
-                        <span>Update</span>
+                        <span class="sidebar-icon"><i class="fas fa-rocket"></i></span>
+                        <span class="sidebar-text">Update</span>
                     </a>
                 </li>
             <?php } ?>
@@ -504,11 +613,37 @@
         </ul>
     </div>
 
-    <!-- Version -->
+    <!-- Footer -->
     <div class="sidebar-footer">
         <div class="version-badge">
             <span>Qieos</span>
             <small>v1.0.0</small>
         </div>
     </div>
-</nav>
+</div>
+
+<script>
+    // Toggle Sidebar
+    document.getElementById('sidebarToggle').addEventListener('click', function() {
+        document.getElementById('sidebarMenu').classList.toggle('collapsed');
+    });
+
+    // Mobile Sidebar Toggle
+    document.querySelectorAll('.navbar-toggler').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            document.getElementById('sidebarMenu').classList.toggle('show');
+        });
+    });
+
+    // Close sidebar on mobile when clicking outside
+    document.addEventListener('click', function(e) {
+        const sidebar = document.getElementById('sidebarMenu');
+        const toggler = document.querySelector('.navbar-toggler');
+        
+        if (window.innerWidth < 992) {
+            if (!sidebar.contains(e.target) && !toggler.contains(e.target)) {
+                sidebar.classList.remove('show');
+            }
+        }
+    });
+</script>
