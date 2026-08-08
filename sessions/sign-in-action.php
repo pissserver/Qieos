@@ -8,6 +8,11 @@
 
         // Validasi input
         if($username==''||$password==''){
+            if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+                header('Content-Type: application/json');
+                echo json_encode(['status' => 'error', 'error' => 'empty', 'message' => 'Username dan password harus diisi']);
+                exit;
+            }
             header("Location:sign-in.php?error=empty");
             exit;
         }
@@ -33,15 +38,32 @@
                     setcookie("username", "", time() - 3600, "/"); // Hapus cookie
                 }
 
-                header("Location:../pages/dashboard.php?login=1");
+                // AJAX check
+                if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+                    header('Content-Type: application/json');
+                    echo json_encode(['status' => 'success', 'redirect' => '../pages/dashboard.php']);
+                    exit;
+                }
+
+                header("Location:../pages/dashboard.php");
                 exit;
             } else {
                 // Password salah
+                if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+                    header('Content-Type: application/json');
+                    echo json_encode(['status' => 'error', 'error' => 'password', 'message' => 'Password yang dimasukkan tidak sesuai']);
+                    exit;
+                }
                 header("Location:sign-in.php?error=password");
                 exit;
             }
         } else {
             // Username tidak ditemukan
+            if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+                header('Content-Type: application/json');
+                echo json_encode(['status' => 'error', 'error' => 'username', 'message' => 'Akun dengan username tersebut tidak terdaftar']);
+                exit;
+            }
             header("Location:sign-in.php?error=username");
             exit;
         }

@@ -1,471 +1,380 @@
-<?php
-include '../sessions/session.php';
-
-date_default_timezone_set('Asia/Jakarta');
-$today = date('Y-m-d');
-$this_month = date('Y-m');
-
-// ===== STATS =====
-$total_customers = 0;
-$total_revenue = 0;
-$total_cashouts = 0;
-$total_orders = 0;
-$total_products = 0;
-$net_profit = 0;
-$today_revenue = 0;
-$today_orders = 0;
-$today_customers = 0;
-$this_month_revenue = 0;
-$this_month_orders = 0;
-$pending_orders = 0;
-
-$r = mysqli_query($conn, "SELECT COUNT(DISTINCT customer_name) as c, COALESCE(SUM(total),0) as r, COUNT(*) as o FROM orders WHERE status_payment='paid'");
-if ($row = mysqli_fetch_assoc($r)) {
-    $total_customers = $row['c'];
-    $total_revenue = $row['r'];
-    $total_orders = $row['o'];
-}
-
-$r = mysqli_query($conn, "SELECT COALESCE(SUM(amount),0) as c FROM cashouts");
-if ($row = mysqli_fetch_assoc($r)) $total_cashouts = $row['c'];
-
-$net_profit = $total_revenue - $total_cashouts;
-
-$r = mysqli_query($conn, "SELECT COUNT(*) as c FROM products");
-if ($row = mysqli_fetch_assoc($r)) $total_products = $row['c'];
-
-$r = mysqli_query($conn, "SELECT COUNT(DISTINCT customer_name) as c, COALESCE(SUM(total),0) as r, COUNT(*) as o FROM orders WHERE DATE(tanggal)='$today' AND status_payment='paid'");
-if ($row = mysqli_fetch_assoc($r)) {
-    $today_revenue = $row['r'];
-    $today_orders = $row['o'];
-    $today_customers = $row['c'];
-}
-
-$r = mysqli_query($conn, "SELECT COALESCE(SUM(total),0) as r, COUNT(*) as o FROM orders WHERE DATE_FORMAT(tanggal,'%Y-%m')='$this_month' AND status_payment='paid'");
-if ($row = mysqli_fetch_assoc($r)) {
-    $this_month_revenue = $row['r'];
-    $this_month_orders = $row['o'];
-}
-
-$r = mysqli_query($conn, "SELECT COUNT(*) as c FROM orders WHERE status_payment='waiting'");
-if ($row = mysqli_fetch_assoc($r)) $pending_orders = $row['c'];
-
-// ===== CHART: Monthly Revenue (last 6 months) =====
-$chart_labels = [];
-$chart_data = [];
-$r = mysqli_query($conn, "SELECT DATE_FORMAT(tanggal,'%b') as label, DATE_FORMAT(tanggal,'%Y-%m') as key_month, COALESCE(SUM(total),0) as rev FROM orders WHERE status_payment='paid' AND tanggal >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH) GROUP BY key_month ORDER BY key_month ASC");
-while ($row = mysqli_fetch_assoc($r)) {
-    $chart_labels[] = $row['label'];
-    $chart_data[] = (float)$row['rev'];
-}
-
-// ===== CHART: Order Status =====
-$status_paid = 0;
-$status_waiting = 0;
-$status_cancelled = 0;
-$r = mysqli_query($conn, "SELECT status_payment, COUNT(*) as c FROM orders GROUP BY status_payment");
-while ($row = mysqli_fetch_assoc($r)) {
-    if ($row['status_payment'] == 'paid') $status_paid = $row['c'];
-    elseif ($row['status_payment'] == 'waiting') $status_waiting = $row['c'];
-    elseif ($row['status_payment'] == 'cancelled') $status_cancelled = $row['c'];
-}
-
-// ===== RECENT ORDERS =====
-$recent_orders = [];
-$r = mysqli_query($conn, "SELECT o.code, o.customer_name, o.total, o.tanggal, o.status_payment, u.fullname as staff_name FROM orders o LEFT JOIN users u ON o.staff_id = u.id ORDER BY o.tanggal DESC LIMIT 6");
-while ($row = mysqli_fetch_assoc($r)) $recent_orders[] = $row;
-
-// ===== TOP PRODUCTS =====
-$top_products = [];
-$r = mysqli_query($conn, "SELECT p.name, p.category, COUNT(od.product_id) as times_sold, COALESCE(SUM(od.qty),0) as total_qty, COALESCE(SUM(od.subtotal),0) as total_rev FROM order_details od JOIN products p ON od.product_id = p.id JOIN orders o ON od.order_id = o.id WHERE o.status_payment='paid' GROUP BY od.product_id ORDER BY total_rev DESC LIMIT 5");
-while ($row = mysqli_fetch_assoc($r)) $top_products[] = $row;
-
-// ===== TOP CUSTOMERS =====
-$top_customers = [];
-$r = mysqli_query($conn, "SELECT customer_name, COUNT(*) as total_orders, COALESCE(SUM(total),0) as total_spent FROM orders WHERE status_payment='paid' GROUP BY customer_name ORDER BY total_spent DESC LIMIT 5");
-while ($row = mysqli_fetch_assoc($r)) $top_customers[] = $row;
-
-// ===== DAILY REVENUE (last 7 days) =====
-$week_labels = [];
-$week_data = [];
-$r = mysqli_query($conn, "SELECT DATE(tanggal) as d, DAYNAME(tanggal) as day_name, COALESCE(SUM(total),0) as rev FROM orders WHERE status_payment='paid' AND tanggal >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) GROUP BY d ORDER BY d ASC");
-while ($row = mysqli_fetch_assoc($r)) {
-    $week_labels[] = substr($row['day_name'], 0, 3);
-    $week_data[] = (float)$row['rev'];
-}
-
-// ===== CASHOUT CATEGORIES =====
-$recent_cashouts = [];
-$r = mysqli_query($conn, "SELECT note, amount, created_at FROM cashouts ORDER BY created_at DESC LIMIT 5");
-if ($r) while ($row = mysqli_fetch_assoc($r)) $recent_cashouts[] = $row;
-?>
-
+<?php include '../sessions/session.php'; ?>
 <!doctype html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>Dashboard - Qieos</title>
     <?php include '../script/headscript.php'; ?>
-    <link rel="stylesheet" href="../assets/css/auth-premium.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        .dash-stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px; }
-        .dash-stat-card {
-            background: #1f2235; border:1px solid rgba(255,255,255,0.06);
-            border-radius:16px; padding:20px 22px; position:relative; overflow:hidden;
-            transition: transform .25s ease, box-shadow .25s ease;
+        *{box-sizing:border-box}
+        body{font-family:'Inter',system-ui,-apple-system,sans-serif}
+
+        @keyframes hdrGlow{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+        @keyframes hdrPulse{0%,100%{box-shadow:0 20px 60px rgba(99,102,241,.15),0 0 120px rgba(99,102,241,.08)}50%{box-shadow:0 24px 80px rgba(99,102,241,.3),0 0 160px rgba(99,102,241,.15)}}
+        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+        @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        @keyframes fadeSlideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes barSlide{from{width:0}to{width:var(--bw)}}
+        @keyframes glowPulse{0%,100%{opacity:.08}50%{opacity:.18}}
+        @keyframes iconBounce{0%{transform:scale(1)}50%{transform:scale(1.12) rotate(-5deg)}100%{transform:scale(1)}}
+        @keyframes borderGlow{0%,100%{border-color:rgba(255,255,255,.08)}50%{border-color:rgba(255,255,255,.18)}}
+        @keyframes dotPulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+        @keyframes valReveal{from{opacity:0;transform:translateY(10px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+        /* ===== HEADER ===== */
+        .dash-hdr{
+            position:relative;border-radius:28px;padding:38px 44px;margin-bottom:26px;overflow:hidden;color:#fff;
+            background:linear-gradient(135deg,#1e1b4b,#312e81,#4338ca,#6366f1,#4338ca,#312e81,#1e1b4b);
+            background-size:400% 400%;animation:hdrGlow 10s ease infinite,hdrPulse 4s ease infinite;
+            transition:all .4s;
         }
-        .dash-stat-card:hover { transform:translateY(-3px); box-shadow:0 12px 30px rgba(0,0,0,0.25); }
-        .dash-stat-card .stat-icon {
-            width:44px; height:44px; border-radius:12px; display:flex;
-            align-items:center; justify-content:center; margin-bottom:14px;
-        }
-        .dash-stat-card .stat-icon svg { width:22px; height:22px; }
-        .dash-stat-card .stat-label { font-size:.78rem; color:#9499b3; font-weight:600; text-transform:uppercase; letter-spacing:.04em; margin-bottom:4px; }
-        .dash-stat-card .stat-value { font-size:1.35rem; font-weight:800; color:#f0f0f5; letter-spacing:-.02em; }
-        .dash-stat-card .stat-sub { font-size:.72rem; color:#6e7191; margin-top:6px; }
-        .dash-stat-card .stat-glow {
-            position:absolute; width:120px; height:120px; border-radius:50%;
-            filter:blur(50px); opacity:.15; top:-30px; right:-30px;
-        }
-        .icon-blue { background:rgba(99,102,241,0.12); color:#818cf8; }
-        .icon-green { background:rgba(16,185,129,0.12); color:#34d399; }
-        .icon-red { background:rgba(239,68,68,0.12); color:#f87171; }
-        .icon-amber { background:rgba(245,158,11,0.12); color:#fbbf24; }
-        .glow-blue { background:#6366f1; }
-        .glow-green { background:#10b981; }
-        .glow-red { background:#ef4444; }
-        .glow-amber { background:#f59e0b; }
+        .dash-hdr::before{content:'';position:absolute;width:350px;height:350px;border-radius:50%;background:radial-gradient(circle,rgba(129,140,248,.2),transparent 65%);top:-160px;right:-100px;pointer-events:none;animation:float 5s ease-in-out infinite}
+        .dash-hdr::after{content:'';position:absolute;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(192,132,252,.18),transparent 65%);bottom:-110px;left:8%;pointer-events:none;animation:float 6s ease-in-out infinite 1s}
+        .dash-hdr .hdr-row{display:flex;justify-content:space-between;align-items:center;position:relative;z-index:1}
+        .dash-hdr h1{font-size:1.85rem;font-weight:900;margin:0 0 8px;letter-spacing:-.04em;background:linear-gradient(90deg,#fff,#c7d2fe);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .dash-hdr .hdr-sub{font-size:.95rem;opacity:.7;margin:0;font-weight:500}
+        .dash-hdr .hdr-dots{display:flex;gap:6px;margin-top:12px}
+        .dash-hdr .hdr-dots span{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.5);animation:dotPulse 2s ease infinite}
+        .dash-hdr .hdr-dots span:nth-child(2){animation-delay:.3s}
+        .dash-hdr .hdr-dots span:nth-child(3){animation-delay:.6s}
+        .dash-hdr .hdr-icon{width:88px;height:88px;border-radius:26px;background:linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.04));backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:36px;flex-shrink:0;animation:float 4s ease-in-out infinite;transition:transform .3s,box-shadow .3s}
+        .dash-hdr .hdr-icon:hover{transform:scale(1.1) rotate(-8deg);box-shadow:0 0 40px rgba(255,255,255,.15)}
 
-        .dash-chart-card {
-            background:#1f2235; border:1px solid rgba(255,255,255,0.06);
-            border-radius:16px; padding:22px; margin-bottom:24px;
-        }
-        .dash-chart-card .chart-title { font-size:1rem; font-weight:700; color:#f0f0f5; margin-bottom:4px; }
-        .dash-chart-card .chart-sub { font-size:.78rem; color:#6e7191; margin-bottom:18px; }
+        /* ===== FILTER ===== */
+        .flt{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--q-bg-card);border:1.5px solid var(--q-border);border-radius:22px;padding:18px 26px;margin-bottom:26px;box-shadow:0 4px 24px rgba(0,0,0,.05);transition:all .35s}
+        .flt:hover{box-shadow:0 8px 40px rgba(0,0,0,.1);border-color:var(--q-border-hover)}
+        .flt-icon{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,rgba(99,102,241,.15),rgba(139,92,246,.1));color:var(--q-accent);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;transition:transform .3s}
+        .flt:hover .flt-icon{transform:rotate(-5deg) scale(1.05)}
+        .flt .fg{display:flex;align-items:center;gap:8px}
+        .flt .fl{font-size:.72rem;font-weight:700;color:var(--q-text-muted);text-transform:uppercase;letter-spacing:.05em}
+        .flt .fi{background:var(--q-bg-input);border:1.5px solid var(--q-border);color:var(--q-text);padding:10px 16px;border-radius:12px;font-size:.85rem;transition:all .3s;font-family:inherit;min-width:145px}
+        .flt .fi:focus{border-color:var(--q-accent);outline:none;box-shadow:0 0 0 4px rgba(99,102,241,.12)}
+        .flt .fs{color:var(--q-text-muted);font-size:.95rem;font-weight:300}
+        .fb{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;padding:11px 30px;border-radius:14px;font-weight:700;font-size:.85rem;cursor:pointer;transition:all .3s;display:flex;align-items:center;gap:8px;box-shadow:0 4px 18px rgba(99,102,241,.3);font-family:inherit}
+        .fb:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(99,102,241,.45)}
+        .fb:active{transform:translateY(1px);box-shadow:0 2px 8px rgba(99,102,241,.3)}
+        .fb i{font-size:13px}
+        .fb-rst{background:var(--q-bg-raised);border:1.5px solid var(--q-border);color:var(--q-text-secondary);padding:11px 20px;border-radius:14px;font-weight:600;font-size:.85rem;cursor:pointer;transition:all .3s;font-family:inherit}
+        .fb-rst:hover{border-color:var(--q-border-hover);color:var(--q-text);transform:translateY(-1px)}
+        .fb-load{display:none;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
+        .flt-tag{font-size:.72rem;color:var(--q-accent);font-weight:700;background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(139,92,246,.08));padding:5px 16px;border-radius:20px;white-space:nowrap;border:1px solid rgba(99,102,241,.15)}
 
-        .dash-grid { display:grid; grid-template-columns:2fr 1fr; gap:20px; margin-bottom:24px; }
-        .dash-grid-equal { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:24px; }
+        /* ===== STAT CARDS 4 ===== */
+        .st4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+        .sc{border-radius:24px;padding:28px 30px;position:relative;overflow:hidden;transition:all .4s cubic-bezier(.4,0,.2,1);border:1.5px solid transparent}
+        .sc:hover{transform:translateY(-6px) scale(1.01)}
 
-        .order-row { display:flex; align-items:center; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.04); }
-        .order-row:last-child { border-bottom:none; }
-        .order-code { font-weight:700; font-size:.82rem; color:#c0c3d8; min-width:130px; }
-        .order-customer { font-size:.82rem; color:#9499b3; flex:1; }
-        .order-amount { font-weight:700; font-size:.85rem; color:#fbbf24; min-width:100px; text-align:right; }
-        .order-status { font-size:.7rem; font-weight:700; padding:4px 10px; border-radius:20px; min-width:65px; text-align:center; }
-        .status-paid { background:rgba(16,185,129,0.12); color:#34d399; }
-        .status-waiting { background:rgba(245,158,11,0.12); color:#fbbf24; }
-        .status-cancelled { background:rgba(239,68,68,0.12); color:#f87171; }
+        .sc.sc-dk{background:linear-gradient(135deg,rgba(99,102,241,.12) 0%,rgba(99,102,241,.04) 50%,var(--q-bg-card) 100%);border-color:rgba(99,102,241,.2);box-shadow:0 8px 32px rgba(99,102,241,.1)}
+        .sc.sc-dk:hover{box-shadow:0 20px 60px rgba(99,102,241,.22),0 0 0 1px rgba(99,102,241,.3);border-color:rgba(99,102,241,.35)}
 
-        .product-row { display:flex; align-items:center; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.04); }
-        .product-row:last-child { border-bottom:none; }
-        .product-rank { width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:.72rem; font-weight:800; background:rgba(99,102,241,0.12); color:#818cf8; margin-right:12px; }
-        .product-name { flex:1; font-size:.85rem; color:#c0c3d8; font-weight:600; }
-        .product-cat { font-size:.7rem; color:#6e7191; margin-right:12px; }
-        .product-rev { font-weight:700; font-size:.82rem; color:#fbbf24; }
+        .sc.sc-rd{background:linear-gradient(135deg,rgba(244,63,94,.1) 0%,rgba(244,63,94,.03) 50%,var(--q-bg-card) 100%);border-color:rgba(244,63,94,.15);box-shadow:0 8px 32px rgba(244,63,94,.08)}
+        .sc.sc-rd:hover{box-shadow:0 20px 60px rgba(244,63,94,.18),0 0 0 1px rgba(244,63,94,.25);border-color:rgba(244,63,94,.3)}
 
-        .customer-row { display:flex; align-items:center; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.04); }
-        .customer-row:last-child { border-bottom:none; }
-        .customer-avatar { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:.85rem; color:#fff; margin-right:12px; flex-shrink:0; }
-        .customer-info { flex:1; }
-        .customer-name { font-size:.85rem; color:#c0c3d8; font-weight:600; }
-        .customer-orders { font-size:.7rem; color:#6e7191; }
-        .customer-spent { font-weight:700; font-size:.82rem; color:#fbbf24; text-align:right; }
+        .sc.sc-em{background:linear-gradient(135deg,rgba(16,185,129,.1) 0%,rgba(16,185,129,.03) 50%,var(--q-bg-card) 100%);border-color:rgba(16,185,129,.15);box-shadow:0 8px 32px rgba(16,185,129,.08)}
+        .sc.sc-em:hover{box-shadow:0 20px 60px rgba(16,185,129,.18),0 0 0 1px rgba(16,185,129,.25);border-color:rgba(16,185,129,.3)}
 
-        .dash-empty { text-align:center; padding:40px 20px; color:#6e7191; font-size:.9rem; }
-        .dash-empty svg { width:48px; height:48px; margin-bottom:12px; opacity:.4; }
+        .sc.sc-am{background:linear-gradient(135deg,rgba(245,158,11,.1) 0%,rgba(245,158,11,.03) 50%,var(--q-bg-card) 100%);border-color:rgba(245,158,11,.15);box-shadow:0 8px 32px rgba(245,158,11,.08)}
+        .sc.sc-am:hover{box-shadow:0 20px 60px rgba(245,158,11,.18),0 0 0 1px rgba(245,158,11,.25);border-color:rgba(245,158,11,.3)}
 
-        .stat-animate { opacity:0; transform:translateY(20px); }
-        .stat-animate.revealed { animation:dashReveal .5s cubic-bezier(.16,1,.3,1) forwards; }
-        @keyframes dashReveal { to { opacity:1; transform:translateY(0); } }
+        .sc .sc-glow{position:absolute;width:150px;height:150px;border-radius:50%;filter:blur(65px);opacity:.1;transition:all .5s;pointer-events:none;animation:glowPulse 3s ease infinite}
+        .sc:hover .sc-glow{opacity:.25;width:180px;height:180px}
 
-        @media(max-width:1199px) { .dash-stats-row { grid-template-columns:repeat(2,1fr); } .dash-grid, .dash-grid-equal { grid-template-columns:1fr; } }
-        @media(max-width:575px) { .dash-stats-row { grid-template-columns:1fr; } }
+        .sc .sc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px}
+        .sc .sc-ic{width:56px;height:56px;border-radius:18px;display:flex;align-items:center;justify-content:center;transition:all .35s;position:relative}
+        .sc:hover .sc-ic{animation:iconBounce .5s ease}
+        .sc .sc-ic i{font-size:24px;position:relative;z-index:1}
+        .sc .sc-ic::after{content:'';position:absolute;inset:-4px;border-radius:22px;opacity:0;transition:opacity .35s}
+        .sc:hover .sc-ic::after{opacity:.15}
+
+        .sc .sc-lbl{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+        .sc.sc-dk .sc-lbl{color:#818cf8 !important}.sc.sc-rd .sc-lbl{color:#fb7185 !important}.sc.sc-em .sc-lbl{color:#34d399 !important}.sc.sc-am .sc-lbl{color:#fbbf24 !important}
+        .sc .sc-val{font-size:1.7rem;font-weight:900;letter-spacing:-.04em;line-height:1.15;margin-top:5px;animation:valReveal .7s ease both}
+        .sc.sc-dk .sc-val{color:#a5b4fc !important}.sc.sc-rd .sc-val{color:#fda4af !important}.sc.sc-em .sc-val{color:#6ee7b7 !important}.sc.sc-am .sc-val{color:#fcd34d !important}
+        .sc .sc-sub{font-size:.7rem;margin-top:10px;display:flex;align-items:center;gap:5px}
+        .sc .sc-sub i{font-size:9px;opacity:.7}
+
+        .sc .sc-bar{height:5px;background:rgba(255,255,255,.05);border-radius:5px;margin-top:18px;overflow:hidden}
+        .sc.sc-dk .sc-bar{background:rgba(99,102,241,.1)}
+        .sc.sc-rd .sc-bar{background:rgba(244,63,94,.1)}
+        .sc.sc-em .sc-bar{background:rgba(16,185,129,.1)}
+        .sc.sc-am .sc-bar{background:rgba(245,158,11,.1)}
+        .sc .sc-bar-fill{height:100%;border-radius:5px;width:0;transition:width 1.6s cubic-bezier(.22,1,.36,1) .4s}
+        .sc-dk .sc-bar-fill{background:linear-gradient(90deg,#6366f1,#a5b4fc)}
+        .sc-rd .sc-bar-fill{background:linear-gradient(90deg,#f43f5e,#fda4af)}
+        .sc-em .sc-bar-fill{background:linear-gradient(90deg,#10b981,#6ee7b7)}
+        .sc-am .sc-bar-fill{background:linear-gradient(90deg,#f59e0b,#fcd34d)}
+
+        .sc .sc-deco{position:absolute;bottom:-25px;right:-12px;font-size:90px;opacity:.025;pointer-events:none;transform:rotate(-15deg);transition:all .4s}
+        .sc:hover .sc-deco{opacity:.06;transform:rotate(-10deg) scale(1.1)}
+
+        /* ===== SECONDARY STATS 3 ===== */
+        .st3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:26px}
+        .scs{background:var(--q-bg-card);border:1.5px solid var(--q-border);border-radius:22px;padding:24px 26px;transition:all .4s;box-shadow:0 4px 18px rgba(0,0,0,.05);position:relative;overflow:hidden}
+        .scs:hover{transform:translateY(-4px);box-shadow:0 14px 40px rgba(0,0,0,.12);border-color:var(--q-border-hover)}
+        .scs .scs-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+        .scs .scs-ic{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:19px;transition:all .35s}
+        .scs:hover .scs-ic{animation:iconBounce .5s ease}
+        .scs .scs-lbl{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--q-text-muted)}
+        .scs .scs-val{font-size:1.3rem;font-weight:800;color:var(--q-text);letter-spacing:-.03em;animation:valReveal .6s ease both}
+        .scs .scs-bar{height:4px;background:var(--q-bg-raised);border-radius:4px;margin-top:14px;overflow:hidden}
+        .scs .scs-bar-fill{height:100%;border-radius:4px;width:0;transition:width 1.4s cubic-bezier(.22,1,.36,1) .5s}
+
+        .ic-violet{background:rgba(139,92,246,.12);color:#a78bfa}
+        .ic-cyan{background:rgba(6,182,212,.12);color:#22d3ee}
+        .ic-indigo{background:rgba(99,102,241,.12);color:#818cf8}
+        .bar-violet{background:linear-gradient(90deg,#8b5cf6,#c4b5fd)}
+        .bar-cyan{background:linear-gradient(90deg,#06b6d4,#67e8f9)}
+        .bar-indigo{background:linear-gradient(90deg,#6366f1,#a5b4fc)}
+
+        /* ===== CHART / CONTENT CARDS ===== */
+        .g21{display:grid;grid-template-columns:5fr 3fr;gap:18px;margin-bottom:24px}
+        .g11{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px}
+        .dc{background:var(--q-bg-card);border:1.5px solid var(--q-border);border-radius:24px;padding:26px;transition:all .4s;box-shadow:0 4px 18px rgba(0,0,0,.05)}
+        .dc:hover{box-shadow:0 14px 48px rgba(0,0,0,.12);border-color:var(--q-border-hover)}
+        .dc-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+        .dc-t{font-size:1.05rem;font-weight:700;color:var(--q-text)}
+        .dc-s{font-size:.72rem;color:var(--q-text-muted);margin-top:3px}
+        .dc-i{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;background:var(--q-bg-raised);border:1.5px solid var(--q-border);font-size:17px;color:var(--q-text-secondary);transition:all .35s}
+        .dc:hover .dc-i{background:var(--q-accent-glow);color:var(--q-accent);border-color:var(--q-accent);transform:rotate(-5deg) scale(1.05)}
+
+        /* ===== ROW ITEMS ===== */
+        .ri{display:flex;align-items:center;padding:12px 14px;border-radius:14px;margin-bottom:3px;gap:12px;transition:all .25s}
+        .ri:hover{background:var(--q-bg-raised);transform:translateX(4px)}
+        .ri:last-child{margin-bottom:0}
+        .ri-c{font-weight:700;font-size:.82rem;color:var(--q-text);min-width:118px;font-family:'Inter',monospace}
+        .ri-n{flex:1;font-size:.84rem;color:var(--q-text-secondary)}
+        .ri-a{font-weight:700;font-size:.84rem;color:#fbbf24;min-width:95px;text-align:right}
+        .ri-b{font-size:.66rem;font-weight:700;padding:4px 14px;border-radius:20px;min-width:66px;text-align:center;letter-spacing:.03em;transition:all .2s}
+        .ri-b:hover{transform:scale(1.05)}
+        .b-p{background:rgba(16,185,129,.12);color:#34d399}
+        .b-w{background:rgba(245,158,11,.12);color:#fbbf24}
+        .b-c{background:rgba(244,63,94,.12);color:#fb7185}
+        .rk{width:32px;height:32px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;background:linear-gradient(135deg,rgba(99,102,241,.15),rgba(139,92,246,.1));color:#818cf8;flex-shrink:0;transition:all .25s}
+        .ri:hover .rk{transform:scale(1.1) rotate(-5deg)}
+        .ct{font-size:.65rem;color:var(--q-text-muted);background:var(--q-bg-raised);padding:3px 12px;border-radius:8px;border:1px solid var(--q-border);text-transform:capitalize;transition:all .2s}
+        .ri:hover .ct{background:var(--q-accent-glow);color:var(--q-accent);border-color:var(--q-accent)}
+        .de{text-align:center;padding:44px;color:var(--q-text-muted);font-size:.85rem}
+        .de i{font-size:36px;opacity:.15;display:block;margin-bottom:14px;transition:all .3s}
+        .de:hover i{opacity:.3;transform:scale(1.1)}
+
+        .lg{display:flex;gap:20px;justify-content:center;margin-top:16px}
+        .lg span{display:flex;align-items:center;gap:7px;font-size:.72rem;color:var(--q-text-secondary)}
+        .lg i{width:12px;height:12px;border-radius:4px;display:inline-block;transition:transform .2s}
+        .lg span:hover i{transform:scale(1.3)}
+
+        /* Chartist bar chart colors matching legend */
+        #c1 .ct-series-a .ct-bar{stroke:#818cf8 !important}
+        #c1 .ct-series-a .ct-area{fill:#818cf8 !important}
+        #c1 .ct-series-b .ct-bar{stroke:#fb7185 !important}
+        #c1 .ct-series-b .ct-area{fill:#fb7185 !important}
+
+        /* Donut chart slice colors */
+        #c2 .ct-series-a path{fill:#34d399 !important}
+        #c2 .ct-series-b path{fill:#fbbf24 !important}
+        #c2 .ct-series-c path{fill:#fb7185 !important}
+
+        .sk{background:linear-gradient(90deg,var(--q-bg-raised) 25%,var(--q-bg-hover) 50%,var(--q-bg-raised) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:10px}
+        .fi{opacity:0;transform:translateY(18px);transition:opacity .55s ease,transform .55s ease}
+        .fi.vis{opacity:1;transform:translateY(0)}
+
+        /* Chartist donut labels */
+        #c2 .ct-label{fill:var(--q-text) !important;color:var(--q-text) !important;font-size:12px !important;font-weight:700 !important}
+        .ct-series .ct-slice path{stroke:var(--q-bg-card) !important;stroke-width:3px !important}
+
+        /* Mini stat inside status pesanan */
+        .mini-box{transition:all .3s;cursor:default;border-radius:16px;padding:16px 8px}
+        .mini-box:hover{transform:translateY(-3px) scale(1.03)}
+        .mini-box .mini-val{font-size:1.7rem;font-weight:800;letter-spacing:-.03em}
+        .mini-box .mini-lbl{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-top:5px}
+
+        @media(max-width:1199px){.st4{grid-template-columns:repeat(2,1fr)}.st3{grid-template-columns:repeat(2,1fr)}.g21,.g11{grid-template-columns:1fr}}
+        @media(max-width:575px){.st4,.st3{grid-template-columns:1fr}.flt{flex-direction:column;align-items:stretch}.flt .fg{flex-direction:column;align-items:stretch}.flt .fi{min-width:auto}}
     </style>
 </head>
-
 <body>
-    <?php if (isset($_GET['login']) && $_GET['login'] == '1'): ?>
-    <div class="dashboard-entry-overlay" id="dashboardEntryOverlay">
-        <div class="dashboard-entry-logo">
-            <img src="../assets/img/brand/qieos.png" alt="Qieos">
-        </div>
-        <div class="dashboard-welcome-text">Selamat Datang, <?php echo htmlspecialchars($user['fullname'] ? $user['fullname'] : $user['username']); ?>!</div>
-        <div class="dashboard-welcome-sub">Memuat dashboard Anda...</div>
-    </div>
-    <?php endif; ?>
-
     <?php include 'components/sidebar.php'; ?>
-
-    <main class="content" id="dashboardContent" <?php echo (isset($_GET['login']) && $_GET['login'] == '1') ? 'style="opacity:0"' : ''; ?>>
+    <main class="content">
         <?php include 'components/navbar.php'; ?>
 
-        <div class="mt-4" id="dashboardMain">
-
-            <!-- STAT CARDS -->
-            <div class="dash-stats-row">
-                <div class="dash-stat-card stat-animate">
-                    <div class="stat-glow glow-blue"></div>
-                    <div class="stat-icon icon-blue">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    </div>
-                    <div class="stat-label">Total Omzet</div>
-                    <div class="stat-value" data-count="<?php echo $total_revenue; ?>">Rp 0</div>
-                    <div class="stat-sub">Dari <?php echo number_format($total_orders); ?> transaksi</div>
+        <div class="dash-hdr fi">
+            <div class="hdr-row">
+                <div>
+                    <h1>Dashboard</h1>
+                    <p class="hdr-sub">Ringkasan data bisnis Anda secara real-time</p>
+                    <div class="hdr-dots"><span></span><span></span><span></span></div>
                 </div>
-
-                <div class="dash-stat-card stat-animate">
-                    <div class="stat-glow glow-green"></div>
-                    <div class="stat-icon icon-green">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    </div>
-                    <div class="stat-label">Omzet Hari Ini</div>
-                    <div class="stat-value" data-count="<?php echo $today_revenue; ?>">Rp 0</div>
-                    <div class="stat-sub"><?php echo number_format($today_orders); ?> pesanan hari ini</div>
-                </div>
-
-                <div class="dash-stat-card stat-animate">
-                    <div class="stat-glow glow-red"></div>
-                    <div class="stat-icon icon-red">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                    </div>
-                    <div class="stat-label">Total Cashout</div>
-                    <div class="stat-value" data-count="<?php echo $total_cashouts; ?>">Rp 0</div>
-                    <div class="stat-sub">Laba bersih: Rp <?php echo number_format($net_profit); ?></div>
-                </div>
-
-                <div class="dash-stat-card stat-animate">
-                    <div class="stat-glow glow-amber"></div>
-                    <div class="stat-icon icon-amber">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-                    </div>
-                    <div class="stat-label">Produk Aktif</div>
-                    <div class="stat-value" data-count="<?php echo $total_products; ?>">0</div>
-                    <div class="stat-sub"><?php echo number_format($pending_orders); ?> pesanan menunggu</div>
-                </div>
+                <div class="hdr-icon"><i class="fas fa-chart-pie"></i></div>
             </div>
-
-            <!-- SECONDARY STATS -->
-            <div class="dash-stats-row" style="grid-template-columns:repeat(3,1fr); margin-bottom:24px;">
-                <div class="dash-stat-card stat-animate" style="padding:16px 20px;">
-                    <div class="stat-label" style="margin-bottom:2px;">Pelanggan Hari Ini</div>
-                    <div class="stat-value" style="font-size:1.15rem;" data-count="<?php echo $today_customers; ?>">0</div>
-                </div>
-                <div class="dash-stat-card stat-animate" style="padding:16px 20px;">
-                    <div class="stat-label" style="margin-bottom:2px;">Omzet Bulan Ini</div>
-                    <div class="stat-value" style="font-size:1.15rem;" data-count="<?php echo $this_month_revenue; ?>">Rp 0</div>
-                </div>
-                <div class="dash-stat-card stat-animate" style="padding:16px 20px;">
-                    <div class="stat-label" style="margin-bottom:2px;">Pesanan Bulan Ini</div>
-                    <div class="stat-value" style="font-size:1.15rem;" data-count="<?php echo $this_month_orders; ?>">0</div>
-                </div>
-            </div>
-
-            <!-- CHARTS ROW -->
-            <div class="dash-grid stat-animate">
-                <div class="dash-chart-card">
-                    <div class="chart-title">Omzet 6 Bulan Terakhir</div>
-                    <div class="chart-sub">Grafik total pendapatan per bulan</div>
-                    <div id="revenueChart" style="height:260px;"></div>
-                </div>
-                <div class="dash-chart-card">
-                    <div class="chart-title">Status Pesanan</div>
-                    <div class="chart-sub">Distribusi seluruh status</div>
-                    <div id="statusChart" style="height:260px;"></div>
-                    <div style="display:flex; justify-content:center; gap:16px; margin-top:12px;">
-                        <div style="display:flex; align-items:center; gap:6px; font-size:.75rem; color:#9499b3;">
-                            <div style="width:10px;height:10px;border-radius:3px;background:#34d399;"></div> Dibayar (<?php echo $status_paid; ?>)
-                        </div>
-                        <div style="display:flex; align-items:center; gap:6px; font-size:.75rem; color:#9499b3;">
-                            <div style="width:10px;height:10px;border-radius:3px;background:#fbbf24;"></div> Pending (<?php echo $status_waiting; ?>)
-                        </div>
-                        <div style="display:flex; align-items:center; gap:6px; font-size:.75rem; color:#9499b3;">
-                            <div style="width:10px;height:10px;border-radius:3px;background:#f87171;"></div> Dibatal (<?php echo $status_cancelled; ?>)
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- WEEKLY CHART + RECENT ORDERS -->
-            <div class="dash-grid-equal stat-animate">
-                <div class="dash-chart-card">
-                    <div class="chart-title">Omzet 7 Hari Terakhir</div>
-                    <div class="chart-sub">Pendapatan harian minggu ini</div>
-                    <div id="weeklyChart" style="height:220px;"></div>
-                </div>
-                <div class="dash-chart-card">
-                    <div class="chart-title">Pesanan Terbaru</div>
-                    <div class="chart-sub">Transaksi terakhir yang masuk</div>
-                    <?php if (empty($recent_orders)): ?>
-                        <div class="dash-empty">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-                            <div>Belum ada pesanan</div>
-                        </div>
-                    <?php else: ?>
-                        <?php foreach ($recent_orders as $o): ?>
-                            <div class="order-row">
-                                <div class="order-code"><?php echo htmlspecialchars($o['code']); ?></div>
-                                <div class="order-customer"><?php echo htmlspecialchars($o['customer_name'] ?: '-'); ?></div>
-                                <div class="order-amount">Rp <?php echo number_format($o['total'], 0, ',', '.'); ?></div>
-                                <div class="order-status status-<?php echo $o['status_payment']; ?>"><?php echo ucfirst($o['status_payment']); ?></div>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </div>
-            </div>
-
-            <!-- TOP PRODUCTS + TOP CUSTOMERS -->
-            <div class="dash-grid-equal stat-animate">
-                <div class="dash-chart-card">
-                    <div class="chart-title">Produk Terlaris</div>
-                    <div class="chart-sub">Berdasarkan total pendapatan</div>
-                    <?php if (empty($top_products)): ?>
-                        <div class="dash-empty">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-                            <div>Belum ada data produk</div>
-                        </div>
-                    <?php else: ?>
-                        <?php $rank = 1; foreach ($top_products as $p): ?>
-                            <div class="product-row">
-                                <div class="product-rank"><?php echo $rank++; ?></div>
-                                <div class="product-name"><?php echo htmlspecialchars($p['name']); ?></div>
-                                <div class="product-cat"><?php echo ucfirst(htmlspecialchars($p['category'])); ?></div>
-                                <div class="product-rev">Rp <?php echo number_format($p['total_rev'], 0, ',', '.'); ?></div>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </div>
-                <div class="dash-chart-card">
-                    <div class="chart-title">Pelanggan Teratas</div>
-                    <div class="chart-sub">Berdasarkan total pengeluaran</div>
-                    <?php if (empty($top_customers)): ?>
-                        <div class="dash-empty">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                            <div>Belum ada data pelanggan</div>
-                        </div>
-                    <?php else: ?>
-                        <?php
-                        $colors = ['#6366f1','#8b5cf6','#ec4899','#10b981','#f59e0b'];
-                        $ci = 0;
-                        foreach ($top_customers as $c):
-                            $color = $colors[$ci % count($colors)];
-                            $ci++;
-                        ?>
-                            <div class="customer-row">
-                                <div class="customer-avatar" style="background:<?php echo $color; ?>;">
-                                    <?php echo strtoupper(substr($c['customer_name'], 0, 1)); ?>
-                                </div>
-                                <div class="customer-info">
-                                    <div class="customer-name"><?php echo htmlspecialchars($c['customer_name']); ?></div>
-                                    <div class="customer-orders"><?php echo $c['total_orders']; ?> pesanan</div>
-                                </div>
-                                <div class="customer-spent">Rp <?php echo number_format($c['total_spent'], 0, ',', '.'); ?></div>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </div>
-            </div>
-
         </div>
+
+        <div class="flt fi" id="fltBar">
+            <div class="flt-icon"><i class="fas fa-calendar-check"></i></div>
+            <div class="fg"><span class="fl">Dari</span><input type="date" class="fi" id="fS" value="<?php echo date('Y-01-01'); ?>"></div>
+            <span class="fs">—</span>
+            <div class="fg"><span class="fl">Sampai</span><input type="date" class="fi" id="fE" value="<?php echo date('Y-m-d'); ?>"></div>
+            <button class="fb" id="fBtn" onclick="go()"><i class="fas fa-filter"></i>Terapkan<div class="fb-load" id="fLd"></div></button>
+            <button class="fb-rst" onclick="rst()"><i class="fas fa-redo"></i> Reset</button>
+            <span class="flt-tag" id="fTag"></span>
+        </div>
+
+        <div id="dc"><div class="st4" id="sk1"></div><div class="g21" id="sk2"></div></div>
     </main>
 
     <?php include "../script/footscript.php"; ?>
-
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Login overlay
-        var overlay = document.getElementById('dashboardEntryOverlay');
-        var content = document.getElementById('dashboardContent');
-        if (overlay) {
-            setTimeout(function() {
-                overlay.classList.add('fade-out');
-                if (content) { content.style.transition = 'opacity .5s ease'; content.style.opacity = '1'; }
-                setTimeout(function() { overlay.remove(); if (window.history && window.history.replaceState) window.history.replaceState({}, '', window.location.pathname); }, 600);
-            }, 1000);
-        }
+    var CI={},CD=null;
+    function fmt(v){return Math.round(v||0).toLocaleString('id-ID')}
+    function rp(v){return'Rp '+fmt(v)}
 
-        // Staggered reveal
-        var anims = document.querySelectorAll('.stat-animate');
-        anims.forEach(function(el, i) {
-            setTimeout(function() { el.classList.add('revealed'); }, 100 + i * 80);
+    function sk(){
+        var h='<div class="st4">';
+        var cls=['sc-dk','sc-rd','sc-em','sc-am'];
+        for(var i=0;i<4;i++) h+='<div class="sc '+cls[i]+' fi"><div class="sk" style="width:100px;height:12px"></div><div class="sk" style="width:160px;height:28px;margin-top:16px"></div><div class="sk" style="width:80px;height:10px;margin-top:10px"></div></div>';
+        h+='</div><div class="g21"><div class="dc"><div class="sk" style="width:200px;height:16px;margin-bottom:18px"></div><div class="sk" style="width:100%;height:260px;border-radius:14px"></div></div><div class="dc"><div class="sk" style="width:160px;height:16px;margin-bottom:18px"></div><div class="sk" style="width:100%;height:260px;border-radius:14px"></div></div></div>';
+        document.getElementById('dc').innerHTML=h;
+    }
+
+    function go(){
+        var s=document.getElementById('fS').value,e=document.getElementById('fE').value;
+        document.getElementById('fLd').style.display='inline-block';document.getElementById('fBtn').disabled=true;
+        fetch('/qieos/pages/components/data/dashboard-data.php?start='+encodeURIComponent(s)+'&end='+encodeURIComponent(e)+'&_='+Date.now())
+        .then(function(r){if(!r.ok)throw new Error(r.status);return r.text()})
+        .then(function(t){
+            var d;try{d=JSON.parse(t)}catch(x){
+                document.getElementById('dc').innerHTML='<div style="color:var(--q-danger);padding:24px;background:var(--q-danger-bg);border-radius:16px;border:1px solid rgba(248,113,113,.2)"><b><i class="fas fa-exclamation-triangle"></i> Error</b><pre style="margin-top:10px;font-size:.8rem;white-space:pre-wrap;max-height:120px;overflow:auto">'+t.substring(0,600)+'</pre></div>';
+                done();return;
+            }
+            done();
+            document.getElementById('fTag').textContent=new Date(s).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'})+' — '+new Date(e).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});
+            render(d);
+        }).catch(function(err){
+            document.getElementById('dc').innerHTML='<div style="color:var(--q-danger);padding:24px;background:var(--q-danger-bg);border-radius:16px"><b>'+err.message+'</b></div>';done();
         });
+        function done(){document.getElementById('fLd').style.display='none';document.getElementById('fBtn').disabled=false}
+    }
+    function rst(){
+        document.getElementById('fS').value='<?php echo date("Y-01-01"); ?>';document.getElementById('fE').value='<?php echo date("Y-m-d"); ?>';
+        document.getElementById('fTag').textContent='';go();
+    }
 
-        // Animated counters
-        document.querySelectorAll('.stat-value[data-count]').forEach(function(el) {
-            var target = parseInt(el.getAttribute('data-count')) || 0;
-            var prefix = el.textContent.startsWith('Rp') ? 'Rp ' : '';
-            var duration = 1200;
-            var start = 0;
-            var startTime = null;
-            function step(timestamp) {
-                if (!startTime) startTime = timestamp;
-                var progress = Math.min((timestamp - startTime) / duration, 1);
-                var eased = 1 - Math.pow(1 - progress, 3);
-                var current = Math.floor(eased * target);
-                el.textContent = prefix + (prefix ? '' : '') + current.toLocaleString('id-ID');
-                if (progress < 1) requestAnimationFrame(step);
-                else el.textContent = prefix + target.toLocaleString('id-ID');
-            }
-            setTimeout(function() { requestAnimationFrame(step); }, 600);
+    function render(d){
+        CD=d;var s=d.status,st=d.stats;var h='';
+
+        // 4 MAIN CARDS
+        h+='<div class="st4">';
+        h+=mcard('sc-dk','#6366f1','fa-wallet','Total Pendapatan',rp(st.pendapatan),'Hari ini: '+rp(st.today_pendapatan),'pendapatan');
+        h+=mcard('sc-rd','#f43f5e','fa-shopping-cart','Total Pengeluaran',rp(st.total_pengeluaran),'Dari list pembelian barang','pengeluaran');
+        h+=mcard('sc-em','#10b981','fa-chart-pie','Laba Bersih',rp(st.laba),st.laba>=0?'Untung':'Rugi — perlu review','laba');
+        h+=mcard('sc-am','#f59e0b','fa-clipboard-list','Total Pesanan',fmt(st.pesanan),st.today_orders+' hari ini','pesanan');
+        h+='</div>';
+
+        // 3 SECONDARY CARDS
+        h+='<div class="st3">';
+        h+=scard('ic-violet','fa-store','Pembayaran Sewa',rp(st.bayar_tenant),'bayar_tenant');
+        h+=scard('ic-cyan','fa-bolt','Air & Listrik',rp(st.bayar_utility),'bayar_utility');
+        h+=scard('ic-indigo','fa-boxes','Total Produk',fmt(st.produk),'produk');
+        h+='</div>';
+
+        // CHARTS ROW 1
+        h+='<div class="g21">';
+        h+=dcc('Pendapatan vs Pengeluaran','Perbandingan 6 bulan terakhir','fa-chart-bar','c1',270,'<div class="lg"><span><i style="background:#818cf8"></i>Pendapatan</span><span><i style="background:#fb7185"></i>Pengeluaran</span></div>');
+        h+='<div class="dc fi"><div class="dc-h"><div><div class="dc-t">Status Pesanan</div><div class="dc-s">Periode filter aktif</div></div><div class="dc-i"><i class="fas fa-chart-pie"></i></div></div><div id="c2" style="height:180px"></div>';
+        h+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px">';
+        h+=msInd('Dibayar',s.paid,'#34d399','#10b981');
+        h+=msInd('Pending',s.waiting,'#fbbf24','#f59e0b');
+        h+=msInd('Dibatal',s.cancelled,'#fb7185','#f43f5e');
+        h+='</div></div></div>';
+
+        // CHARTS ROW 2 + TABLE
+        h+='<div class="g11">';
+        h+=dcc('Omzet 7 Hari','Pendapatan harian minggu ini','fa-chart-line','c3',220);
+        h+='<div class="dc fi"><div class="dc-h"><div><div class="dc-t">Pesanan Terbaru</div><div class="dc-s">Transaksi terakhir masuk</div></div><div class="dc-i"><i class="fas fa-receipt"></i></div></div>';
+        if(!d.recent_orders.length) h+='<div class="de"><i class="fas fa-receipt"></i>Belum ada pesanan</div>';
+        else d.recent_orders.forEach(function(o){
+            var bc=o.status_payment==='paid'?'b-p':o.status_payment==='waiting'?'b-w':'b-c';
+            h+='<div class="ri"><div class="ri-c">'+o.code+'</div><div class="ri-n" style="color:var(--q-text);font-weight:600">'+(o.operator||'—')+'</div><div class="ri-a">'+rp(o.total)+'</div><div class="ri-b '+bc+'">'+o.status_payment+'</div></div>';
         });
+        h+='</div></div>';
 
-        // Revenue Bar Chart (Chartist)
-        if (typeof Chartist !== 'undefined') {
-            var labels = <?php echo json_encode($chart_labels); ?>;
-            var data = <?php echo json_encode($chart_data); ?>;
-            if (labels.length > 0) {
-                new Chartist.Bar('#revenueChart', {
-                    labels: labels,
-                    series: [{ data: data }]
-                }, {
-                    distributeSeries: true,
-                    plugins: [Chartist.plugins.tooltip()],
-                    axisY: {
-                        offset: 60,
-                        labelInterpolationFnc: function(v) { return 'Rp ' + (v/1000000).toFixed(1) + 'jt'; }
-                    },
-                    axisX: { showGrid: false },
-                    chartPadding: { top: 20, right: 15, bottom: 5, left: 10 }
-                });
-            }
+        // BOTTOM TABLES
+        h+='<div class="g11">';
+        h+='<div class="dc fi"><div class="dc-h"><div><div class="dc-t">Produk Terlaris</div><div class="dc-s">Top 5 berdasarkan revenue</div></div><div class="dc-i"><i class="fas fa-trophy"></i></div></div>';
+        if(!d.top_products.length) h+='<div class="de"><i class="fas fa-box"></i>Belum ada data</div>';
+        else{var r=1;d.top_products.forEach(function(p){
+            h+='<div class="ri"><div class="rk">'+(r++)+'</div><div class="ri-n" style="font-weight:600;color:var(--q-text)">'+p.name+'</div><div class="ct">'+p.category+'</div><div class="ri-a">'+rp(p.rev)+'</div></div>';
+        });}
+        h+='</div>';
 
-            // Status Pie Chart
-            var pieLabels = ['Dibayar', 'Pending', 'Dibatal'];
-            var pieData = [<?php echo $status_paid; ?>, <?php echo $status_waiting; ?>, <?php echo $status_cancelled; ?>];
-            if (pieData.some(function(v){return v>0;})) {
-                new Chartist.Pie('#statusChart', {
-                    labels: pieLabels,
-                    series: pieData
-                }, {
-                    donut: true,
-                    donutWidth: 50,
-                    donutSolid: true,
-                    showLabel: true,
-                    labelOffset: 10,
-                    labelDirection: 'explode',
-                    plugins: [Chartist.plugins.tooltip()]
-                });
-            }
+        h+='<div class="dc fi"><div class="dc-h"><div><div class="dc-t">List Pembelian Terakhir</div><div class="dc-s">Riwayat pengadaan barang</div></div><div class="dc-i"><i class="fas fa-clipboard-list"></i></div></div>';
+        if(!d.recent_list_purchases.length) h+='<div class="de"><i class="fas fa-truck"></i>Belum ada pembelian</div>';
+        else d.recent_list_purchases.forEach(function(p){
+            var dt=new Date(p.date_list).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});
+            h+='<div class="ri"><div class="ri-c">'+dt+'</div><div class="ri-n">'+p.items+' item</div><div class="ri-a">'+rp(p.total)+'</div></div>';
+        });
+        h+='</div></div>';
 
-            // Weekly Line Chart
-            var wLabels = <?php echo json_encode($week_labels); ?>;
-            var wData = <?php echo json_encode($week_data); ?>;
-            if (wLabels.length > 0) {
-                new Chartist.Line('#weeklyChart', {
-                    labels: wLabels,
-                    series: [{ data: wData }]
-                }, {
-                    fullWidth: true,
-                    chartPadding: { top: 20, right: 15, bottom: 5, left: 10 },
-                    axisY: {
-                        offset: 60,
-                        labelInterpolationFnc: function(v) { return 'Rp ' + (v/1000).toFixed(0) + 'k'; }
-                    },
-                    axisX: { showGrid: false },
-                    plugins: [Chartist.plugins.tooltip()]
-                });
-            }
+        document.getElementById('dc').innerHTML=h;
+        setTimeout(function(){
+            document.querySelectorAll('.fi').forEach(function(el,i){setTimeout(function(){el.classList.add('vis')},40+i*50)});
+            document.querySelectorAll('[data-w]').forEach(function(el){el.style.width=el.getAttribute('data-w')});
+        },20);
+        renderCharts(d);
+    }
+
+    function mcard(cls,color,icon,label,val,sub,key){
+        var pct=0;if(CD&&CD.stats.pendapatan>0){
+            if(key==='pendapatan')pct=100;
+            else if(key==='pengeluaran')pct=Math.min(Math.round(CD.stats.total_pengeluaran/CD.stats.pendapatan*100),100);
+            else if(key==='pesanan')pct=100;
+            else if(key==='laba')pct=CD.stats.laba>=0?100:0;
         }
-    });
+        var isNeg=key==='laba'&&CD&&CD.stats.laba<0;
+        var arrow=isNeg?'fa-arrow-down':'fa-arrow-up';
+        var ac=isNeg?'color:var(--q-danger)':'color:var(--q-success)';
+        return'<div class="sc '+cls+' fi"><div class="sc-glow" style="background:'+color+'"></div><div class="sc-top"><div><div class="sc-lbl">'+label+'</div><div class="sc-val">'+val+'</div><div class="sc-sub"><i class="fas '+arrow+'" style="'+ac+'"></i> '+sub+'</div></div><div class="sc-ic '+cls.replace('sc-','ic-')+'"><i class="fas '+icon+'"></i></div></div><div class="sc-bar"><div class="sc-bar-fill '+cls.replace('sc-','bar-')+'" data-w="'+pct+'%"></div></div><i class="fas '+icon+' sc-deco"></i></div>';
+    }
+
+    function scard(ic,icon,label,val,key){
+        var pct=0;if(CD&&CD.stats.pendapatan>0){
+            if(key==='bayar_tenant')pct=Math.min(Math.round(CD.stats.bayar_tenant/CD.stats.pendapatan*100),100);
+            else if(key==='bayar_utility')pct=Math.min(Math.round(CD.stats.bayar_utility/CD.stats.pendapatan*100),100);
+            else if(key==='produk')pct=100;
+        }
+        return'<div class="scs fi"><div class="scs-top"><div><div class="scs-lbl">'+label+'</div><div class="scs-val">'+val+'</div></div><div class="scs-ic '+ic+'"><i class="fas '+icon+'"></i></div></div><div class="scs-bar"><div class="scs-bar-fill '+(ic==='ic-indigo'?'bar-indigo':ic==='ic-cyan'?'bar-cyan':'bar-violet')+'" data-w="'+pct+'%"></div></div></div>';
+    }
+
+    function dcc(title,sub,icon,id,h,extra){
+        return'<div class="dc fi"><div class="dc-h"><div><div class="dc-t">'+title+'</div><div class="dc-s">'+sub+'</div></div><div class="dc-i"><i class="fas '+icon+'"></i></div></div><div id="'+id+'" style="height:'+h+'px"></div>'+(extra||'')+'</div>';
+    }
+
+    function msInd(label,val,bgColor,dotColor){
+        return'<div style="display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:16px;background:var(--q-bg-raised);transition:all .25s;cursor:default" onmouseover="this.style.transform=\'translateX(4px)\'" onmouseout="this.style.transform=\'none\'"><div style="width:44px;height:44px;border-radius:12px;background:'+bgColor+';flex-shrink:0;display:flex;align-items:center;justify-content:center"><div style="width:16px;height:16px;border-radius:50%;background:'+dotColor+';box-shadow:0 0 12px '+dotColor+'"></div></div><div style="flex:1"><div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--q-text-muted)">'+label+'</div><div style="font-size:1.5rem;font-weight:800;color:var(--q-text);letter-spacing:-.03em;margin-top:2px">'+val+'</div></div></div>';
+    }
+
+    function renderCharts(d){
+        if(typeof Chartist==='undefined')return;
+        Object.values(CI).forEach(function(c){try{c.detach()}catch(e){}});CI={};
+        var o={plugins:[Chartist.plugins.tooltip()],axisY:{offset:55,labelInterpolationFnc:function(v){return v>=1e6?(v/1e6).toFixed(1)+'jt':v>=1e3?(v/1e3).toFixed(0)+'rb':v}},axisX:{showGrid:false},chartPadding:{top:20,right:12,bottom:8,left:12}};
+
+        setTimeout(function(){
+            if(d.chart_months&&d.chart_months.length&&document.getElementById('c1')){
+                CI.bar=new Chartist.Bar('#c1',{labels:d.chart_months,series:[{name:'Pendapatan',data:d.chart_pendapatan,className:'ct-series-a'},{name:'Pengeluaran',data:d.chart_pengeluaran,className:'ct-series-b'}]},Object.assign({},o,{seriesBarDistance:8}));
+            }
+            var pd=[d.status.paid,d.status.waiting,d.status.cancelled];
+            if(pd.some(function(v){return v>0})&&document.getElementById('c2')){
+                CI.pie=new Chartist.Pie('#c2',{labels:['Dibayar','Pending','Dibatal'],series:pd},{donut:true,donutWidth:40,donutSolid:true,showLabel:false,plugins:[Chartist.plugins.tooltip()]});
+            }
+            if(d.chart_week&&d.chart_week.length&&document.getElementById('c3')){
+                CI.line=new Chartist.Line('#c3',{labels:d.chart_week.map(function(w){return w.l}),series:[{data:d.chart_week.map(function(w){return w.v})}]},Object.assign({},o,{lineSmooth:Chartist.Interpolation.cardinal({tension:.3}),fullWidth:true}));
+            }
+        },120);
+    }
+
+    document.addEventListener('DOMContentLoaded',function(){sk();go()});
     </script>
 </body>
 </html>

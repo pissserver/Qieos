@@ -140,15 +140,38 @@
             <div class="login-success-ripple"></div>
 
             <div class="login-success-circle">
-                <svg width="48" height="48" viewBox="0 0 48 48">
+                <svg width="44" height="44" viewBox="0 0 48 48">
                     <polyline class="login-success-check" points="14 24 22 32 36 16"></polyline>
                 </svg>
             </div>
 
-            <div class="login-success-text">Selamat Datang!</div>
-            <div class="login-success-subtext">Anda berhasil masuk ke sistem</div>
+            <div class="login-welcome-name" id="loginWelcomeName">Selamat Datang!</div>
+            <div class="login-welcome-sub" id="loginWelcomeSub">Anda berhasil masuk ke sistem</div>
+
+            <div class="login-loading-dots">
+                <span></span><span></span><span></span>
+            </div>
 
             <div class="login-progress-bar"></div>
+        </div>
+
+        <!-- Login Failed Overlay -->
+        <div class="login-fail-overlay" id="loginFailOverlay">
+            <div class="login-fail-ripple"></div>
+            <div class="login-fail-ripple"></div>
+            <div class="login-fail-ripple"></div>
+
+            <div class="login-fail-circle" id="failCircle">
+                <svg width="44" height="44" viewBox="0 0 48 48">
+                    <line class="login-fail-x" x1="16" y1="16" x2="32" y2="32"></line>
+                    <line class="login-fail-x x2" x1="32" y1="16" x2="16" y2="32"></line>
+                </svg>
+            </div>
+
+            <div class="login-fail-name" id="failName">Login Gagal!</div>
+            <div class="login-fail-sub" id="failSub">Username atau password salah</div>
+
+            <div class="login-fail-dismiss" id="failDismiss">Menutup dalam 3 detik...</div>
         </div>
 
         <script>
@@ -179,73 +202,90 @@
                     });
                 }
 
-                // Login Submit Animation
+                // ===== LOGIN SUBMIT VIA AJAX =====
                 var form = document.getElementById('signInForm');
                 var submitBtn = document.getElementById('submitBtn');
                 var overlay = document.getElementById('loginSuccessOverlay');
+                var failOverlay = document.getElementById('loginFailOverlay');
                 var cardWrapper = document.querySelector('.auth-card-wrapper');
+                var welcomeName = document.getElementById('loginWelcomeName');
+                var welcomeSub = document.getElementById('loginWelcomeSub');
+                var failName = document.getElementById('failName');
+                var failSub = document.getElementById('failSub');
+                var failDismiss = document.getElementById('failDismiss');
                 
-                if (form && submitBtn && overlay) {
+                if (form && submitBtn) {
                     form.addEventListener('submit', function(e) {
                         e.preventDefault();
+
+                        var username = document.getElementById('username').value || '';
+                        var password = document.getElementById('password').value || '';
 
                         // Button loading
                         submitBtn.classList.add('auth-btn-loading');
                         submitBtn.innerHTML = '<div class="auth-loading-spinner"></div><span>Memproses...</span>';
                         submitBtn.disabled = true;
 
-                        // Create burst particles in overlay
-                        createBurstParticles();
+                        // AJAX check credentials
+                        var fd = new FormData();
+                        fd.append('username', username);
+                        fd.append('password', password);
+                        fd.append('remember', document.getElementById('remember').checked ? '1' : '');
 
-                        // Card shrink + blur
-                        if (cardWrapper) cardWrapper.classList.add('login-exit');
+                        fetch('sign-in-action.php', {
+                            method: 'POST',
+                            body: fd,
+                            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                        })
+                        .then(function(r) { return r.json(); })
+                        .then(function(res) {
+                            if (res.status === 'success') {
+                                // SUCCESS — tampilkan animasi sukses lalu redirect
+                                if (welcomeName) welcomeName.textContent = 'Selamat Datang, ' + username + '!';
+                                if (welcomeSub) welcomeSub.textContent = 'Anda berhasil masuk ke sistem';
+                                if (cardWrapper) cardWrapper.classList.add('login-exit');
+                                setTimeout(function() { overlay.classList.add('active'); }, 450);
+                                setTimeout(function() { window.location.href = res.redirect; }, 2200);
+                            } else {
+                                // FAIL — tampilkan animasi gagal langsung
+                                resetBtn();
+                                if (failName) failName.textContent = res.message || 'Login Gagal!';
+                                if (failSub) {
+                                    if (res.error === 'username') failSub.textContent = 'Akun dengan username tersebut tidak terdaftar';
+                                    else if (res.error === 'password') failSub.textContent = 'Password yang dimasukkan tidak sesuai';
+                                    else if (res.error === 'empty') failSub.textContent = 'Username dan password harus diisi';
+                                    else failSub.textContent = 'Terjadi kesalahan, coba lagi';
+                                }
 
-                        // Show overlay after card starts exiting
-                        setTimeout(function() {
-                            overlay.classList.add('active');
-                        }, 350);
+                                // Shake card + show fail overlay
+                                if (cardWrapper) cardWrapper.style.animation = 'failShake .6s ease';
+                                setTimeout(function() { failOverlay.classList.add('active'); }, 400);
 
-                        // Submit form after overlay animation plays
-                        setTimeout(function() {
+                                // Auto dismiss 3 detik
+                                var cd = 3;
+                                var ci = setInterval(function() {
+                                    cd--;
+                                    if (failDismiss) failDismiss.textContent = 'Menutup dalam ' + cd + ' detik...';
+                                    if (cd <= 0) {
+                                        clearInterval(ci);
+                                        failOverlay.classList.remove('active');
+                                        if (cardWrapper) cardWrapper.style.animation = '';
+                                    }
+                                }, 1000);
+                            }
+                        })
+                        .catch(function() {
+                            resetBtn();
+                            // Fallback: submit form normally
                             form.submit();
-                        }, 1600);
+                        });
                     });
                 }
 
-                function createBurstParticles() {
-                    var colors = ['#6366f1', '#8b5cf6', '#a78bfa', '#c4b5fd', '#818cf8'];
-                    var cx = window.innerWidth / 2;
-                    var cy = window.innerHeight / 2;
-
-                    for (var i = 0; i < 24; i++) {
-                        var p = document.createElement('div');
-                        p.className = 'login-particle';
-                        p.style.position = 'fixed';
-                        p.style.left = cx + 'px';
-                        p.style.top = cy + 'px';
-                        p.style.zIndex = '99998';
-                        p.style.background = colors[Math.floor(Math.random() * colors.length)];
-                        p.style.width = (4 + Math.random() * 6) + 'px';
-                        p.style.height = p.style.width;
-                        p.style.borderRadius = '50%';
-                        p.style.opacity = '1';
-
-                        var angle = (Math.PI * 2 * i) / 24;
-                        var dist = 80 + Math.random() * 160;
-                        p.style.setProperty('--px', Math.cos(angle) * dist + 'px');
-                        p.style.setProperty('--py', Math.sin(angle) * dist + 'px');
-
-                        document.body.appendChild(p);
-
-                        // Animate manually
-                        (function(el, px, py) {
-                            el.animate([
-                                { transform: 'translate(0,0) scale(1)', opacity: 1 },
-                                { transform: 'translate(' + px + ',' + py + ') scale(0)', opacity: 0 }
-                            ], { duration: 800, easing: 'ease-out', fill: 'forwards' });
-                            setTimeout(function() { el.remove(); }, 1000);
-                        })(p, Math.cos(angle) * dist + 'px', Math.sin(angle) * dist + 'px');
-                    }
+                function resetBtn() {
+                    submitBtn.classList.remove('auth-btn-loading');
+                    submitBtn.innerHTML = '<span>Login Sekarang</span><svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>';
+                    submitBtn.disabled = false;
                 }
             });
         </script>
