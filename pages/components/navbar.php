@@ -359,6 +359,10 @@
         padding:16px 24px;
         margin-top: 20px;
 
+        position:sticky;
+        top:12px;
+        z-index:100;
+
         border-radius:24px;
 
         background:

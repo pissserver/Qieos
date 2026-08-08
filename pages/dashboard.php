@@ -117,15 +117,27 @@ while ($row = mysqli_fetch_assoc($top_customers_query)) {
     <title>Dashboard - Cartify</title>
 
     <?php include '../script/headscript.php'; ?>
+
+<link rel="stylesheet" href="../assets/css/auth-premium.css">
 </head>
 
 <body>
+    <?php if (isset($_GET['login']) && $_GET['login'] == '1'): ?>
+    <div class="dashboard-entry-overlay" id="dashboardEntryOverlay">
+        <div class="dashboard-entry-logo">
+            <img src="../assets/img/brand/qieos.png" alt="Qieos">
+        </div>
+        <div class="dashboard-welcome-text">Selamat Datang, <?php echo htmlspecialchars($user['fullname'] ? $user['fullname'] : $user['username']); ?>!</div>
+        <div class="dashboard-welcome-sub">Memuat dashboard Anda...</div>
+    </div>
+    <?php endif; ?>
+
     <?php include 'components/sidebar.php'; ?>
 
-    <main class="content">
+    <main class="content" id="dashboardContent" <?php echo (isset($_GET['login']) && $_GET['login'] == '1') ? 'style="opacity:0"' : ''; ?>>
         <?php include 'components/navbar.php'; ?>
 
-        <div class="row mt-5">
+        <div class="row mt-5" id="dashboardMain">
             <div class="col-12 col-sm-12 col-xl-4 mb-4">
                 <div class="card border-0 shadow">
                     <div class="card-body">
@@ -470,6 +482,30 @@ while ($row = mysqli_fetch_assoc($top_customers_query)) {
     </main>
 
     <?php include "../script/footscript.php"; ?>
+
+    <?php if (isset($_GET['login']) && $_GET['login'] == '1'): ?>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var overlay = document.getElementById('dashboardEntryOverlay');
+            var content = document.getElementById('dashboardContent');
+
+            setTimeout(function() {
+                if (overlay) overlay.classList.add('fade-out');
+                if (content) {
+                    content.style.transition = 'opacity 0.6s ease';
+                    content.style.opacity = '1';
+                }
+                setTimeout(function() {
+                    if (overlay) overlay.remove();
+                    // Clean URL
+                    if (window.history && window.history.replaceState) {
+                        window.history.replaceState({}, '', window.location.pathname);
+                    }
+                }, 700);
+            }, 1800);
+        });
+    </script>
+    <?php endif; ?>
 </body>
 
 </html>

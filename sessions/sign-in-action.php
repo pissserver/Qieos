@@ -33,7 +33,7 @@
                     setcookie("username", "", time() - 3600, "/"); // Hapus cookie
                 }
 
-                header("Location:../index.php");
+                header("Location:../pages/dashboard.php?login=1");
                 exit;
             } else {
                 // Password salah

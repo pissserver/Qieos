@@ -133,6 +133,24 @@
 
         <?php include '../script/footscript.php'; ?>
 
+        <!-- Login Success Overlay -->
+        <div class="login-success-overlay" id="loginSuccessOverlay">
+            <div class="login-success-ripple"></div>
+            <div class="login-success-ripple"></div>
+            <div class="login-success-ripple"></div>
+
+            <div class="login-success-circle">
+                <svg width="48" height="48" viewBox="0 0 48 48">
+                    <polyline class="login-success-check" points="14 24 22 32 36 16"></polyline>
+                </svg>
+            </div>
+
+            <div class="login-success-text">Selamat Datang!</div>
+            <div class="login-success-subtext">Anda berhasil masuk ke sistem</div>
+
+            <div class="login-progress-bar"></div>
+        </div>
+
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 // Background floating particles
@@ -161,15 +179,73 @@
                     });
                 }
 
-                // Submit Animation State
-                const form = document.getElementById('signInForm');
-                const submitBtn = document.getElementById('submitBtn');
+                // Login Submit Animation
+                var form = document.getElementById('signInForm');
+                var submitBtn = document.getElementById('submitBtn');
+                var overlay = document.getElementById('loginSuccessOverlay');
+                var cardWrapper = document.querySelector('.auth-card-wrapper');
                 
-                if (form && submitBtn) {
-                    form.addEventListener('submit', function() {
+                if (form && submitBtn && overlay) {
+                    form.addEventListener('submit', function(e) {
+                        e.preventDefault();
+
+                        // Button loading
                         submitBtn.classList.add('auth-btn-loading');
-                        submitBtn.innerHTML = `<div class="auth-loading-spinner"></div><span>Memproses...</span>`;
+                        submitBtn.innerHTML = '<div class="auth-loading-spinner"></div><span>Memproses...</span>';
+                        submitBtn.disabled = true;
+
+                        // Create burst particles in overlay
+                        createBurstParticles();
+
+                        // Card shrink + blur
+                        if (cardWrapper) cardWrapper.classList.add('login-exit');
+
+                        // Show overlay after card starts exiting
+                        setTimeout(function() {
+                            overlay.classList.add('active');
+                        }, 350);
+
+                        // Submit form after overlay animation plays
+                        setTimeout(function() {
+                            form.submit();
+                        }, 2500);
                     });
+                }
+
+                function createBurstParticles() {
+                    var colors = ['#6366f1', '#8b5cf6', '#a78bfa', '#c4b5fd', '#818cf8'];
+                    var cx = window.innerWidth / 2;
+                    var cy = window.innerHeight / 2;
+
+                    for (var i = 0; i < 24; i++) {
+                        var p = document.createElement('div');
+                        p.className = 'login-particle';
+                        p.style.position = 'fixed';
+                        p.style.left = cx + 'px';
+                        p.style.top = cy + 'px';
+                        p.style.zIndex = '99998';
+                        p.style.background = colors[Math.floor(Math.random() * colors.length)];
+                        p.style.width = (4 + Math.random() * 6) + 'px';
+                        p.style.height = p.style.width;
+                        p.style.borderRadius = '50%';
+                        p.style.opacity = '1';
+
+                        var angle = (Math.PI * 2 * i) / 24;
+                        var dist = 80 + Math.random() * 160;
+                        p.style.setProperty('--px', Math.cos(angle) * dist + 'px');
+                        p.style.setProperty('--py', Math.sin(angle) * dist + 'px');
+
+                        document.body.appendChild(p);
+
+                        // Animate manually
+                        (function(el, px, py) {
+                            el.animate([
+                                { transform: 'translate(0,0) scale(1)', opacity: 1 },
+                                { transform: 'translate(' + px + ',' + py + ') scale(0)', opacity: 0 }
+                            ], { duration: 800, easing: 'ease-out', fill: 'forwards' });
+                            setTimeout(function() { el.remove(); }, 1000);
+                        })(p, Math.cos(angle) * dist + 'px', Math.sin(angle) * dist + 'px');
+                    }
                 }
             });
         </script>

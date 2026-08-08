@@ -610,3 +610,264 @@ body.auth-container {
         margin-bottom: 1.25rem;
     }
 }
+
+/* ============================================
+   LOGIN SUCCESS OVERLAY ANIMATION
+   ============================================ */
+.login-success-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 35%, #311042 70%, #0f172a 100%);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.login-success-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Success checkmark circle */
+.login-success-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 60px rgba(99, 102, 241, 0.5), 0 0 120px rgba(99, 102, 241, 0.2);
+    transform: scale(0);
+    opacity: 0;
+    margin-bottom: 2rem;
+}
+
+.login-success-overlay.active .login-success-circle {
+    animation: successCircleBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards;
+}
+
+.login-success-check {
+    stroke-dasharray: 50;
+    stroke-dashoffset: 50;
+    stroke: #fff;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+}
+
+.login-success-overlay.active .login-success-check {
+    animation: checkDraw 0.5s ease 0.7s forwards;
+}
+
+/* Success text */
+.login-success-text {
+    color: #f8fafc;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    opacity: 0;
+    transform: translateY(20px);
+    text-align: center;
+}
+
+.login-success-subtext {
+    color: #94a3b8;
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-top: 0.5rem;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.login-success-overlay.active .login-success-text {
+    animation: fadeSlideUp 0.5s ease 1s forwards;
+}
+
+.login-success-overlay.active .login-success-subtext {
+    animation: fadeSlideUp 0.5s ease 1.2s forwards;
+}
+
+/* Ripple ring effect */
+.login-success-ripple {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 2px solid rgba(99, 102, 241, 0.4);
+    opacity: 0;
+}
+
+.login-success-overlay.active .login-success-ripple:nth-child(1) {
+    animation: rippleOut 1s ease 0.6s forwards;
+}
+
+.login-success-overlay.active .login-success-ripple:nth-child(2) {
+    animation: rippleOut 1s ease 0.8s forwards;
+}
+
+.login-success-overlay.active .login-success-ripple:nth-child(3) {
+    animation: rippleOut 1s ease 1s forwards;
+}
+
+/* Particles */
+.login-particle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #6366f1;
+    opacity: 0;
+}
+
+.login-success-overlay.active .login-particle {
+    animation: particleBurst 0.8s ease forwards;
+}
+
+/* Progress bar at bottom */
+.login-progress-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa);
+    border-radius: 0 4px 4px 0;
+    width: 0;
+}
+
+.login-success-overlay.active .login-progress-bar {
+    animation: progressFill 1.8s ease 0.3s forwards;
+}
+
+/* Card exit animation */
+.auth-card-wrapper.login-exit {
+    animation: cardExit 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Keyframes */
+@keyframes successCircleBounce {
+    0% { transform: scale(0); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes checkDraw {
+    to { stroke-dashoffset: 0; }
+}
+
+@keyframes fadeSlideUp {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes rippleOut {
+    0% { transform: scale(1); opacity: 0.6; }
+    100% { transform: scale(3); opacity: 0; }
+}
+
+@keyframes particleBurst {
+    0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(var(--px), var(--py)) scale(0);
+    }
+}
+
+@keyframes progressFill {
+    to { width: 100%; }
+}
+
+@keyframes cardExit {
+    0% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(0.92); filter: blur(8px); }
+}
+
+/* ============================================
+   DASHBOARD ENTRY ANIMATION
+   ============================================ */
+.dashboard-entry-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 35%, #311042 70%, #0f172a 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    opacity: 1;
+    transition: opacity 0.6s ease;
+}
+
+.dashboard-entry-overlay.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.dashboard-entry-logo {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 60px rgba(99, 102, 241, 0.4);
+    animation: logoPulse 1.5s ease infinite;
+}
+
+.dashboard-entry-logo img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+}
+
+@keyframes logoPulse {
+    0%, 100% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.3); transform: scale(1); }
+    50% { box-shadow: 0 0 80px rgba(99, 102, 241, 0.6); transform: scale(1.05); }
+}
+
+.dashboard-welcome-text {
+    color: #f8fafc;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-top: 1.5rem;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeSlideUp 0.5s ease 0.3s forwards;
+}
+
+.dashboard-welcome-sub {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-top: 0.35rem;
+    opacity: 0;
+    animation: fadeSlideUp 0.5s ease 0.5s forwards;
+}
+
+/* Dashboard content staggered reveal */
+.dashboard-content-reveal > * {
+    opacity: 0;
+    transform: translateY(24px);
+}
+
+.dashboard-content-reveal.reveal-active > * {
+    animation: contentReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.dashboard-content-reveal.reveal-active > *:nth-child(1) { animation-delay: 0.1s; }
+.dashboard-content-reveal.reveal-active > *:nth-child(2) { animation-delay: 0.2s; }
+.dashboard-content-reveal.reveal-active > *:nth-child(3) { animation-delay: 0.3s; }
+.dashboard-content-reveal.reveal-active > *:nth-child(4) { animation-delay: 0.4s; }
+.dashboard-content-reveal.reveal-active > *:nth-child(5) { animation-delay: 0.5s; }
+
+@keyframes contentReveal {
+    to { opacity: 1; transform: translateY(0); }
+}
