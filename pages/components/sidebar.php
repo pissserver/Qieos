@@ -468,7 +468,6 @@
             margin-left: var(--sidebar-width) !important;
             transition: none !important;
             will-change: margin-left;
-            contain: layout style;
         }
 
         .content.sidebar-transition {

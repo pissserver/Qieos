@@ -1026,9 +1026,13 @@ include '../../sessions/session.php';
             });
         }
 
+        let orderDetailModalInstance = null;
+
         function showDetail(id) {
-            const modalEl = new bootstrap.Modal(document.getElementById('orderDetailModal'));
-            modalEl.show();
+            if (!orderDetailModalInstance) {
+                orderDetailModalInstance = new bootstrap.Modal(document.getElementById('orderDetailModal'));
+            }
+            orderDetailModalInstance.show();
 
             const container = document.getElementById('order-detail-body');
             container.innerHTML = `<div class="text-center py-4"><i class="fas fa-spinner fa-spin"></i> Memuat...</div>`;

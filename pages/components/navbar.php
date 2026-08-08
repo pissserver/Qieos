@@ -1207,9 +1207,13 @@
     // Load cart from localStorage
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
+    let cartModalInstance = null;
+
     function openCart() {
-        let modal = new bootstrap.Modal(document.getElementById('cartModal'));
-        modal.show();
+        if (!cartModalInstance) {
+            cartModalInstance = new bootstrap.Modal(document.getElementById('cartModal'));
+        }
+        cartModalInstance.show();
     }
 
     function addToCart(btn, id, name, price, category){

@@ -23004,7 +23004,6 @@ textarea.form-control-lg {
 .content {
     overflow: hidden;
     padding: 0 1rem 0 1rem;
-    transition: all 0.3s;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -28756,5 +28755,9 @@ article .h1, article .h2, article .h3, article .h4, article .h5, article .h6 {
 
 .datepicker-dropdown {
     z-index: 9999;
+}
+
+body.sidebar-locked {
+    overflow: hidden;
 }
 /*# sourceMappingURL=volt.css.map */

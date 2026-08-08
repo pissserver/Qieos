@@ -70,10 +70,10 @@ d.addEventListener("DOMContentLoaded", function(event) {
     var sidebar = document.getElementById('sidebarMenu')
     if(sidebar && d.body.clientWidth < breakpoints.lg) {
         sidebar.addEventListener('shown.bs.collapse', function () {
-            document.querySelector('body').style.position = 'fixed';
+            document.body.classList.add('sidebar-locked');
         });
         sidebar.addEventListener('hidden.bs.collapse', function () {
-            document.querySelector('body').style.position = 'relative';
+            document.body.classList.remove('sidebar-locked');
         });
     }
 
