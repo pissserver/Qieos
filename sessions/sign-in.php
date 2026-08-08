@@ -208,7 +208,7 @@
                         // Submit form after overlay animation plays
                         setTimeout(function() {
                             form.submit();
-                        }, 2500);
+                        }, 1600);
                     });
                 }
 
