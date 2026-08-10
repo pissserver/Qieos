@@ -207,16 +207,16 @@ if (!isset($_SESSION['welcome_shown'])) {
         .w-icon-wrap{position:relative;width:86px;height:86px;margin:0 auto 22px;border-radius:28px;background:linear-gradient(135deg,rgba(99,102,241,.2),rgba(168,85,247,.15));border:1.5px solid rgba(99,102,241,.3);display:flex;align-items:center;justify-content:center;font-size:38px;color:#818cf8;animation:wFloatIcon 4s ease-in-out infinite, wRingPulse 2.5s infinite}
         .w-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:20px;background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(168,85,247,.12));border:1px solid rgba(99,102,241,.2);font-size:.75rem;font-weight:700;color:#a5b4fc;margin-bottom:14px;letter-spacing:.03em}
         .w-badge i{font-size:11px;color:#fbbf24}
-        .w-title{font-size:1.65rem;font-weight:900;color:#f1f5f9;margin:0 0 8px;letter-spacing:-.03em;line-height:1.2}
+        .w-title{font-size:1.65rem;font-weight:900;color:#f1f5f9 !important;margin:0 0 8px;letter-spacing:-.03em;line-height:1.2}
         .w-title span{background:linear-gradient(90deg,#818cf8,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-        .w-sub{font-size:.88rem;color:#94a3b8;margin:0 0 26px;line-height:1.5;font-weight:500}
+        .w-sub{font-size:.88rem;color:#94a3b8 !important;margin:0 0 26px;line-height:1.5;font-weight:500}
         
         .w-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px;text-align:left}
         .w-info-card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);padding:14px 16px;border-radius:18px;display:flex;align-items:center;gap:12px;transition:all .3s}
         .w-info-card:hover{border-color:rgba(99,102,241,.3);transform:translateY(-2px)}
         .w-info-icon{width:36px;height:36px;border-radius:12px;background:rgba(99,102,241,.15);color:#818cf8;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
-        .w-info-lbl{font-size:.65rem;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
-        .w-info-val{font-size:.82rem;color:#f1f5f9;font-weight:700;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .w-info-lbl{font-size:.65rem;color:#94a3b8 !important;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+        .w-info-val{font-size:.82rem;color:#f1f5f9 !important;font-weight:700;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
         
         .w-btn{width:100%;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;padding:14px;border-radius:18px;font-weight:800;font-size:.95rem;cursor:pointer;transition:all .3s;box-shadow:0 8px 25px rgba(99,102,241,.35);display:flex;align-items:center;justify-content:center;gap:10px;font-family:inherit}
         .w-btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(99,102,241,.5)}
@@ -294,29 +294,29 @@ if (!isset($_SESSION['welcome_shown'])) {
                     <div class="w-info-card">
                         <div class="w-info-icon"><i class="fas fa-clock"></i></div>
                         <div>
-                            <div class="w-info-lbl">Jam</div>
-                            <div class="w-info-val" id="wTime"></div>
+                            <div class="w-info-lbl" style="color:#94a3b8 !important">Jam</div>
+                            <div class="w-info-val" style="color:#f1f5f9 !important" id="wTime"></div>
                         </div>
                     </div>
                     <div class="w-info-card">
                         <div class="w-info-icon"><i class="fas fa-calendar-day"></i></div>
                         <div>
-                            <div class="w-info-lbl">Hari</div>
-                            <div class="w-info-val" id="wDay"></div>
+                            <div class="w-info-lbl" style="color:#94a3b8 !important">Hari</div>
+                            <div class="w-info-val" style="color:#f1f5f9 !important" id="wDay"></div>
                         </div>
                     </div>
                     <div class="w-info-card">
                         <div class="w-info-icon"><i class="fas fa-mountain-sun"></i></div>
                         <div>
-                            <div class="w-info-lbl">Waktu</div>
-                            <div class="w-info-val" id="wGreet"></div>
+                            <div class="w-info-lbl" style="color:#94a3b8 !important">Waktu</div>
+                            <div class="w-info-val" style="color:#f1f5f9 !important" id="wGreet"></div>
                         </div>
                     </div>
                     <div class="w-info-card">
                         <div class="w-info-icon"><i class="fas fa-shield-halved"></i></div>
                         <div>
-                            <div class="w-info-lbl">Role</div>
-                            <div class="w-info-val"><?php echo htmlspecialchars(ucwords($user['role'] ? $user['role'] : 'Member')); ?></div>
+                            <div class="w-info-lbl" style="color:#94a3b8 !important">Role</div>
+                            <div class="w-info-val" style="color:#f1f5f9 !important"><?php echo htmlspecialchars(ucwords($user['role'])); ?></div>
                         </div>
                     </div>
                 </div>
