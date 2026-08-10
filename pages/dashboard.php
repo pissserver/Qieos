@@ -192,7 +192,30 @@
         .mini-box .mini-lbl{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-top:5px}
 
         @media(max-width:1199px){.st4{grid-template-columns:repeat(2,1fr)}.st3{grid-template-columns:repeat(2,1fr)}.g21,.g11{grid-template-columns:1fr}}
-        @media(max-width:575px){.st4,.st3{grid-template-columns:1fr}.flt{flex-direction:column;align-items:stretch}.flt .fg{flex-direction:column;align-items:stretch}.flt .fi{min-width:auto}}
+        @media(max-width:768px){
+            .dash-hdr{padding:24px 20px;border-radius:20px}
+            .dash-hdr h1{font-size:1.4rem}
+            .dash-hdr .hdr-sub{font-size:.85rem}
+            .dash-hdr .hdr-icon{width:60px;height:60px;border-radius:18px;font-size:24px}
+            .flt{padding:14px 16px;gap:10px}
+            .sc{padding:20px 18px}
+            .sc .sc-val{font-size:1.35rem}
+            .scs{padding:18px 20px}
+            .scs .scs-val{font-size:1.15rem}
+            .dc{padding:16px}
+            .ri{padding:10px;gap:8px;flex-wrap:wrap}
+            .ri-c{min-width:auto;font-size:.75rem}
+            .ri-n{font-size:.78rem;width:100%;order:3}
+            .ri-a{min-width:auto;font-size:.78rem}
+        }
+        @media(max-width:575px){
+            .st4,.st3{grid-template-columns:1fr}
+            .flt{flex-direction:column;align-items:stretch}
+            .flt .fg{flex-direction:column;align-items:stretch}
+            .flt .fi{min-width:auto;width:100%}
+            .fb,.fb-rst{width:100%;justify-content:center}
+            .flt-tag{text-align:center;white-space:normal}
+        }
     </style>
 </head>
 <body>
@@ -282,8 +305,8 @@
         // CHARTS ROW 1
         h+='<div class="g21">';
         h+=dcc('Pendapatan vs Pengeluaran','Perbandingan 6 bulan terakhir','fa-chart-bar','c1',270,'<div class="lg"><span><i style="background:#818cf8"></i>Pendapatan</span><span><i style="background:#fb7185"></i>Pengeluaran</span></div>');
-        h+='<div class="dc fi"><div class="dc-h"><div><div class="dc-t">Status Pesanan</div><div class="dc-s">Periode filter aktif</div></div><div class="dc-i"><i class="fas fa-chart-pie"></i></div></div><div id="c2" style="height:180px"></div>';
-        h+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px">';
+        h+='<div class="dc fi"><div class="dc-h"><div><div class="dc-t">Status Pesanan</div><div class="dc-s">Periode filter aktif</div></div><div class="dc-i"><i class="fas fa-chart-pie"></i></div></div><div id="c2" style="height:140px"></div>';
+        h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px;margin-top:14px">';
         h+=msInd('Dibayar',s.paid,'#34d399','#10b981');
         h+=msInd('Pending',s.waiting,'#fbbf24','#f59e0b');
         h+=msInd('Dibatal',s.cancelled,'#fb7185','#f43f5e');
@@ -352,7 +375,7 @@
     }
 
     function msInd(label,val,bgColor,dotColor){
-        return'<div style="display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:16px;background:var(--q-bg-raised);transition:all .25s;cursor:default" onmouseover="this.style.transform=\'translateX(4px)\'" onmouseout="this.style.transform=\'none\'"><div style="width:44px;height:44px;border-radius:12px;background:'+bgColor+';flex-shrink:0;display:flex;align-items:center;justify-content:center"><div style="width:16px;height:16px;border-radius:50%;background:'+dotColor+';box-shadow:0 0 12px '+dotColor+'"></div></div><div style="flex:1"><div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--q-text-muted)">'+label+'</div><div style="font-size:1.5rem;font-weight:800;color:var(--q-text);letter-spacing:-.03em;margin-top:2px">'+val+'</div></div></div>';
+        return'<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:var(--q-bg-raised);transition:all .25s;cursor:default" onmouseover="this.style.transform=\'translateX(4px)\'" onmouseout="this.style.transform=\'none\'"><div style="width:32px;height:32px;border-radius:10px;background:'+bgColor+';flex-shrink:0;display:flex;align-items:center;justify-content:center"><div style="width:10px;height:10px;border-radius:50%;background:'+dotColor+';box-shadow:0 0 8px '+dotColor+'"></div></div><div style="flex:1;min-width:0"><div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--q-text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+label+'</div><div style="font-size:1.1rem;font-weight:800;color:var(--q-text);letter-spacing:-.03em;margin-top:1px">'+val+'</div></div></div>';
     }
 
     function renderCharts(d){
