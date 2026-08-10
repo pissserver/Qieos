@@ -1,4 +1,12 @@
-<?php include '../sessions/session.php'; ?>
+<?php 
+include '../sessions/session.php'; 
+
+$show_welcome_modal = false;
+if (!isset($_SESSION['welcome_shown'])) {
+    $show_welcome_modal = true;
+    $_SESSION['welcome_shown'] = true;
+}
+?>
 <!doctype html>
 <html lang="id">
 <head>
@@ -185,6 +193,35 @@
         #c2 .ct-label{fill:var(--q-text) !important;color:var(--q-text) !important;font-size:12px !important;font-weight:700 !important}
         .ct-series .ct-slice path{stroke:var(--q-bg-card) !important;stroke-width:3px !important}
 
+        /* ===== WELCOME MODAL ===== */
+        @keyframes wOverlayShow{from{opacity:0}to{opacity:1}}
+        @keyframes wModalPop{from{opacity:0;transform:scale(.85) translateY(30px)}to{opacity:1;transform:scale(1) translateY(0)}}
+        @keyframes wFloatIcon{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-10px) rotate(5deg)}}
+        @keyframes wRingPulse{0%{box-shadow:0 0 0 0 rgba(99,102,241,.4)}70%{box-shadow:0 0 0 20px rgba(99,102,241,0)}100%{box-shadow:0 0 0 0 rgba(99,102,241,0)}}
+        
+        .w-overlay{position:fixed;inset:0;background:rgba(15,23,42,.75);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;animation:wOverlayShow .4s cubic-bezier(.16,1,.3,1) forwards}
+        .w-modal{position:relative;width:100%;max-width:480px;background:linear-gradient(145deg,#1e1b4b,#111827);border:1.5px solid rgba(255,255,255,.15);border-radius:32px;padding:36px 32px;text-align:center;box-shadow:0 25px 80px rgba(0,0,0,.4),0 0 40px rgba(99,102,241,.2);overflow:hidden;animation:wModalPop .5s cubic-bezier(.16,1,.3,1) forwards}
+        .w-modal::before{content:'';position:absolute;top:-120px;left:-100px;width:260px;height:260px;background:radial-gradient(circle,rgba(99,102,241,.3),transparent 70%);pointer-events:none;border-radius:50%}
+        .w-modal::after{content:'';position:absolute;bottom:-120px;right:-100px;width:260px;height:260px;background:radial-gradient(circle,rgba(168,85,247,.25),transparent 70%);pointer-events:none;border-radius:50%}
+        
+        .w-icon-wrap{position:relative;width:86px;height:86px;margin:0 auto 22px;border-radius:28px;background:linear-gradient(135deg,rgba(99,102,241,.2),rgba(168,85,247,.15));border:1.5px solid rgba(99,102,241,.3);display:flex;align-items:center;justify-content:center;font-size:38px;color:#818cf8;animation:wFloatIcon 4s ease-in-out infinite, wRingPulse 2.5s infinite}
+        .w-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:20px;background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(168,85,247,.12));border:1px solid rgba(99,102,241,.2);font-size:.75rem;font-weight:700;color:#a5b4fc;margin-bottom:14px;letter-spacing:.03em}
+        .w-badge i{font-size:11px;color:#fbbf24}
+        .w-title{font-size:1.65rem;font-weight:900;color:#f1f5f9;margin:0 0 8px;letter-spacing:-.03em;line-height:1.2}
+        .w-title span{background:linear-gradient(90deg,#818cf8,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .w-sub{font-size:.88rem;color:#94a3b8;margin:0 0 26px;line-height:1.5;font-weight:500}
+        
+        .w-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px;text-align:left}
+        .w-info-card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);padding:14px 16px;border-radius:18px;display:flex;align-items:center;gap:12px;transition:all .3s}
+        .w-info-card:hover{border-color:rgba(99,102,241,.3);transform:translateY(-2px)}
+        .w-info-icon{width:36px;height:36px;border-radius:12px;background:rgba(99,102,241,.15);color:#818cf8;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+        .w-info-lbl{font-size:.65rem;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+        .w-info-val{font-size:.82rem;color:#f1f5f9;font-weight:700;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        
+        .w-btn{width:100%;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;padding:14px;border-radius:18px;font-weight:800;font-size:.95rem;cursor:pointer;transition:all .3s;box-shadow:0 8px 25px rgba(99,102,241,.35);display:flex;align-items:center;justify-content:center;gap:10px;font-family:inherit}
+        .w-btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(99,102,241,.5)}
+        .w-btn:active{transform:translateY(1px);box-shadow:0 4px 12px rgba(99,102,241,.3)}
+
         /* Mini stat inside status pesanan */
         .mini-box{transition:all .3s;cursor:default;border-radius:16px;padding:16px 8px}
         .mini-box:hover{transform:translateY(-3px) scale(1.03)}
@@ -245,6 +282,50 @@
         </div>
 
         <div id="dc"><div class="st4" id="sk1"></div><div class="g21" id="sk2"></div></div>
+
+        <?php if ($show_welcome_modal): ?>
+        <div class="w-overlay" id="wModal" onclick="if(event.target===this)closeWelcome()">
+            <div class="w-modal">
+                <div class="w-icon-wrap"><i class="fas fa-hat-wizard"></i></div>
+                <div class="w-badge"><i class="fas fa-crown"></i> Welcome</div>
+                <div class="w-title">Halo, <span><?php echo htmlspecialchars($user['fullname'] ? $user['fullname'] : $user['username']); ?></span>!</div>
+                <div class="w-sub">Selamat datang kembali di sistem manajemen Qieos. Berikut ringkasan hari ini.</div>
+                <div class="w-info-grid">
+                    <div class="w-info-card">
+                        <div class="w-info-icon"><i class="fas fa-clock"></i></div>
+                        <div>
+                            <div class="w-info-lbl">Jam</div>
+                            <div class="w-info-val" id="wTime"></div>
+                        </div>
+                    </div>
+                    <div class="w-info-card">
+                        <div class="w-info-icon"><i class="fas fa-calendar-day"></i></div>
+                        <div>
+                            <div class="w-info-lbl">Hari</div>
+                            <div class="w-info-val" id="wDay"></div>
+                        </div>
+                    </div>
+                    <div class="w-info-card">
+                        <div class="w-info-icon"><i class="fas fa-mountain-sun"></i></div>
+                        <div>
+                            <div class="w-info-lbl">Waktu</div>
+                            <div class="w-info-val" id="wGreet"></div>
+                        </div>
+                    </div>
+                    <div class="w-info-card">
+                        <div class="w-info-icon"><i class="fas fa-shield-halved"></i></div>
+                        <div>
+                            <div class="w-info-lbl">Role</div>
+                            <div class="w-info-val"><?php echo htmlspecialchars(ucwords($user['role'] ? $user['role'] : 'Member')); ?></div>
+                        </div>
+                    </div>
+                </div>
+                <button class="w-btn" onclick="closeWelcome()">
+                    <i class="fas fa-rocket"></i> Mulai Bekerja
+                </button>
+            </div>
+        </div>
+        <?php endif; ?>
     </main>
 
     <?php include "../script/footscript.php"; ?>
@@ -397,7 +478,33 @@
         },120);
     }
 
-    document.addEventListener('DOMContentLoaded',function(){sk();go()});
+    function closeWelcome(){
+        var m=document.getElementById('wModal');
+        if(!m)return;
+        m.style.transition='opacity .3s ease, transform .3s ease';
+        m.style.opacity='0';
+        m.querySelector('.w-modal').style.transform='scale(.9) translateY(20px)';
+        setTimeout(function(){m.remove()},300);
+    }
+
+    function initWelcomeClock(){
+        var now=new Date();
+        var h=now.getHours();
+        var greet='Selamat Malam';
+        if(h>=4&&h<11) greet='Selamat Pagi';
+        else if(h>=11&&h<15) greet='Selamat Siang';
+        else if(h>=15&&h<18) greet='Selamat Sore';
+
+        var timeEl=document.getElementById('wTime');
+        var dayEl=document.getElementById('wDay');
+        var greetEl=document.getElementById('wGreet');
+
+        if(timeEl) timeEl.textContent=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})+' WIB';
+        if(dayEl) dayEl.textContent=now.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'short'});
+        if(greetEl) greetEl.textContent=greet;
+    }
+
+    document.addEventListener('DOMContentLoaded',function(){sk();go();initWelcomeClock()});
     </script>
 </body>
 </html>
