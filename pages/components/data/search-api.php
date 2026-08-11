@@ -55,7 +55,7 @@ if ($prod_q) {
             'code' => $row['code'],
             'category' => $row['category'],
             'price' => 'Rp ' . number_format($row['sell_price'], 0, ',', '.'),
-            'url' => '/qieos/pages/sales/catalog.php',
+            'url' => '/qieos/pages/sales/catalog.php?highlight='.$row['id'],
             'icon' => 'fas fa-box',
             'category_label' => 'Produk'
         ];

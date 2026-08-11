@@ -1000,7 +1000,7 @@
     }
     .search-close-btn:hover{background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.3);color:#f87171}
 
-    .search-body{max-height:400px;overflow-y:auto;padding:10px 12px;scrollbar-width:thin;scrollbar-color:rgba(99,102,241,.3) transparent}
+    .search-body{max-height:400px;overflow-y:auto;padding:10px 12px 20px;scrollbar-width:thin;scrollbar-color:rgba(99,102,241,.3) transparent}
     .search-body::-webkit-scrollbar{width:5px}
     .search-body::-webkit-scrollbar-track{background:transparent}
     .search-body::-webkit-scrollbar-thumb{background:rgba(99,102,241,.3);border-radius:10px}
@@ -1080,7 +1080,7 @@
         .search-trigger{display:none !important}
         .search-overlay{padding:0;align-items:flex-start}
         .search-container{border-radius:0;max-height:100vh;height:100vh;max-width:100%;display:flex;flex-direction:column}
-        .search-body{flex:1;max-height:none}
+        .search-body{flex:1;max-height:none;padding-bottom:40px}
         .search-input-wrap{padding:14px 16px}
     }
 </style>

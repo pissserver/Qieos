@@ -926,6 +926,20 @@ $query = mysqli_query($conn,
 
     }
 
+    @keyframes highlightPulse{
+        0%{box-shadow:0 0 0 0 rgba(99,102,241,.5)}
+        50%{box-shadow:0 0 0 12px rgba(99,102,241,0)}
+        100%{box-shadow:0 0 0 0 rgba(99,102,241,0)}
+    }
+    .product-item.highlight-target{
+        animation:highlightPulse 1.2s ease-in-out 3;
+        border-radius:35px;
+    }
+    .product-item.highlight-target .product-card{
+        border:2px solid rgba(99,102,241,.6);
+        box-shadow:0 0 30px rgba(99,102,241,.3),0 25px 60px rgba(2,6,23,.35);
+    }
+
     @keyframes emptyFade{
 
         from{
@@ -1448,6 +1462,34 @@ $query = mysqli_query($conn,
 
         // refresh tiap 3 detik
         setInterval(syncStock, 3000);
+
+        // === HIGHLIGHT FROM GLOBAL SEARCH ===
+        (function(){
+            var params = new URLSearchParams(window.location.search);
+            var highlightId = params.get('highlight');
+            if(!highlightId) return;
+
+            var target = document.querySelector('.product-item[data-id="'+highlightId+'"]');
+            if(!target) return;
+
+            setTimeout(function(){
+                target.scrollIntoView({behavior:'smooth',block:'center'});
+                target.classList.add('highlight-target');
+                var nameEl = target.querySelector('.product-title');
+                var productName = nameEl ? nameEl.textContent.trim() : 'Produk';
+                Swal.fire({
+                    icon:'info',
+                    title:'Produk Ditemukan',
+                    text:'Anda diarahkan ke "'+productName+'" dari pencarian.',
+                    timer:2500,
+                    showConfirmButton:false,
+                    toast:true,
+                    position:'top-end'
+                });
+                setTimeout(function(){ target.classList.remove('highlight-target'); },4000);
+                history.replaceState(null,'',window.location.pathname);
+            },400);
+        })();
 
     </script>
 
