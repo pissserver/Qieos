@@ -1083,6 +1083,116 @@
         .search-body{flex:1;max-height:none;padding-bottom:40px}
         .search-input-wrap{padding:14px 16px}
     }
+
+    /* ===================== SCREENSAVER ===================== */
+    .screensaver{
+        position:fixed;inset:0;z-index:99999999;
+        background:#050a14;
+        display:flex;align-items:center;justify-content:center;flex-direction:column;
+        opacity:0;visibility:hidden;transition:opacity .6s ease,visibility .6s ease;cursor:none;
+        overflow:hidden;
+    }
+    .screensaver.active{opacity:1;visibility:visible}
+
+    /* AURORA — 2 blobs, ringan */
+    .ss-aurora{position:absolute;inset:0}
+    .ss-aurora::before,.ss-aurora::after{
+        content:'';position:absolute;border-radius:50%;opacity:.35;
+        will-change:transform;
+        animation:auroraFloat 10s ease-in-out infinite alternate;
+    }
+    .ss-aurora::before{width:500px;height:500px;top:-150px;left:-80px;background:radial-gradient(circle,rgba(99,102,241,.5),transparent 70%)}
+    .ss-aurora::after{width:420px;height:420px;bottom:-150px;right:-80px;background:radial-gradient(circle,rgba(139,92,246,.45),transparent 70%);animation-delay:-5s;animation-direction:alternate-reverse}
+    @keyframes auroraFloat{0%{transform:translate(0,0) scale(1)}50%{transform:translate(50px,-40px) scale(1.15)}100%{transform:translate(-20px,30px) scale(.95)}}
+
+    /* CONTENT */
+    .ss-content{position:relative;z-index:10;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center}
+
+    /* CLOCK */
+    .ss-clock-wrap{position:relative;margin-bottom:24px}
+    .ss-clock-ring{
+        position:absolute;inset:-28px;border-radius:50%;
+        border:1.5px solid rgba(99,102,241,.12);
+        will-change:transform;
+        animation:ringSpin 16s linear infinite;
+    }
+    .ss-clock-ring::before{
+        content:'';position:absolute;top:-5px;left:50%;
+        width:10px;height:10px;border-radius:50%;
+        background:#818cf8;
+        box-shadow:0 0 20px rgba(99,102,241,.8),0 0 40px rgba(99,102,241,.4);
+    }
+    @keyframes ringSpin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+    .screensaver-time{
+        font-size:7.5rem;font-weight:100;color:#f1f5f9;letter-spacing:-.04em;line-height:1;
+        font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+        text-shadow:0 0 40px rgba(99,102,241,.25),0 0 80px rgba(139,92,246,.15);
+    }
+    .ss-time-colon{animation:colonBlink 1s step-end infinite;display:inline-block}
+    @keyframes colonBlink{0%,100%{opacity:1}50%{opacity:.2}}
+
+    .screensaver-date{
+        font-size:1rem;font-weight:400;color:#94a3b8;letter-spacing:.12em;text-transform:uppercase;
+        margin-bottom:40px;
+    }
+
+    /* GREETING */
+    .screensaver-greeting{
+        font-size:1.4rem;font-weight:700;color:#e2e8f0;margin-bottom:10px;
+        letter-spacing:-.01em;
+    }
+    .screensaver-greeting span{
+        background:linear-gradient(135deg,#818cf8,#c084fc,#f472b6);
+        background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+        animation:gradientShift 3s ease infinite;
+    }
+    @keyframes gradientShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+
+    /* DIVIDER */
+    .ss-quote-divider{
+        width:60px;height:2px;border-radius:2px;margin:14px auto 18px;
+        background:linear-gradient(90deg,transparent,rgba(99,102,241,.5),transparent);
+    }
+
+    /* QUOTE */
+    .screensaver-quote{
+        max-width:460px;text-align:center;font-size:.88rem;font-weight:400;color:#94a3b8;line-height:1.8;
+        padding:0 24px;
+    }
+    .screensaver-quote::before{
+        content:'\201C';display:block;font-size:2.2rem;line-height:1;margin-bottom:-8px;font-style:normal;
+        background:linear-gradient(135deg,rgba(99,102,241,.5),rgba(192,132,252,.5));
+        -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    }
+
+    /* HINT */
+    .screensaver-hint{
+        position:absolute;bottom:36px;font-size:.65rem;color:rgba(255,255,255,.15);letter-spacing:.12em;text-transform:uppercase;
+        animation:hintPulse 2.5s ease-in-out infinite;
+    }
+    @keyframes hintPulse{0%,100%{opacity:.15}50%{opacity:.35}}
+
+    /* ENTER */
+    .screensaver.active .ss-content{animation:ssEnter .7s cubic-bezier(.16,1,.3,1) forwards}
+    @keyframes ssEnter{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+
+    @media(max-width:768px){
+        .screensaver-time{font-size:5rem}
+        .screensaver-date{font-size:.85rem;margin-bottom:30px}
+        .screensaver-greeting{font-size:1.15rem}
+        .screensaver-quote{font-size:.8rem;padding:0 16px}
+        .ss-clock-ring{inset:-20px}
+        .ss-aurora::before{width:300px;height:300px}
+        .ss-aurora::after{width:260px;height:260px}
+    }
+    @media(max-width:576px){
+        .screensaver-time{font-size:3.8rem}
+        .screensaver-date{font-size:.72rem;letter-spacing:.08em}
+        .screensaver-greeting{font-size:.95rem}
+        .screensaver-quote{font-size:.72rem}
+        .ss-clock-ring{inset:-16px}
+    }
 </style>
 
 <nav class="premium-navbar">
@@ -1201,6 +1311,8 @@
         </div>
     </div>
 </div>
+
+<!-- Screensaver (appended to body via JS) -->
 
 <script>
 (function(){
@@ -1905,6 +2017,99 @@
     // dari PHP
     let omzet = <?php echo $omzet; ?>;
     animateValue("omzet-today", omzet, 800); // cepat & smooth
+</script>
+
+<script>
+(function(){
+    var userName = '<?php echo addslashes($user["fullname"] ? $user["fullname"] : $user["username"]); ?>';
+
+    var ss = document.createElement('div');
+    ss.className = 'screensaver';
+    ss.id = 'screensaver';
+    ss.innerHTML = '<div class="ss-aurora"></div><div class="ss-content"><div class="ss-clock-wrap"><div class="ss-clock-ring"></div><div class="screensaver-time" id="ssTime"></div></div><div class="screensaver-date" id="ssDate"></div><div class="screensaver-greeting">Halo, <span>'+userName+'</span></div><div class="ss-quote-divider"></div><div class="screensaver-quote" id="ssQuote"></div></div><div class="screensaver-hint">SENTUH ATAU TEKAN TOMBOL APAPUN</div>';
+    document.body.appendChild(ss);
+
+    var ssTime = document.getElementById('ssTime');
+    var ssDate = document.getElementById('ssDate');
+    var ssQuote = document.getElementById('ssQuote');
+    var timer = null;
+    var IDLE = 120000;
+    var isActive = false;
+    var clockInterval = null;
+
+    var quotes = [
+        "Kerja keras mengalahkan bakat saat bakat tidak bekerja keras.",
+        "Produktivitas bukan tentang bekerja lebih lama, tapi bekerja lebih cerdas.",
+        "Setiap detail kecil menentukan hasil akhir yang besar.",
+        "Konsistensi adalah kunci dari setiap pencapaian besar.",
+        "Jangan tunda pekerjaan yang bisa dilakukan hari ini.",
+        "Fokus pada satu hal, selesaikan dengan sempurna.",
+        "Disiplin adalah jembatan antara tujuan dan pencapaian.",
+        "Kemajuan kecil setiap hari menghasilkan perubahan besar.",
+        "Jangan takut membuat kesalahan, takutlah tidak belajar darinya.",
+        "Tim yang solid menghasilkan karya yang luar biasa.",
+        "Waktu tidak menunggu siapapun, manfaatkan setiap detiknya.",
+        "Bekerja dengan passion membuat hidup tidak terasa seperti bekerja.",
+        "Kesuksesan dimulai dari langkah kecil yang berani diambil.",
+        "Profesionalisme terlihat dari bagaimana kamu menyelesaikan masalah.",
+        "Komunikasi yang baik adalah fondasi dari tim yang sukses.",
+        "Perencanaan yang matang menghemat waktu dan tenaga.",
+        "Setiap tantangan adalah kesempatan untuk menjadi lebih baik.",
+        "Hasil tidak pernah berbohong tentang usaha yang telah dilakukan.",
+        "Pekerjaan yang ditunda hanya menumpuk menjadi masalah.",
+        "Kolaborasi yang baik menghasilkan ide yang revolusioner.",
+        "Jadilah solusi, bukan bagian dari masalah.",
+        "Kualitas pekerjaan mencerminkan karakter seseorang.",
+        "Jangan bandingkan kemajuanmu dengan orang lain.",
+        "Investasi terbaik adalah investasi pada diri sendiri.",
+        "Pikiran yang tenang menghasilkan keputusan yang tepat."
+    ];
+
+    var dayNames = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabit'];
+    var monthNames = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+    function updateClock(){
+        var now = new Date();
+        var h = String(now.getHours()).padStart(2,'0');
+        var m = String(now.getMinutes()).padStart(2,'0');
+        var s = String(now.getSeconds()).padStart(2,'0');
+        ssTime.innerHTML = h+'<span class="ss-time-colon">:</span>'+m+'<span class="ss-time-colon">:</span>'+s;
+        ssDate.textContent = dayNames[now.getDay()]+', '+now.getDate()+' '+monthNames[now.getMonth()]+' '+now.getFullYear();
+    }
+
+    function showSS(){
+        if(isActive) return;
+        isActive = true;
+        ssQuote.textContent = quotes[Math.floor(Math.random()*quotes.length)];
+        updateClock();
+        clockInterval = setInterval(updateClock, 1000);
+        ss.classList.add('active');
+    }
+
+    function hideSS(){
+        if(!isActive) return;
+        isActive = false;
+        ss.classList.remove('active');
+        if(clockInterval){ clearInterval(clockInterval); clockInterval = null; }
+        resetTimer();
+    }
+
+    function resetTimer(){
+        clearTimeout(timer);
+        timer = setTimeout(showSS, IDLE);
+    }
+
+    var events = ['mousemove','mousedown','keydown','scroll','touchstart','touchmove','click','resize'];
+    events.forEach(function(evt){
+        document.addEventListener(evt, function(){
+            if(isActive) hideSS();
+            else resetTimer();
+        }, {passive:true});
+    });
+
+    updateClock();
+    resetTimer();
+})();
 </script>
 
 <?php } ?>
