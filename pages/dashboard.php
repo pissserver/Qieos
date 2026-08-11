@@ -204,19 +204,34 @@ if (!isset($_SESSION['welcome_shown'])) {
         .w-modal::before{content:'';position:absolute;top:-120px;left:-100px;width:260px;height:260px;background:radial-gradient(circle,rgba(99,102,241,.3),transparent 70%);pointer-events:none;border-radius:50%}
         .w-modal::after{content:'';position:absolute;bottom:-120px;right:-100px;width:260px;height:260px;background:radial-gradient(circle,rgba(168,85,247,.25),transparent 70%);pointer-events:none;border-radius:50%}
         
-        .w-icon-wrap{position:relative;width:86px;height:86px;margin:0 auto 22px;border-radius:28px;background:linear-gradient(135deg,rgba(99,102,241,.2),rgba(168,85,247,.15));border:1.5px solid rgba(99,102,241,.3);display:flex;align-items:center;justify-content:center;font-size:38px;color:#818cf8;animation:wFloatIcon 4s ease-in-out infinite, wRingPulse 2.5s infinite}
+        .w-icon-wrap{position:relative;width:86px;height:86px;margin:0 auto 22px;border-radius:28px;background:linear-gradient(135deg,rgba(99,102,241,.2),rgba(168,85,247,.15));border:1.5px solid rgba(99,102,241,.3);display:flex;align-items:center;justify-content:center;font-size:38px;color:#818cf8;animation:wFloatIcon 4s ease-in-out infinite, wRingPulse 2.5s infinite;flex-shrink:0}
         .w-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:20px;background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(168,85,247,.12));border:1px solid rgba(99,102,241,.2);font-size:.75rem;font-weight:700;color:#a5b4fc;margin-bottom:14px;letter-spacing:.03em}
         .w-badge i{font-size:11px;color:#fbbf24}
-        .w-title{font-size:1.65rem;font-weight:900;color:#f1f5f9 !important;margin:0 0 8px;letter-spacing:-.03em;line-height:1.2}
+        .w-title{font-size:1.65rem;font-weight:900;color:#f1f5f9 !important;margin:0 0 8px;letter-spacing:-.03em;line-height:1.2;word-break:break-word}
         .w-title span{background:linear-gradient(90deg,#818cf8,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-        .w-sub{font-size:.88rem;color:#94a3b8 !important;margin:0 0 26px;line-height:1.5;font-weight:500}
+        .w-sub{font-size:.88rem;color:#94a3b8 !important;margin:0 0 26px;line-height:1.5;font-weight:500;word-break:break-word}
         
         .w-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px;text-align:left}
-        .w-info-card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);padding:14px 16px;border-radius:18px;display:flex;align-items:center;gap:12px;transition:all .3s}
+        .w-info-card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);padding:14px 16px;border-radius:18px;display:flex;align-items:center;gap:12px;transition:all .3s;min-width:0}
         .w-info-card:hover{border-color:rgba(99,102,241,.3);transform:translateY(-2px)}
         .w-info-icon{width:36px;height:36px;border-radius:12px;background:rgba(99,102,241,.15);color:#818cf8;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
         .w-info-lbl{font-size:.65rem;color:#94a3b8 !important;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
         .w-info-val{font-size:.82rem;color:#f1f5f9 !important;font-weight:700;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+        @media(max-width:575px){
+            .w-overlay{padding:12px}
+            .w-modal{padding:20px 16px;border-radius:24px}
+            .w-icon-wrap{width:52px;height:52px;font-size:22px;margin-bottom:10px;border-radius:16px}
+            .w-badge{padding:4px 12px;font-size:.68rem;margin-bottom:8px}
+            .w-title{font-size:1.15rem;margin-bottom:4px}
+            .w-sub{font-size:.75rem;margin-bottom:12px;line-height:1.3}
+            .w-info-grid{gap:6px;margin-bottom:14px}
+            .w-info-card{padding:8px 10px;border-radius:12px;gap:8px}
+            .w-info-icon{width:28px;height:28px;font-size:12px;border-radius:8px}
+            .w-info-lbl{font-size:.58rem}
+            .w-info-val{font-size:.72rem}
+            .w-btn{padding:10px;border-radius:14px;font-size:.82rem;gap:6px}
+        }
         
         .w-btn{width:100%;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;padding:14px;border-radius:18px;font-weight:800;font-size:.95rem;cursor:pointer;transition:all .3s;box-shadow:0 8px 25px rgba(99,102,241,.35);display:flex;align-items:center;justify-content:center;gap:10px;font-family:inherit}
         .w-btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(99,102,241,.5)}

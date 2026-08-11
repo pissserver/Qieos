@@ -241,11 +241,12 @@
                         .then(function(res) {
                             if (res.status === 'success') {
                                 // SUCCESS — tampilkan animasi sukses lalu redirect
-                                if (welcomeName) welcomeName.textContent = 'Selamat Datang, ' + username + '!';
+                                var displayName = res.fullname || username;
+                                if (welcomeName) welcomeName.textContent = 'Selamat Datang, ' + displayName + '!';
                                 if (welcomeSub) welcomeSub.textContent = 'Anda berhasil masuk ke sistem';
                                 if (cardWrapper) cardWrapper.classList.add('login-exit');
-                                setTimeout(function() { overlay.classList.add('active'); }, 450);
-                                setTimeout(function() { window.location.href = res.redirect; }, 2200);
+                                setTimeout(function() { overlay.classList.add('active'); }, 200);
+                                setTimeout(function() { window.location.href = res.redirect; }, 3200);
                             } else {
                                 // FAIL — tampilkan animasi gagal langsung
                                 resetBtn();

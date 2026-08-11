@@ -41,7 +41,8 @@
                 // AJAX check
                 if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
                     header('Content-Type: application/json');
-                    echo json_encode(['status' => 'success', 'redirect' => '../pages/dashboard.php']);
+                    $fullname = !empty($row['fullname']) ? $row['fullname'] : $row['username'];
+                    echo json_encode(['status' => 'success', 'fullname' => $fullname, 'redirect' => '../pages/dashboard.php']);
                     exit;
                 }
 
