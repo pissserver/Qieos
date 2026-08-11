@@ -953,6 +953,131 @@
         border:1px solid #e2e8f0;
         font-weight:600;
     }
+
+    /* ===================== GLOBAL SEARCH ===================== */
+    .search-trigger{
+        width:56px;height:56px;border-radius:18px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:white;cursor:pointer;transition:.3s;position:relative
+    }
+    .search-trigger:hover{transform:translateY(-3px);background:rgba(99,102,241,.15);border-color:rgba(99,102,241,.3)}
+    .search-trigger .kbd-hint{
+        position:absolute;bottom:-4px;right:-4px;background:rgba(99,102,241,.9);color:white;font-size:8px;font-weight:700;padding:2px 5px;border-radius:6px;letter-spacing:.02em;opacity:.8
+    }
+
+    .search-overlay{
+        position:fixed;inset:0;z-index:999999;display:flex;align-items:flex-start;justify-content:center;padding:60px 20px 20px;
+        background:rgba(7,15,30,.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+        opacity:0;visibility:hidden;transition:opacity .25s ease,visibility .25s ease
+    }
+    .search-overlay.active{opacity:1;visibility:visible}
+
+    .search-container{
+        width:100%;max-width:620px;
+        background:linear-gradient(145deg,#0c1322,#111c30);
+        border:1px solid rgba(255,255,255,.08);
+        border-radius:24px;
+        box-shadow:0 30px 80px rgba(0,0,0,.5),0 0 60px rgba(99,102,241,.1);
+        overflow:hidden;
+        transform:translateY(-30px) scale(.95);transition:transform .3s cubic-bezier(.16,1,.3,1),opacity .25s ease;opacity:0
+    }
+    .search-overlay.active .search-container{transform:translateY(0) scale(1);opacity:1}
+
+    .search-input-wrap{
+        display:flex;align-items:center;gap:14px;padding:18px 22px;border-bottom:1px solid rgba(255,255,255,.06)
+    }
+    .search-input-wrap i{font-size:20px;color:#818cf8;flex-shrink:0}
+    .search-input{
+        flex:1;background:transparent;border:none;outline:none;color:#f1f5f9;font-size:16px;font-weight:500;font-family:inherit
+    }
+    .search-input::placeholder{color:#64748b}
+    .search-close-btn{
+        background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:#94a3b8;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;transition:.2s;flex-shrink:0;font-family:inherit
+    }
+    .search-close-btn:hover{background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.3);color:#f87171}
+
+    .search-body{max-height:400px;overflow-y:auto;padding:10px 12px;scrollbar-width:thin;scrollbar-color:rgba(99,102,241,.3) transparent}
+    .search-body::-webkit-scrollbar{width:5px}
+    .search-body::-webkit-scrollbar-track{background:transparent}
+    .search-body::-webkit-scrollbar-thumb{background:rgba(99,102,241,.3);border-radius:10px}
+
+    .search-section-label{
+        font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#64748b;padding:8px 12px 4px;display:flex;align-items:center;gap:6px
+    }
+    .search-section-label i{font-size:10px}
+
+    .search-item{
+        display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:14px;cursor:pointer;transition:all .2s ease
+    }
+    .search-item:hover,.search-item.focused{background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(139,92,246,.1))}
+    .search-item:hover .search-item-icon,.search-item.focused .search-item-icon{transform:scale(1.1)}
+
+    .search-item-icon{
+        width:38px;height:38px;border-radius:12px;background:rgba(99,102,241,.1);color:#818cf8;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:transform .2s
+    }
+    .search-item-icon.product-icon{background:rgba(16,185,129,.1);color:#34d399}
+    .search-item-icon.tenant-icon{background:rgba(245,158,11,.1);color:#fbbf24}
+
+    .search-item-info{flex:1;min-width:0}
+    .search-item-name{color:#f1f5f9;font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .search-item-meta{color:#64748b;font-size:11px;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+    .search-item-badge{
+        font-size:10px;font-weight:600;padding:3px 8px;border-radius:6px;flex-shrink:0
+    }
+    .search-item-badge.badge-page{background:rgba(99,102,241,.1);color:#818cf8}
+    .search-item-badge.badge-product{background:rgba(16,185,129,.1);color:#34d399}
+    .search-item-badge.badge-tenant{background:rgba(245,158,11,.1);color:#fbbf24}
+
+    .search-empty{
+        text-align:center;padding:40px 20px;color:#64748b
+    }
+    .search-empty i{font-size:36px;color:#334155;margin-bottom:10px;display:block}
+    .search-empty p{font-size:13px;margin:0}
+
+    .search-footer{
+        display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-top:1px solid rgba(255,255,255,.06);background:rgba(0,0,0,.15)
+    }
+    .search-hint{display:flex;gap:10px;align-items:center}
+    .search-hint span{font-size:10px;color:#475569;display:flex;align-items:center;gap:4px}
+    .search-hint kbd{
+        background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);padding:1px 5px;border-radius:4px;font-size:9px;color:#94a3b8;font-family:inherit
+    }
+    .search-result-count{font-size:10px;color:#475569}
+
+    .search-loading{
+        display:flex;align-items:center;justify-content:center;padding:30px;gap:8px
+    }
+    .search-loading .dot{
+        width:6px;height:6px;border-radius:50%;background:#818cf8;animation:searchDotBounce .6s ease-in-out infinite alternate
+    }
+    .search-loading .dot:nth-child(2){animation-delay:.15s}
+    .search-loading .dot:nth-child(3){animation-delay:.3s}
+    @keyframes searchDotBounce{from{opacity:.3;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+
+    .search-recent{padding:6px 12px}
+    .search-recent-item{
+        display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:10px;cursor:pointer;transition:.2s
+    }
+    .search-recent-item:hover{background:rgba(255,255,255,.04)}
+    .search-recent-item i{color:#475569;font-size:12px}
+    .search-recent-item span{color:#94a3b8;font-size:12.5px;flex:1}
+    .search-recent-item .clear-recent{color:#475569;font-size:10px;cursor:pointer;padding:2px 6px;border-radius:6px;transition:.2s}
+    .search-recent-item .clear-recent:hover{background:rgba(239,68,68,.15);color:#f87171}
+
+    @media(max-width:768px){
+        .search-overlay{padding:12px}
+        .search-container{border-radius:20px;max-height:85vh}
+        .search-body{max-height:calc(85vh - 140px)}
+        .search-trigger{width:42px;height:42px;border-radius:12px}
+        .search-trigger .kbd-hint{display:none}
+        .search-input{font-size:15px}
+        .search-footer{flex-wrap:wrap;gap:6px}
+    }
+    @media(max-width:576px){
+        .search-overlay{padding:0;align-items:flex-start}
+        .search-container{border-radius:0;max-height:100vh;height:100vh;max-width:100%;display:flex;flex-direction:column}
+        .search-body{flex:1;max-height:none}
+        .search-input-wrap{padding:14px 16px}
+    }
 </style>
 
 <nav class="premium-navbar">
@@ -965,6 +1090,12 @@
     </div>
 
     <div class="premium-actions">
+        <!-- SEARCH -->
+        <div class="search-trigger" id="searchTrigger" onclick="openSearch()">
+            <i class="fas fa-search"></i>
+            <span class="kbd-hint">⌘K</span>
+        </div>
+
         <!-- WHAT'S NEW -->
         <div
             class="premium-action-btn"
@@ -1041,7 +1172,234 @@
 
         </div>
 
-        <?php } ?>
+<?php } ?>
+
+<!-- Global Search Overlay -->
+<div class="search-overlay" id="searchOverlay">
+    <div class="search-container">
+        <div class="search-input-wrap">
+            <i class="fas fa-search"></i>
+            <input type="text" class="search-input" id="searchInput" placeholder="Cari halaman, produk, tenant..." autocomplete="off" spellcheck="false">
+            <button class="search-close-btn" onclick="closeSearch()">ESC</button>
+        </div>
+        <div class="search-body" id="searchBody">
+            <div class="search-recent" id="searchRecent"></div>
+            <div id="searchResults"></div>
+        </div>
+        <div class="search-footer">
+            <div class="search-hint">
+                <span><kbd>&uarr;</kbd><kbd>&darr;</kbd> Navigasi</span>
+                <span><kbd>&crarr;</kbd> Buka</span>
+                <span><kbd>ESC</kbd> Tutup</span>
+            </div>
+            <div class="search-result-count" id="searchCount"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function(){
+    var overlay = document.getElementById('searchOverlay');
+    var input = document.getElementById('searchInput');
+    var results = document.getElementById('searchResults');
+    var recentEl = document.getElementById('searchRecent');
+    var countEl = document.getElementById('searchCount');
+    var focusIndex = -1;
+    var allItems = [];
+    var debounceTimer = null;
+    var recentSearches = JSON.parse(localStorage.getItem('qieos_recent_search') || '[]');
+
+    function renderRecent(){
+        if(!recentSearches.length){ recentEl.innerHTML = ''; return; }
+        var html = '<div class="search-section-label"><i class="fas fa-clock-rotate-left"></i> Pencarian Terakhir</div>';
+        recentSearches.slice(0,5).forEach(function(s,i){
+            html += '<div class="search-recent-item" onclick="window._searchSelect(\''+s.replace(/'/g,"\\'")+'\')"><i class="fas fa-clock"></i><span>'+escapeHtml(s)+'</span><span class="clear-recent" onclick="event.stopPropagation();window._removeRecent('+i+')"><i class="fas fa-times"></i></span></div>';
+        });
+        recentEl.innerHTML = html;
+    }
+
+    function addRecent(q){
+        recentSearches = recentSearches.filter(function(s){ return s.toLowerCase() !== q.toLowerCase(); });
+        recentSearches.unshift(q);
+        if(recentSearches.length > 8) recentSearches.pop();
+        localStorage.setItem('qieos_recent_search', JSON.stringify(recentSearches));
+    }
+
+    window._removeRecent = function(i){
+        recentSearches.splice(i,1);
+        localStorage.setItem('qieos_recent_search', JSON.stringify(recentSearches));
+        renderRecent();
+    };
+
+    window._searchSelect = function(q){
+        input.value = q;
+        doSearch(q);
+        input.focus();
+    };
+
+    function escapeHtml(t){
+        var d = document.createElement('div');
+        d.appendChild(document.createTextNode(t));
+        return d.innerHTML;
+    }
+
+    function doSearch(q){
+        if(!q || q.length < 1){
+            results.innerHTML = '';
+            countEl.textContent = '';
+            focusIndex = -1;
+            allItems = [];
+            renderRecent();
+            return;
+        }
+
+        results.innerHTML = '<div class="search-loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+        recentEl.innerHTML = '';
+        countEl.textContent = '';
+
+        var role = '<?php echo $user["role"]; ?>';
+        fetch('/qieos/pages/components/data/search-api.php?q='+encodeURIComponent(q)+'&role='+encodeURIComponent(role))
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            if(data.status !== 'success') return;
+            var r = data.results;
+            var html = '';
+            var total = 0;
+            allItems = [];
+            focusIndex = -1;
+
+            if(r.pages && r.pages.length){
+                html += '<div class="search-section-label"><i class="fas fa-compass"></i> Halaman</div>';
+                r.pages.forEach(function(p){
+                    var idx = allItems.length;
+                    allItems.push(p.url);
+                    html += '<div class="search-item" data-idx="'+idx+'" onclick="window._goSearchItem('+idx+')">';
+                    html += '<div class="search-item-icon"><i class="'+p.icon+'"></i></div>';
+                    html += '<div class="search-item-info"><div class="search-item-name">'+escapeHtml(p.name)+'</div><div class="search-item-meta">'+escapeHtml(p.category)+'</div></div>';
+                    html += '<span class="search-item-badge badge-page">Halaman</span>';
+                    html += '</div>';
+                    total++;
+                });
+            }
+
+            if(r.products && r.products.length){
+                html += '<div class="search-section-label"><i class="fas fa-cube"></i> Produk</div>';
+                r.products.forEach(function(p){
+                    var idx = allItems.length;
+                    allItems.push(p.url);
+                    html += '<div class="search-item" data-idx="'+idx+'" onclick="window._goSearchItem('+idx+')">';
+                    html += '<div class="search-item-icon product-icon"><i class="'+p.icon+'"></i></div>';
+                    html += '<div class="search-item-info"><div class="search-item-name">'+escapeHtml(p.name)+'</div><div class="search-item-meta">'+escapeHtml(p.code)+' &middot; '+escapeHtml(p.category)+' &middot; '+p.price+' &middot; Stok: '+p.stock+'</div></div>';
+                    html += '<span class="search-item-badge badge-product">Produk</span>';
+                    html += '</div>';
+                    total++;
+                });
+            }
+
+            if(r.tenants && r.tenants.length){
+                html += '<div class="search-section-label"><i class="fas fa-store"></i> Tenant</div>';
+                r.tenants.forEach(function(t){
+                    var idx = allItems.length;
+                    allItems.push(t.url);
+                    html += '<div class="search-item" data-idx="'+idx+'" onclick="window._goSearchItem('+idx+')">';
+                    html += '<div class="search-item-icon tenant-icon"><i class="'+t.icon+'"></i></div>';
+                    html += '<div class="search-item-info"><div class="search-item-name">'+escapeHtml(t.name)+'</div><div class="search-item-meta">'+escapeHtml(t.code)+' &middot; '+escapeHtml(t.type)+'</div></div>';
+                    html += '<span class="search-item-badge badge-tenant">Tenant</span>';
+                    html += '</div>';
+                    total++;
+                });
+            }
+
+            if(total === 0){
+                html = '<div class="search-empty"><i class="fas fa-search"></i><p>Tidak ditemukan hasil untuk "<strong>'+escapeHtml(q)+'</strong>"</p></div>';
+            }
+
+            results.innerHTML = html;
+            countEl.textContent = total + ' hasil ditemukan';
+        })
+        .catch(function(){
+            results.innerHTML = '<div class="search-empty"><i class="fas fa-exclamation-triangle"></i><p>Gagal memuat pencarian</p></div>';
+        });
+    }
+
+    window._goSearchItem = function(idx){
+        if(allItems[idx]) window.location.href = allItems[idx];
+    };
+
+    window.openSearch = function(){
+        overlay.classList.add('active');
+        input.value = '';
+        results.innerHTML = '';
+        countEl.textContent = '';
+        allItems = [];
+        focusIndex = -1;
+        renderRecent();
+        setTimeout(function(){ input.focus(); },100);
+    };
+
+    window.closeSearch = function(){
+        overlay.classList.remove('active');
+        input.value = '';
+        results.innerHTML = '';
+        countEl.textContent = '';
+        allItems = [];
+        focusIndex = -1;
+    };
+
+    overlay.addEventListener('click', function(e){
+        if(e.target === overlay) closeSearch();
+    });
+
+    input.addEventListener('input', function(){
+        clearTimeout(debounceTimer);
+        var v = this.value.trim();
+        debounceTimer = setTimeout(function(){ doSearch(v); }, 180);
+    });
+
+    input.addEventListener('keydown', function(e){
+        var items = results.querySelectorAll('.search-item');
+        if(!items.length) return;
+
+        if(e.key === 'ArrowDown'){
+            e.preventDefault();
+            focusIndex = Math.min(focusIndex + 1, items.length - 1);
+            updateFocus(items);
+        } else if(e.key === 'ArrowUp'){
+            e.preventDefault();
+            focusIndex = Math.max(focusIndex - 1, 0);
+            updateFocus(items);
+        } else if(e.key === 'Enter'){
+            e.preventDefault();
+            if(focusIndex >= 0 && allItems[focusIndex]){
+                var q = input.value.trim();
+                if(q) addRecent(q);
+                window.location.href = allItems[focusIndex];
+            }
+        }
+    });
+
+    function updateFocus(items){
+        items.forEach(function(it){ it.classList.remove('focused'); });
+        if(focusIndex >= 0 && items[focusIndex]){
+            items[focusIndex].classList.add('focused');
+            items[focusIndex].scrollIntoView({block:'nearest'});
+        }
+    }
+
+    document.addEventListener('keydown', function(e){
+        if((e.ctrlKey || e.metaKey) && e.key === 'k'){
+            e.preventDefault();
+            if(overlay.classList.contains('active')) closeSearch();
+            else openSearch();
+        }
+        if(e.key === 'Escape' && overlay.classList.contains('active')){
+            closeSearch();
+        }
+    });
+
+    renderRecent();
+})();
+</script>
 
         <!-- PROFILE -->
         <div class="dropdown">
