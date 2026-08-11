@@ -6,7 +6,7 @@ $q = isset($_GET['q']) ? trim($_GET['q']) : '';
 $role = isset($_GET['role']) ? trim($_GET['role']) : '';
 
 if ($q === '') {
-    echo json_encode(['status' => 'success', 'results' => ['pages' => [], 'products' => [], 'tenants' => []]]);
+    echo json_encode(['status' => 'success', 'results' => ['pages' => [], 'products' => [], 'orders' => [], 'tenants' => []]]);
     exit;
 }
 
@@ -46,33 +46,48 @@ foreach ($pages as $p) {
 }
 
 $matched_products = [];
-$prod_q = $conn->query("SELECT id, product_name, product_code, category, price, stock, photo FROM products WHERE deleted_at IS NULL AND (product_name LIKE '$like' OR product_code LIKE '$like' OR category LIKE '$like') ORDER BY product_name ASC LIMIT 8");
+$prod_q = $conn->query("SELECT id, name, code, category, sell_price, photo FROM products WHERE (name LIKE '$like' OR code LIKE '$like' OR category LIKE '$like') ORDER BY name ASC LIMIT 8");
 if ($prod_q) {
     while ($row = $prod_q->fetch_assoc()) {
         $matched_products[] = [
             'id' => $row['id'],
-            'name' => $row['product_name'],
-            'code' => $row['product_code'],
+            'name' => $row['name'],
+            'code' => $row['code'],
             'category' => $row['category'],
-            'price' => 'Rp ' . number_format($row['price'], 0, ',', '.'),
-            'stock' => (int)$row['stock'],
-            'photo' => $row['photo'] ? '/qieos/assets/img/uploads/' . $row['photo'] : '/qieos/assets/img/default-avatar.jpg',
-            'url' => '/qieos/pages/coming-soon.php',
+            'price' => 'Rp ' . number_format($row['sell_price'], 0, ',', '.'),
+            'url' => '/qieos/pages/sales/catalog.php',
             'icon' => 'fas fa-box',
             'category_label' => 'Produk'
         ];
     }
 }
 
+$matched_orders = [];
+$ord_q = $conn->query("SELECT id, code, tanggal, total, status_payment FROM orders WHERE id LIKE '$like' OR code LIKE '$like' ORDER BY id DESC LIMIT 10");
+if ($ord_q) {
+    while ($row = $ord_q->fetch_assoc()) {
+        $status_label = ucfirst($row['status_payment']);
+        $matched_orders[] = [
+            'id' => $row['id'],
+            'code' => $row['code'],
+            'date' => date('d M Y', strtotime($row['tanggal'])),
+            'total' => 'Rp ' . number_format($row['total'], 0, ',', '.'),
+            'status' => $status_label,
+            'url' => '/qieos/pages/receipt.php?id=' . $row['id'],
+            'icon' => 'fas fa-receipt',
+            'category_label' => 'Pesanan'
+        ];
+    }
+}
+
 $matched_tenants = [];
-$tnt_q = $conn->query("SELECT id, tenant_name, tenant_code, tenant_type FROM tenants WHERE deleted_at IS NULL AND (tenant_name LIKE '$like' OR tenant_code LIKE '$like' OR tenant_type LIKE '$like') ORDER BY tenant_name ASC LIMIT 5");
+$tnt_q = $conn->query("SELECT id, tenant_name, tenant_owner FROM tenants WHERE tenant_name LIKE '$like' OR tenant_owner LIKE '$like' ORDER BY tenant_name ASC LIMIT 5");
 if ($tnt_q) {
     while ($row = $tnt_q->fetch_assoc()) {
         $matched_tenants[] = [
             'id' => $row['id'],
             'name' => $row['tenant_name'],
-            'code' => $row['tenant_code'],
-            'type' => $row['tenant_type'],
+            'owner' => $row['tenant_owner'],
             'url' => '/qieos/pages/tenant/tenant-detail.php?id=' . $row['id'],
             'icon' => 'fas fa-store',
             'category_label' => 'Tenant'
@@ -85,6 +100,7 @@ echo json_encode([
     'results' => [
         'pages' => $matched_pages,
         'products' => $matched_products,
+        'orders' => $matched_orders,
         'tenants' => $matched_tenants
     ]
 ]);

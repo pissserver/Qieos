@@ -653,6 +653,12 @@
             font-size:14px;
         }
 
+        .search-trigger,
+        .whatsnew-nav-btn,
+        #whatsNewBtn{
+            display:none !important;
+        }
+
         .premium-omzet{
             min-width:auto;
             padding:8px 10px;
@@ -1067,12 +1073,11 @@
         .search-overlay{padding:12px}
         .search-container{border-radius:20px;max-height:85vh}
         .search-body{max-height:calc(85vh - 140px)}
-        .search-trigger{width:42px;height:42px;border-radius:12px}
-        .search-trigger .kbd-hint{display:none}
         .search-input{font-size:15px}
         .search-footer{flex-wrap:wrap;gap:6px}
     }
     @media(max-width:576px){
+        .search-trigger{display:none !important}
         .search-overlay{padding:0;align-items:flex-start}
         .search-container{border-radius:0;max-height:100vh;height:100vh;max-width:100%;display:flex;flex-direction:column}
         .search-body{flex:1;max-height:none}
@@ -1207,6 +1212,7 @@
     var focusIndex = -1;
     var allItems = [];
     var debounceTimer = null;
+    var isSearchOpen = false;
     var recentSearches = JSON.parse(localStorage.getItem('qieos_recent_search') || '[]');
 
     function renderRecent(){
@@ -1289,8 +1295,22 @@
                     allItems.push(p.url);
                     html += '<div class="search-item" data-idx="'+idx+'" onclick="window._goSearchItem('+idx+')">';
                     html += '<div class="search-item-icon product-icon"><i class="'+p.icon+'"></i></div>';
-                    html += '<div class="search-item-info"><div class="search-item-name">'+escapeHtml(p.name)+'</div><div class="search-item-meta">'+escapeHtml(p.code)+' &middot; '+escapeHtml(p.category)+' &middot; '+p.price+' &middot; Stok: '+p.stock+'</div></div>';
+                    html += '<div class="search-item-info"><div class="search-item-name">'+escapeHtml(p.name)+'</div><div class="search-item-meta">'+escapeHtml(p.code)+' &middot; '+escapeHtml(p.category)+' &middot; '+p.price+'</div></div>';
                     html += '<span class="search-item-badge badge-product">Produk</span>';
+                    html += '</div>';
+                    total++;
+                });
+            }
+
+            if(r.orders && r.orders.length){
+                html += '<div class="search-section-label"><i class="fas fa-receipt"></i> Pesanan</div>';
+                r.orders.forEach(function(o){
+                    var idx = allItems.length;
+                    allItems.push(o.url);
+                    html += '<div class="search-item" data-idx="'+idx+'" onclick="window._goSearchItem('+idx+')">';
+                    html += '<div class="search-item-icon" style="background:rgba(239,68,68,.1);color:#f87171"><i class="'+o.icon+'"></i></div>';
+                    html += '<div class="search-item-info"><div class="search-item-name">'+escapeHtml(o.code)+'</div><div class="search-item-meta">'+o.date+' &middot; '+o.total+' &middot; '+escapeHtml(o.status)+'</div></div>';
+                    html += '<span class="search-item-badge" style="background:rgba(239,68,68,.1);color:#f87171">Pesanan</span>';
                     html += '</div>';
                     total++;
                 });
@@ -1303,7 +1323,7 @@
                     allItems.push(t.url);
                     html += '<div class="search-item" data-idx="'+idx+'" onclick="window._goSearchItem('+idx+')">';
                     html += '<div class="search-item-icon tenant-icon"><i class="'+t.icon+'"></i></div>';
-                    html += '<div class="search-item-info"><div class="search-item-name">'+escapeHtml(t.name)+'</div><div class="search-item-meta">'+escapeHtml(t.code)+' &middot; '+escapeHtml(t.type)+'</div></div>';
+                    html += '<div class="search-item-info"><div class="search-item-name">'+escapeHtml(t.name)+'</div><div class="search-item-meta">'+escapeHtml(t.owner)+'</div></div>';
                     html += '<span class="search-item-badge badge-tenant">Tenant</span>';
                     html += '</div>';
                     total++;
@@ -1328,17 +1348,20 @@
 
     window.openSearch = function(){
         overlay.classList.add('active');
+        isSearchOpen = true;
         input.value = '';
         results.innerHTML = '';
         countEl.textContent = '';
         allItems = [];
         focusIndex = -1;
         renderRecent();
+        history.pushState({search:true}, '');
         setTimeout(function(){ input.focus(); },100);
     };
 
     window.closeSearch = function(){
         overlay.classList.remove('active');
+        isSearchOpen = false;
         input.value = '';
         results.innerHTML = '';
         countEl.textContent = '';
@@ -1347,7 +1370,10 @@
     };
 
     overlay.addEventListener('click', function(e){
-        if(e.target === overlay) closeSearch();
+        if(e.target === overlay){
+            closeSearch();
+            history.back();
+        }
     });
 
     input.addEventListener('input', function(){
@@ -1394,6 +1420,19 @@
         }
         if(e.key === 'Escape' && overlay.classList.contains('active')){
             closeSearch();
+            history.back();
+        }
+    });
+
+    window.addEventListener('popstate', function(e){
+        if(isSearchOpen){
+            overlay.classList.remove('active');
+            isSearchOpen = false;
+            input.value = '';
+            results.innerHTML = '';
+            countEl.textContent = '';
+            allItems = [];
+            focusIndex = -1;
         }
     });
 
@@ -1562,6 +1601,8 @@
 
     // Attach event to Whats New button
     document.getElementById("whatsNewBtn").addEventListener("click", showLatestUpdate);
+    var mobileWnb = document.getElementById("whatsNewBtnMobile");
+    if(mobileWnb) mobileWnb.addEventListener("click", showLatestUpdate);
 </script>
 
 <?php if ($user['role'] == 'developer' || $user['role'] == 'staff kasir') { ?>

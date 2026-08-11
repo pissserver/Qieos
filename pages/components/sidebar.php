@@ -487,17 +487,26 @@
 <div class="sidebar-tooltip" id="sidebarTooltip"></div>
 
 <!-- Mobile Top Navbar -->
-<nav class="navbar navbar-dark navbar-theme-primary px-3 d-lg-none">
+<nav class="navbar navbar-dark navbar-theme-primary px-3 d-lg-none" style="gap:8px;">
     <a class="navbar-brand d-flex align-items-center gap-2" href="/qieos/pages/dashboard.php">
         <img src="/qieos/assets/img/brand/qieos.png" alt="Qieos Logo" style="height: 40px; width: auto;" />
     </a>
-    <button
-        class="navbar-toggler"
-        type="button"
-        id="mobileSidebarToggle"
-        aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+    <div class="d-flex align-items-center gap-2 ms-auto">
+        <button class="mobile-nav-btn" onclick="openSearch()" aria-label="Search" style="width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;">
+            <i class="fas fa-search"></i>
+        </button>
+        <button class="mobile-nav-btn" id="whatsNewBtnMobile" aria-label="What's New" style="width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;position:relative;">
+            <i class="fas fa-bullhorn"></i>
+            <span style="position:absolute;top:-3px;right:-3px;background:#ef4444;color:#fff;font-size:7px;font-weight:700;padding:2px 4px;border-radius:4px;">NEW</span>
+        </button>
+        <button
+            class="navbar-toggler"
+            type="button"
+            id="mobileSidebarToggle"
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
 </nav>
 
 <!-- Main Collapsible Sidebar -->
