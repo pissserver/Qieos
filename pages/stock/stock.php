@@ -256,8 +256,8 @@ include '../../sessions/session.php';
                     paginate: {
                         first: "Awal",
                         last: "Akhir",
-                        next: "â€º",
-                        previous: "â€¹"
+                        next: "›",
+                        previous: "‹"
                     }
                 }
             });

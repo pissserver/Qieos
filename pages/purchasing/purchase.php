@@ -1,13 +1,17 @@
 <?php
 include '../../sessions/session.php';
 
-$qLast = mysqli_query($conn,"SELECT MAX(id) as last_id FROM purchases");
+$qLast = mysqli_query($conn,"SELECT form FROM purchases WHERE deleted_at IS NULL ORDER BY id DESC LIMIT 1");
 $dLast = mysqli_fetch_assoc($qLast);
 
-$lastId = $dLast['last_id'] ? (int)$dLast['last_id'] : 0;
+$lastNum = 0;
+if ($dLast && !empty($dLast['form'])) {
+    // Ambil angka dari format FORM-0000002 -> 2
+    $lastNum = (int) preg_replace('/[^0-9]/', '', $dLast['form']);
+}
 
 if(!isset($_SESSION['current_form_id'])){
-    $_SESSION['current_form_id'] = $lastId > 0 ? $lastId : 1;
+    $_SESSION['current_form_id'] = $lastNum > 0 ? $lastNum : 1;
 }
 
 $currentFormId = $_SESSION['current_form_id'];
