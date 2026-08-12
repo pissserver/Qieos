@@ -1,4 +1,4 @@
-<?php include '../../sessions/session.php'; ?>
+﻿<?php include '../../sessions/session.php'; ?>
 
 <!doctype html>
 <html>
@@ -6,164 +6,7 @@
         <title>Stok Penjualan - Qieos</title>
         <?php include '../../script/headscript.php'; ?>
 
-        <style>
-            /* HERO */
-            .sales-header{
-                background:linear-gradient(135deg,#334155,#0f172a);
-                color:#fff;
-                border-radius:24px;
-                padding:30px;
-                display:flex;
-                justify-content:space-between;
-                align-items:center;
-                margin-bottom:25px;
-                box-shadow:0 12px 30px rgba(15,23,42,.15);
-            }
-
-            .sales-header h3{
-                font-weight:800;
-                margin:5px 0;
-                color:#fff;
-            }
-
-            .sales-header small{
-                text-transform:uppercase;
-                letter-spacing:1px;
-                opacity:.8;
-            }
-
-            .sales-icon{
-                width:90px;
-                height:90px;
-                border-radius:22px;
-                background:rgba(255,255,255,.08);
-                display:flex;
-                align-items:center;
-                justify-content:center;
-                font-size:35px;
-            }
-
-            /* SECTION */
-
-            .section-card{
-                background:#fff;
-                border-radius:24px;
-                padding:24px;
-                box-shadow:0 8px 24px rgba(15,23,42,.05);
-            }
-
-            /* PANEL */
-            
-            .panel-header{
-                display:flex;
-                justify-content:space-between;
-                align-items:center;
-                padding:18px 22px;
-                border-radius:18px;
-            }
-
-            .panel-left{
-                display:flex;
-                align-items:center;
-                gap:16px;
-            }
-
-            .panel-icon{
-                width:58px;
-                height:58px;
-                border-radius:16px;
-                background:rgba(255,255,255,.12);
-                display:flex;
-                align-items:center;
-                justify-content:center;
-                font-size:22px;
-            }
-
-            .panel-title{
-                font-size:17px;
-                font-weight:700;
-            }
-
-            .panel-subtitle{
-                font-size:13px;
-                opacity:.85;
-            }
-
-            .panel-primary{
-                background:linear-gradient(
-                    135deg,
-                    #4f46e5,
-                    #4338ca
-                );
-                color:#fff;
-            }
-
-            .panel-success{
-                background:linear-gradient(
-                    135deg,
-                    #16a34a,
-                    #15803d
-                );
-                color:#fff;
-            }
-
-            .panel-dark{
-                background:linear-gradient(
-                    135deg,
-                    #334155,
-                    #0f172a
-                );
-                color:#fff;
-            }
-
-            /* FORM */
-
-            .form-label-modern{
-                font-weight:600;
-                margin-bottom:8px;
-                color:#334155;
-            }
-
-            .input-group-text{
-                border-radius:12px 0 0 12px;
-            }
-
-            .form-product,
-            .form-qty{
-                border-radius:12px;
-                min-height:45px;
-            }
-
-            .btn-request{
-                height:46px;
-                border-radius:12px;
-                font-weight:600;
-            }
-
-            /* Empty search */
-            .empty-search{
-                padding:50px 20px;
-                text-align:center;
-            }
-
-            .empty-img{
-                width:370px;
-                opacity:.9;
-                margin-bottom:18px;
-            }
-
-            .empty-title{
-                font-size:18px;
-                font-weight:700;
-                color:#0f172a;
-                margin-bottom:6px;
-            }
-
-            .empty-sub{
-                font-size:14px;
-                color:#64748b;
-            }
-        </style>
+        <link rel="stylesheet" href="/qieos/css/pages/sales-stock.css">
     </head>
 
     <body>
@@ -357,7 +200,7 @@
             const qtyInput = form.querySelector('input[name="qty"]');
             const stockInfo = document.getElementById("stock-info");
 
-            /* 🔥 SET MAX QTY */
+            /* ðŸ”¥ SET MAX QTY */
             productSelect.addEventListener("change", function () {
                 let stock = parseInt(
                     this.options[this.selectedIndex].dataset.stock || 0,
@@ -368,7 +211,7 @@
                 qtyInput.placeholder = stock != 0 ? "Max: " + stock : "Stok kosong";
             });
 
-            /* 🔥 VALIDASI */
+            /* ðŸ”¥ VALIDASI */
             form.addEventListener("submit", async function (e) {
                 e.preventDefault();
 
@@ -411,7 +254,7 @@
                 btn.innerText = "Request Stok";
             });
 
-            /* 🔥 LOAD TABLE */
+            /* ðŸ”¥ LOAD TABLE */
             function loadTable() {
                 fetch("sales-table.php")
                     .then((res) => res.text())
@@ -456,7 +299,7 @@
                     });
             }
 
-            /* 🔥 LOAD REQUEST */
+            /* ðŸ”¥ LOAD REQUEST */
             function loadHistory(){
                 fetch('../components/tables/history-request-table.php')
                 .then(res=>res.text())
@@ -465,12 +308,12 @@
 
                     setTimeout(() => {
 
-                        // 🔥 DESTROY DULU
+                        // ðŸ”¥ DESTROY DULU
                         if ($.fn.DataTable.isDataTable('#requestHistory')) {
                             $('#requestHistory').DataTable().destroy();
                         }
 
-                        // 🔥 INIT ULANG
+                        // ðŸ”¥ INIT ULANG
                         $('#requestHistory').DataTable({
                             pageLength: 5,
                             lengthMenu:[[5,10,25,50],[5,10,25,50]],
@@ -501,7 +344,7 @@
                                 `
                             },
 
-                            // 🔥 PENTING: IKUTIN SORT SQL
+                            // ðŸ”¥ PENTING: IKUTIN SORT SQL
                             order: [] 
                         });
 

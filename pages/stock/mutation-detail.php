@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 include '../../sessions/session.php';
 
 $id = $_GET['id'];
@@ -28,107 +28,7 @@ $bulan = [
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-<style>
-.stock-wrapper {
-    background: #f4f6f9;
-    padding: 20px;
-    border-radius: 12px;
-}
-
-.stock-card {
-    border: none;
-    border-radius: 20px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-    overflow: hidden;
-}
-
-.stock-header-detail {
-    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-    color: #fff;
-    padding: 16px 20px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.table-stock thead {
-    background: #f1f3f5;
-}
-
-.table-stock th {
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: .6px;
-    color: #555;
-}
-
-.table-stock td {
-    vertical-align: middle;
-    font-size: 14px;
-}
-
-.badge-qty {
-    background: #e7f1ff;
-    color: #1d4ed8;
-    padding: 6px 10px;
-    border-radius: 8px;
-    font-size: 13px;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.badge-remain {
-    background: #e9fbe7;
-    color: #9b1818;
-    padding: 6px 10px;
-    border-radius: 8px;
-    font-size: 13px;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.badge-price {
-    background: #fff3cd;
-    color: #856404;
-    padding: 6px 10px;
-    border-radius: 8px;
-    font-size: 13px;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.date-block {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.date-main {
-    font-weight: 600;
-    color: #111;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.form-badge {
-    font-size: 12px;
-    color: #64748b;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.form-badge i {
-    color: #0ea5e9;
-}
-
-</style>
+<link rel="stylesheet" href="/qieos/css/pages/mutation-detail.css">
 
 <div class="stock-wrapper">
 

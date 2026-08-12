@@ -1,4 +1,4 @@
-<?php include '../../sessions/session.php'; ?>
+﻿<?php include '../../sessions/session.php'; ?>
 
 <!doctype html>
 <html>
@@ -6,137 +6,7 @@
         <title>Transfer ke Penjualan - Qieos</title>
         <?php include '../../script/headscript.php'; ?>
 
-        <style>
-            /* HERO HEADER */
-            .transfer-header{
-                background:linear-gradient(135deg,#334155,#0f172a);
-                color:#fff;
-                border-radius:24px;
-                padding:30px;
-                display:flex;
-                justify-content:space-between;
-                align-items:center;
-                margin-bottom:25px;
-                box-shadow:0 12px 30px rgba(15,23,42,.15);
-            }
-
-            .transfer-header h3{
-                font-weight:800;
-                margin:5px 0;
-                color:#fff;
-            }
-
-            .transfer-header p{
-                opacity:.85;
-                margin:0;
-            }
-
-            .transfer-icon{
-                width:90px;
-                height:90px;
-                border-radius:22px;
-                background:rgba(255,255,255,.08);
-                display:flex;
-                justify-content:center;
-                align-items:center;
-                font-size:34px;
-            }
-
-            /* SECTION */
-
-            .section-card{
-                background:#fff;
-                border-radius:24px;
-                padding:24px;
-                box-shadow:0 8px 24px rgba(15,23,42,.05);
-            }
-
-            /* PANEL */
-
-            .panel-header{
-                display:flex;
-                justify-content:space-between;
-                align-items:center;
-                padding:18px 22px;
-                border-radius:18px;
-            }
-
-            .panel-left{
-                display:flex;
-                align-items:center;
-                gap:16px;
-            }
-
-            .panel-icon{
-                width:58px;
-                height:58px;
-                border-radius:16px;
-                display:flex;
-                align-items:center;
-                justify-content:center;
-                font-size:22px;
-            }
-
-            .panel-title{
-                font-size:17px;
-                font-weight:700;
-            }
-
-            .panel-subtitle{
-                font-size:13px;
-                opacity:.85;
-            }
-
-            /* REQUEST PANEL */
-
-            .panel-warning{
-                background:linear-gradient(
-                    135deg,
-                    #f59e0b,
-                    #d97706
-                );
-                color:#fff;
-            }
-
-            .panel-warning .panel-icon{
-                background:rgba(255,255,255,.15);
-            }
-
-            /* HISTORY PANEL */
-
-            .panel-dark{
-                background:linear-gradient(
-                    135deg,
-                    #334155,
-                    #0f172a
-                );
-                color:#fff;
-            }
-
-            .panel-dark .panel-icon{
-                background:rgba(255,255,255,.12);
-            }
-
-            /* EMPTY SEARCH */
-
-            .empty-img{
-                width:370px;
-                opacity:.9;
-                margin-bottom:18px;
-            }
-
-            .empty-title{
-                font-size:18px;
-                font-weight:700;
-                color:#0f172a;
-                margin-bottom:6px;
-            }
-
-            .empty-sub{
-                font-size:14px;
-                color:#64748b;
-            }
-        </style>
+        <link rel="stylesheet" href="/qieos/css/pages/transfer.css">
     </head>
 
     <body>
@@ -233,12 +103,12 @@
 
                     setTimeout(() => {
 
-                        // 🔥 DESTROY DULU
+                        // ðŸ”¥ DESTROY DULU
                         if ($.fn.DataTable.isDataTable('#requestHistory')) {
                             $('#requestHistory').DataTable().destroy();
                         }
 
-                        // 🔥 INIT ULANG
+                        // ðŸ”¥ INIT ULANG
                         $('#requestHistory').DataTable({
                             pageLength: 5,
                             lengthMenu:[[5,10,25,50],[5,10,25,50]],
@@ -269,7 +139,7 @@
                                 `
                             },
 
-                            // 🔥 PENTING: IKUTIN SORT SQL
+                            // ðŸ”¥ PENTING: IKUTIN SORT SQL
                             order: [] 
                         });
 
@@ -287,7 +157,7 @@
             loadHistory();
 
 
-            // 🔥 APPROVE
+            // ðŸ”¥ APPROVE
             function approve(id){
                 Swal.fire({
                     title: 'Approve Request?',
@@ -315,7 +185,7 @@
                 });
             }
 
-            // 🔥 REJECT
+            // ðŸ”¥ REJECT
             function reject(id){
                 Swal.fire({
                     title: 'Tolak Request?',
