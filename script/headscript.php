@@ -1,7 +1,7 @@
 <!-- Meta -->
 <meta
     name="viewport"
-    content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, shrink-to-fit=no" />
 <meta name="title" content="Volt Free Bootstrap Dashboard - Transactions" />
 <meta name="author" content="Themesberg" />
 <meta
@@ -33,8 +33,7 @@
     sizes="120x120"
     href="/qieos/assets/img/brand/qieos2.png" />
 
-<meta name="msapplication-TileColor" content="#ffffff" />
-<meta name="theme-color" content="#ffffff" />
+<meta name="msapplication-TileColor" content="#4f46e5" />
 
 <!-- Sweet Alert -->
 <link
@@ -71,12 +70,56 @@
 
 <!-- PWA -->
 <link rel="manifest" href="/qieos/manifest.json">
-<link rel="apple-touch-icon" href="/qieos/assets/img/brand/icon-192.png">
 <meta name="theme-color" content="#4f46e5">
+
+<!-- PWA: iOS / iPadOS standalone support -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Qieos">
+<link rel="apple-touch-icon" href="/qieos/assets/img/brand/icon-192.png">
+<link rel="apple-touch-icon" sizes="192x192" href="/qieos/assets/img/brand/icon-192.png">
+<link rel="apple-touch-icon" sizes="512x512" href="/qieos/assets/img/brand/icon-512.png">
+
+<!-- PWA: fullscreen/standalone display + safe-area handling -->
+<style>
+    :root{
+        --safe-top:env(safe-area-inset-top, 0px);
+        --safe-bottom:env(safe-area-inset-bottom, 0px);
+        --safe-left:env(safe-area-inset-left, 0px);
+        --safe-right:env(safe-area-inset-right, 0px);
+    }
+
+    /* Saat berjalan sebagai aplikasi terinstall (standalone/fullscreen) */
+    @media (display-mode: standalone), (display-mode: fullscreen), (display-mode: window-controls-overlay){
+        html, body{
+            overscroll-behavior-y:none;
+        }
+
+        body{
+            padding-top:var(--safe-top);
+            padding-bottom:var(--safe-bottom);
+            padding-left:var(--safe-left);
+            padding-right:var(--safe-right);
+            -webkit-user-select:none;
+            user-select:none;
+        }
+
+        /* Izinkan seleksi teks di area input/konten */
+        input, textarea, select, [contenteditable="true"], .allow-select{
+            -webkit-user-select:text;
+            user-select:text;
+        }
+    }
+</style>
 
 <script>
     if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("/qieos/sw.js");
+        window.addEventListener("load", function () {
+            navigator.serviceWorker.register("/qieos/sw.js").catch(function (err) {
+                console.warn("SW registration failed:", err);
+            });
+        });
     }
 </script>
 

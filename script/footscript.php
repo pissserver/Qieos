@@ -184,3 +184,80 @@
     });
 })();
 </script>
+
+<!-- PWA Install Prompt -->
+<style>
+    #pwaInstallBtn{
+        position:fixed;
+        right:calc(18px + env(safe-area-inset-right, 0px));
+        bottom:calc(18px + env(safe-area-inset-bottom, 0px));
+        z-index:99990;
+        display:none;
+        align-items:center;
+        gap:8px;
+        padding:12px 18px;
+        border:none;
+        border-radius:999px;
+        color:#fff;
+        font-weight:700;
+        font-size:14px;
+        cursor:pointer;
+        background:linear-gradient(90deg,#4f46e5,#7c3aed);
+        box-shadow:0 12px 30px rgba(79,70,229,.45);
+        transition:.25s;
+    }
+    #pwaInstallBtn:hover{
+        transform:translateY(-2px);
+        box-shadow:0 16px 36px rgba(79,70,229,.55);
+    }
+    #pwaInstallBtn i{font-size:15px;}
+</style>
+
+<button id="pwaInstallBtn" type="button">
+    <i class="fas fa-download"></i>
+    Install Aplikasi
+</button>
+
+<script>
+(function () {
+    var deferredPrompt = null;
+    var installBtn = document.getElementById('pwaInstallBtn');
+    if (!installBtn) return;
+
+    // Deteksi apakah sudah berjalan sebagai aplikasi terinstall
+    function isStandalone() {
+        return window.matchMedia('(display-mode: standalone)').matches ||
+               window.matchMedia('(display-mode: fullscreen)').matches ||
+               window.navigator.standalone === true;
+    }
+
+    // Tangkap event install (Chrome/Edge/Android)
+    window.addEventListener('beforeinstallprompt', function (e) {
+        e.preventDefault();
+        deferredPrompt = e;
+        if (!isStandalone()) {
+            installBtn.style.display = 'inline-flex';
+        }
+    });
+
+    installBtn.addEventListener('click', function () {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(function () {
+            deferredPrompt = null;
+            installBtn.style.display = 'none';
+        });
+    });
+
+    // Sembunyikan tombol setelah terinstall
+    window.addEventListener('appinstalled', function () {
+        installBtn.style.display = 'none';
+        deferredPrompt = null;
+    });
+
+    // Kalau sudah standalone, pastikan tombol tidak muncul
+    if (isStandalone()) {
+        installBtn.style.display = 'none';
+    }
+})();
+</script>
