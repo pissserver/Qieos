@@ -509,3 +509,149 @@
             align-items:center;
             white-space:nowrap;
         }
+
+        /* LAYOUT FIX + RESPONSIVE */
+        .panel-header{
+            gap:16px;
+            flex-wrap:wrap;
+        }
+
+        .panel-left{
+            min-width:0;
+            flex:1 1 auto;
+        }
+
+        .panel-left > div{
+            min-width:0;
+        }
+
+        #stockTable{
+            width:100% !important;
+        }
+
+        .table-responsive-wrap,
+        .dataTables_wrapper{
+            width:100%;
+            overflow-x:visible;
+            -webkit-overflow-scrolling:touch;
+        }
+
+        @media (max-width:991.98px){
+            .table-responsive-wrap,
+            .dataTables_wrapper{
+                overflow-x:auto;
+            }
+        }
+
+        @media (max-width:991.98px){
+            .section-card{
+                padding:18px;
+                border-radius:18px;
+            }
+
+            .panel-header{
+                flex-direction:column;
+                align-items:flex-start;
+                gap:14px;
+                padding:16px 18px;
+            }
+
+            .panel-left{
+                width:100%;
+            }
+
+            /* search + button add */
+            .table-action-wrapper{
+                flex-wrap:wrap;
+                justify-content:flex-start;
+                gap:10px;
+            }
+
+            #editRegistrationModal .modal-dialog,
+            #addRegistrationModal .modal-dialog{
+                margin:12px;
+            }
+
+            #editRegistrationModal .px-5,
+            #addRegistrationModal .px-5{
+                padding-left:1.25rem !important;
+                padding-right:1.25rem !important;
+            }
+        }
+
+        @media (max-width:575.98px){
+            .section-card{
+                padding:14px;
+            }
+
+            .panel-icon{
+                width:48px;
+                height:48px;
+                font-size:18px;
+                border-radius:14px;
+            }
+
+            .panel-title{
+                font-size:15px;
+            }
+
+            .panel-subtitle{
+                font-size:12px;
+            }
+
+            .mt-4.px-4{
+                padding-left:0 !important;
+                padding-right:0 !important;
+            }
+
+            #stockTable{
+                border-spacing:0 10px;
+            }
+
+            #stockTable thead th{
+                font-size:11px;
+                white-space:nowrap;
+            }
+
+            #stockTable tbody td{
+                padding:14px 12px;
+            }
+
+            .avatar,
+            .avatar-photo{
+                width:42px;
+                height:42px;
+                border-radius:12px;
+            }
+
+            .product-wrap{
+                gap:10px;
+            }
+
+            .stock-badge,
+            .unit-badge,
+            .status-badge{
+                padding:6px 10px;
+                font-size:12px;
+                white-space:nowrap;
+            }
+
+            .action-btn{
+                width:34px;
+                height:34px;
+                margin:2px;
+            }
+
+            .table-action-wrapper #stockTable_filter input{
+                width:100% !important;
+            }
+
+            #btnAddRegistration{
+                width:100%;
+                justify-content:center;
+            }
+
+            .panel-header.my-3.mx-3{
+                margin:12px !important;
+            }
+        }

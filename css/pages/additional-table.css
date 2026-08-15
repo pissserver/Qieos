@@ -3,6 +3,7 @@
     #stockTable{
         border-collapse:separate;
         border-spacing:0 14px;
+        width:100% !important;
     }
 
     #stockTable thead th{
@@ -105,4 +106,44 @@
 
     .btn-delete{
         background:#ef4444;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width:575.98px){
+        #stockTable{
+            border-spacing:0 10px;
+        }
+
+        #stockTable thead th{
+            font-size:11px;
+            white-space:nowrap;
+        }
+
+        #stockTable tbody td{
+            padding:14px 12px;
+        }
+
+        .product-icon{
+            width:40px;
+            height:40px;
+            font-size:15px;
+            border-radius:12px;
+        }
+
+        .stock-product{
+            gap:10px;
+        }
+
+        .category-badge,
+        .stock-badge{
+            padding:6px 10px;
+            font-size:12px;
+            white-space:nowrap;
+        }
+
+        .action-btn{
+            width:34px;
+            height:34px;
+            margin:2px;
+        }
     }

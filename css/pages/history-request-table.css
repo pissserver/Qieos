@@ -1,6 +1,7 @@
     #requestHistory{
         border-collapse:separate;
         border-spacing:0 14px;
+        width:100% !important;
     }
 
     #requestHistory thead th{
@@ -152,4 +153,40 @@
         padding:0 30px 0 12px !important;
         border-radius:8px !important;
         border:1px solid #cbd5e1 !important;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width:575.98px){
+        #requestHistory{
+            border-spacing:0 10px;
+        }
+
+        .history-table thead th,
+        #requestHistory thead th{
+            font-size:11px;
+            white-space:nowrap;
+        }
+
+        .history-row td{
+            padding:14px 12px;
+        }
+
+        .product-icon{
+            width:40px;
+            height:40px;
+            font-size:15px;
+            border-radius:12px;
+        }
+
+        .product-wrap{
+            gap:10px;
+        }
+
+        .qty-badge,
+        .date-badge,
+        .status-badge{
+            padding:6px 10px;
+            font-size:12px;
+            white-space:nowrap;
+        }
     }

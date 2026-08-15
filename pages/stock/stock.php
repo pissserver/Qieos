@@ -51,7 +51,7 @@ include '../../sessions/session.php';
 
         <div class="mt-4 px-4">
             <!-- TABLE -->
-            <div>
+            <div class="table-responsive-wrap">
                 <table class="table table-hover align-middle" id="stockTable">
                     <thead>
                         <tr style="font-size:13px;color:#64748b;">

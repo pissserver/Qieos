@@ -1,6 +1,7 @@
     #purchaseTable{
         border-collapse:separate;
         border-spacing:0 14px;
+        width:100% !important;
     }
 
     #purchaseTable thead th{
@@ -118,4 +119,45 @@
     .action-btn:hover{
         transform:translateY(-2px);
         opacity:.92;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width:575.98px){
+        #purchaseTable{
+            border-spacing:0 10px;
+        }
+
+        #purchaseTable thead th{
+            font-size:11px;
+            white-space:nowrap;
+        }
+
+        #purchaseTable tbody td{
+            padding:14px 12px;
+        }
+
+        .purchase-icon{
+            width:40px;
+            height:40px;
+            font-size:15px;
+            border-radius:12px;
+        }
+
+        .purchase-box{
+            gap:10px;
+        }
+
+        .date-badge,
+        .note-badge,
+        .created-badge{
+            padding:6px 10px;
+            font-size:12px;
+            white-space:nowrap;
+        }
+
+        .action-btn{
+            width:34px;
+            height:34px;
+            margin:2px;
+        }
     }

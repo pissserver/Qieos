@@ -83,7 +83,7 @@ include '../../sessions/session.php';
 
     <!-- Modal Detail Order -->
     <div class="modal fade" id="orderDetailModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header" style="background: linear-gradient(45deg,#6366f1,#8b5cf6); color:white;">
                     <h5 class="mb-0 text-white">
