@@ -444,21 +444,25 @@ $hasPrevious = $currentFormId > 1;
             year: 'numeric'
         });
 
-        fetch('list-action.php?action=destroy', {
-            method: 'POST',
-            body: new URLSearchParams({ id: id })
-        })
-        .then(res=>res.json())
-        .then(res=>{
+        QConfirm('Hapus Daftar Belanja?', 'Daftar belanja tanggal ' + formattedDate + ' akan dihapus permanen.').then(function(ok){
+            if(ok){
+                fetch('list-action.php?action=destroy', {
+                    method: 'POST',
+                    body: new URLSearchParams({ id: id })
+                })
+                .then(res=>res.json())
+                .then(res=>{
 
-            if(res.status==='success'){
+                    if(res.status==='success'){
 
-                QToast('Terhapus', 'Data berhasil dihapus', 'success');
+                        QToast('Terhapus', 'Data berhasil dihapus', 'success');
 
-                loadPurchaseTable();
+                        loadPurchaseTable();
 
+                    }
+
+                });
             }
-
         });
 
     });

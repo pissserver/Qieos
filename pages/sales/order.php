@@ -162,32 +162,40 @@ include '../../sessions/session.php';
     <!-- Action -->
     <script>
         function payOrder(id, name) {
-            $.post('order-pay.php', {
-                order_id: id
-            }, function(response) {
-                // pastikan response sudah di-parse JSON
-                if (response.status === 'success') {
-                    QToast('Berhasil!', 'Pesanan telah terbayar.', 'success');
-                    loadPage(1); // reload halaman pertama
-                    updateOmzet(); // update omzet di navbar
-                } else {
-                    QToast('Gagal!', response.message || 'Terjadi kesalahan saat memproses pembayaran.', 'error');
+            QConfirm('Konfirmasi Pembayaran?', 'Pesanan ' + name + ' akan ditandai sebagai lunas.', {confirmText:'Bayar', icon:'fa-money-bill-wave', confirmClass:'q-confirm-btn-success'}).then(function(ok){
+                if(ok){
+                    $.post('order-pay.php', {
+                        order_id: id
+                    }, function(response) {
+                        // pastikan response sudah di-parse JSON
+                        if (response.status === 'success') {
+                            QToast('Berhasil!', 'Pesanan telah terbayar.', 'success');
+                            loadPage(1); // reload halaman pertama
+                            updateOmzet(); // update omzet di navbar
+                        } else {
+                            QToast('Gagal!', response.message || 'Terjadi kesalahan saat memproses pembayaran.', 'error');
+                        }
+                    }, 'json');
                 }
-            }, 'json');
+            });
         }
 
         function cancelOrder(id, name) {
-            $.post('order-cancel.php', {
-                order_id: id
-            }, function(response) {
-                if (response.status === 'success') {
-                    QToast('Berhasil!', 'Pesanan telah dibatalkan.', 'success');
-                    loadPage(1); // reload halaman pertama
-                    updateOmzet(); // update omzet di navbar
-                } else {
-                    QToast('Gagal!', response.message || 'Terjadi kesalahan saat membatalkan pesanan.', 'error');
+            QConfirm('Batalkan Pesanan?', 'Pesanan ' + name + ' akan dibatalkan. Stok akan dikembalikan.').then(function(ok){
+                if(ok){
+                    $.post('order-cancel.php', {
+                        order_id: id
+                    }, function(response) {
+                        if (response.status === 'success') {
+                            QToast('Berhasil!', 'Pesanan telah dibatalkan.', 'success');
+                            loadPage(1); // reload halaman pertama
+                            updateOmzet(); // update omzet di navbar
+                        } else {
+                            QToast('Gagal!', response.message || 'Terjadi kesalahan saat membatalkan pesanan.', 'error');
+                        }
+                    }, 'json');
                 }
-            }, 'json');
+            });
         }
 
         let orderDetailModalInstance = null;

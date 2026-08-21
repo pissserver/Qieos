@@ -157,38 +157,46 @@
             loadHistory();
 
 
-            // ðŸ”¥ APPROVE
+            // APPROVE
             function approve(id){
 
-                fetch('transfer-action.php?action=approve',{
-                    method:'POST',
-                    headers:{'Content-Type':'application/x-www-form-urlencoded'},
-                    body:'id='+id
-                })
-                .then(res=>res.json())
-                .then(res=>{
-                    QToast(res.status,res.msg,res.status);
-                    loadTable();
-                    loadHistory();
+                QConfirm('Setujui Transfer?', 'Stok akan dipindahkan dari gudang ke penjualan.').then(function(ok){
+                    if(ok){
+                        fetch('transfer-action.php?action=approve',{
+                            method:'POST',
+                            headers:{'Content-Type':'application/x-www-form-urlencoded'},
+                            body:'id='+id
+                        })
+                        .then(res=>res.json())
+                        .then(res=>{
+                            QToast(res.status,res.msg,res.status);
+                            loadTable();
+                            loadHistory();
+                        });
+                    }
                 });
 
             }
 
-            // ðŸ”¥ REJECT
+            // REJECT
             function reject(id){
 
-                fetch('transfer-action.php?action=reject',{
-                    method:'POST',
-                    headers:{'Content-Type':'application/x-www-form-urlencoded'},
-                    body:'id='+id
-                })
-                .then(res=>res.json())
-                .then(res=>{
-                    console.log(res);
-                    console.log(id);
-                    QToast(res.status,res.msg,res.status);
-                    loadTable();
-                    loadHistory();
+                QConfirm('Tolak Transfer?', 'Permintaan transfer ini akan ditolak.').then(function(ok){
+                    if(ok){
+                        fetch('transfer-action.php?action=reject',{
+                            method:'POST',
+                            headers:{'Content-Type':'application/x-www-form-urlencoded'},
+                            body:'id='+id
+                        })
+                        .then(res=>res.json())
+                        .then(res=>{
+                            console.log(res);
+                            console.log(id);
+                            QToast(res.status,res.msg,res.status);
+                            loadTable();
+                            loadHistory();
+                        });
+                    }
                 });
 
             }

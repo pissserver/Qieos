@@ -65,115 +65,8 @@ include '../../sessions/session.php';
                     </div>
                     
                     <!-- TABLE -->
-                    <div class="table-responsive-wrap">
-                        <table class="table table-hover align-middle" id="stockTable">
-                            <thead>
-                                <tr style="font-size:13px;color:#64748b;">
-                                    <th>Nama</th>
-                                    <th class="text-center">Role</th>
-                                    <th class="text-center">Terbuat</th>
-                                    <th class="text-center">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-
-                            <?php
-                            $q = mysqli_query($conn,"
-                            SELECT
-                                *
-                            FROM users
-                            WHERE role IN ('administrator', 'developer') 
-                            ORDER BY fullname ASC
-                            ");
-                            while($d=mysqli_fetch_assoc($q)): ?>
-
-                            <tr class="stock-row">
-
-                                <td>
-                                    <div class="product-wrap">
-
-                                        <?php if(!empty($d['photo'])): ?>
-                                            <img class="avatar-photo"
-                                                src="/qieos/assets/img/uploads/<?= htmlspecialchars($d['photo']) ?>"
-                                                alt="<?= htmlspecialchars($d['fullname']) ?>">
-                                        <?php else: ?>
-                                            <div class="avatar">
-                                                <i class="fas fa-user"></i>
-                                            </div>
-                                        <?php endif; ?>
-
-                                        <div>
-                                            <div class="fw-bold">
-                                                <?= htmlspecialchars($d['fullname']) ?>
-                                            </div>
-
-                                            <small class="text-muted text-capitalize">
-                                                <?= htmlspecialchars($d['username']) ?>
-                                            </small>
-                                        </div>
-
-                                    </div>
-                                </td>
-
-                                <td class="text-center">
-
-                                    <span class="stock-badge <?php echo $d['role'] === 'developer' ? 'dev-badge' : 'unit-badge'; ?> text-capitalize">
-                                        <?php if($d['role'] === 'developer'): ?>
-                                            <i class="fas fa-crown me-1"></i>
-                                        <?php else: ?>
-                                            <i class="fas fa-user-shield me-1"></i>
-                                        <?php endif; ?>
-                                        <?= htmlspecialchars($d['role']) ?>
-                                    </span>
-
-                                </td>
-
-                                <td class="text-center">
-
-                                    <span class="unit-badge">
-                                        <i class="fas fa-cubes me-1"></i>
-                                        <?php
-                                        $bulan = [
-                                            1 => 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-                                            'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
-                                        ];
-
-                                        $tgl = strtotime($d['created_at']);
-                                        echo date('d', $tgl) . ' ' . $bulan[(int)date('n', $tgl)] . ' ' . date('Y', $tgl);
-                                        ?>
-                                    </span>
-
-                                </td>
-
-                                <td class="text-center">
-                                    <?php if($d['role'] === 'developer'): ?>
-                                        <span class="text-muted" style="font-size:13px;">
-                                            <i class="fas fa-lock me-1"></i>
-                                            Tidak dapat diubah
-                                        </span>
-                                    <?php elseif($d['username'] === $_SESSION['username']): ?>
-                                        <span class="text-muted" style="font-size:13px;">
-                                            <i class="fas fa-lock me-1"></i>
-                                            Anda
-                                        </span>
-                                    <?php else: ?>
-                                        <button class="action-btn btn-edit editAdministratorBtn" data-id="<?= $d['id'] ?>">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-
-                                        <button class="action-btn btn-delete deleteAdministratorBtn"
-                                            data-id="<?= $d['id'] ?>"
-                                            data-fullname="<?= $d['fullname'] ?>">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-
-                            <?php endwhile; ?>
-
-                            </tbody>
-                        </table>
+                    <div class="table-responsive-wrap" id="adminTableContainer">
+                        <!-- Loaded via AJAX -->
                     </div>
                 </div>
             </div>
@@ -243,46 +136,65 @@ include '../../sessions/session.php';
 <?php include '../../script/footscript.php'; ?>
 
 <script>
-    $(document).ready(function(){
-        $('#stockTable').DataTable({
-            pageLength: 5,
-            lengthMenu:[[5,10,25,50],[5,10,25,50]],
-            responsive: true,
-            autoWidth: false,
-            language:{
-                search:"",
-                searchPlaceholder:"Cari administrator...",
+    function loadAdminTable(){
+        $('#btnContainer').hide().insertBefore('#adminTableContainer');
+        fetch('administrator-table.php')
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById('adminTableContainer').innerHTML = html;
 
-                zeroRecords: `
-                    <div class="empty-search">
-                        <img src="../../assets/img/illustrations/empty-data.png" class="empty-img">
-                        <div class="empty-title">Administrator tidak ditemukan</div>
-                        <div class="empty-sub">
-                            Coba gunakan kata kunci lain
-                        </div>
-                    </div>
-                `,
-
-                emptyTable: `
-                    <div class="empty-search">
-                        <img src="../../assets/img/illustrations/empty-data.png" class="empty-img">
-                        <div class="empty-title">Belum ada data administrator</div>
-                        <div class="empty-sub">
-                            Silakan tambahkan administrator terlebih dahulu
-                        </div>
-                    </div>
-                `
+            // Destroy old DataTable first
+            if($.fn.DataTable.isDataTable('#stockTable')){
+                $('#stockTable').DataTable().destroy();
             }
+
+            // Reinit DataTable
+            setTimeout(()=>{
+            $('#stockTable').DataTable({
+                pageLength: 5,
+                lengthMenu:[[5,10,25,50],[5,10,25,50]],
+                responsive: true,
+                autoWidth: false,
+                language:{
+                    search:"",
+                    searchPlaceholder:"Cari administrator...",
+
+                    zeroRecords: `
+                        <div class="empty-search">
+                            <img src="../../assets/img/illustrations/empty-data.png" class="empty-img">
+                            <div class="empty-title">Administrator tidak ditemukan</div>
+                            <div class="empty-sub">
+                                Coba gunakan kata kunci lain
+                            </div>
+                        </div>
+                    `,
+
+                    emptyTable: `
+                        <div class="empty-search">
+                            <img src="../../assets/img/illustrations/empty-data.png" class="empty-img">
+                            <div class="empty-title">Belum ada data administrator</div>
+                            <div class="empty-sub">
+                                Silakan tambahkan administrator terlebih dahulu
+                            </div>
+                        </div>
+                    `
+                }
+            });
+
+            // Buat wrapper untuk search + button
+            $('#stockTable_filter')
+                .wrap('<div class="table-action-wrapper"></div>');
+
+            // Pindahkan tombol ke wrapper
+            $('#btnContainer')
+                .show()
+                .appendTo('.table-action-wrapper');
+            },100);
         });
+    }
 
-        // Buat wrapper untuk search + button
-        $('#stockTable_filter')
-            .wrap('<div class="table-action-wrapper"></div>');
-
-        // Pindahkan tombol ke wrapper
-        $('#btnContainer')
-            .show()
-            .appendTo('.table-action-wrapper');
+    $(document).ready(function(){
+        loadAdminTable();
     });
 </script>
 
@@ -326,9 +238,7 @@ include '../../sessions/session.php';
 
                 $('#addAdministratorModal').modal('hide');
 
-                setTimeout(() => {
-                    location.reload();
-                }, 1000);
+                loadAdminTable();
 
             }else{
 
@@ -386,9 +296,7 @@ include '../../sessions/session.php';
 
                 $('#editAdministratorModal').modal('hide');
 
-                setTimeout(() => {
-                    location.reload();
-                }, 1000);
+                loadAdminTable();
 
             }else{
 
@@ -411,20 +319,22 @@ include '../../sessions/session.php';
         let id = $(this).data('id');
         let fullname = $(this).data('fullname');
 
-        fetch('administrator-action.php?action=destroy', {
-            method: 'POST',
-            body: new URLSearchParams({ id: id })
-        })
-        .then(res=>res.json())
-        .then(res=>{
+        QConfirm('Hapus Administrator?', 'Data ' + fullname + ' akan dihapus secara permanen.').then(function(ok){
+            if(ok){
+                fetch('administrator-action.php?action=destroy', {
+                    method: 'POST',
+                    body: new URLSearchParams({ id: id })
+                })
+                .then(res=>res.json())
+                .then(res=>{
 
-            if(res.status==='success'){
+                    if(res.status==='success'){
 
-                QToast('Terhapus', 'Data berhasil dihapus', 'success');
+                        QToast('Terhapus', 'Data berhasil dihapus', 'success');
 
-                setTimeout(() => {
-                    location.reload();
-                }, 1000);
+                        loadAdminTable();
+                    }
+                });
             }
         });
     });

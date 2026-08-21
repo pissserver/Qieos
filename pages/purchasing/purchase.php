@@ -358,6 +358,18 @@ $hasPrevious = $currentFormId > 1;
         });
     });
 
+    function padFormNumber(n){
+        return 'FORM-' + String(n).padStart(7,'0');
+    }
+
+    function updateFormNumber(res){
+        if(res.form_number){
+            document.querySelector('input[name="form_number"]').value = res.form_number;
+        }
+        loadTable();
+        loadPurchaseTable();
+    }
+
     // Next form button
     document.getElementById('nextFormBtn')?.addEventListener('click',function(){
 
@@ -365,7 +377,8 @@ $hasPrevious = $currentFormId > 1;
         .then(res=>res.json())
         .then(res=>{
             if(res.status==='success'){
-                location.reload();
+                updateFormNumber(res);
+                QToast('Berhasil', 'Beralih ke ' + res.form_number, 'success');
             }
         });
 
@@ -378,7 +391,8 @@ $hasPrevious = $currentFormId > 1;
         .then(res=>res.json())
         .then(res=>{
             if(res.status==='success'){
-                location.reload();
+                updateFormNumber(res);
+                QToast('Berhasil', 'Beralih ke ' + res.form_number, 'success');
             }
         });
 
@@ -627,21 +641,23 @@ $hasPrevious = $currentFormId > 1;
         let qty = $(this).data('qty');
         let unit = $(this).data('unit');
 
-        fetch('purchase-action.php?action=destroy&id='+id)
-        .then(res=>res.json())
-        .then(res=>{
+        QConfirm('Hapus Data Pembelian?', 'Data pembelian form ' + form + ' akan dihapus permanen.').then(function(ok){
+            if(ok){
+                fetch('purchase-action.php?action=destroy&id='+id)
+                .then(res=>res.json())
+                .then(res=>{
 
-            if(res.status==='success'){
+                    if(res.status==='success'){
 
-                QToast('Terhapus', 'Data berhasil dihapus', 'success');
+                        QToast('Terhapus', 'Data berhasil dihapus', 'success');
 
-                loadPurchaseTable();
-                loadTable();
+                        loadPurchaseTable();
+                        loadTable();
 
+                    }
+
+                });
             }
-
-        });
-
         });
 
     });

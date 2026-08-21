@@ -71,8 +71,12 @@
 
         $_SESSION['current_form_id']++;
 
+        $formNumber = 'FORM-' . str_pad($_SESSION['current_form_id'], 7, '0', STR_PAD_LEFT);
+
         echo json_encode([
-            'status'=>'success'
+            'status'=>'success',
+            'form_number'=>$formNumber,
+            'form_id'=>$_SESSION['current_form_id']
         ]);
         exit;
     }
@@ -84,8 +88,12 @@
             $_SESSION['current_form_id']--;
         }
 
+        $formNumber = 'FORM-' . str_pad($_SESSION['current_form_id'], 7, '0', STR_PAD_LEFT);
+
         echo json_encode([
-            'status'=>'success'
+            'status'=>'success',
+            'form_number'=>$formNumber,
+            'form_id'=>$_SESSION['current_form_id']
         ]);
         exit;
     }

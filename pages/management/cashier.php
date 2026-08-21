@@ -65,99 +65,8 @@ include '../../sessions/session.php';
                     </div>
                     
                     <!-- TABLE -->
-                    <div class="table-responsive-wrap">
-                        <table class="table table-hover align-middle" id="stockTable">
-                            <thead>
-                                <tr style="font-size:13px;color:#64748b;">
-                                    <th>Nama</th>
-                                    <th class="text-center">Role</th>
-                                    <th class="text-center">Terbuat</th>
-                                    <th class="text-center">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-
-                            <?php
-                            $q = mysqli_query($conn,"
-                            SELECT
-                                *
-                            FROM users
-                            WHERE role = 'staff kasir'
-                            ORDER BY fullname ASC
-                            ");
-                            while($d=mysqli_fetch_assoc($q)): ?>
-
-                            <tr class="stock-row">
-
-                                <td>
-                                    <div class="product-wrap">
-
-                                        <?php if(!empty($d['photo'])): ?>
-                                            <img class="avatar-photo"
-                                                src="/qieos/assets/img/uploads/<?= htmlspecialchars($d['photo']) ?>"
-                                                alt="<?= htmlspecialchars($d['fullname']) ?>">
-                                        <?php else: ?>
-                                            <div class="avatar">
-                                                <i class="fas fa-user"></i>
-                                            </div>
-                                        <?php endif; ?>
-
-                                        <div>
-                                            <div class="fw-bold">
-                                                <?= htmlspecialchars($d['fullname']) ?>
-                                            </div>
-
-                                            <small class="text-muted text-capitalize">
-                                                <?= htmlspecialchars($d['username']) ?>
-                                            </small>
-                                        </div>
-
-                                    </div>
-                                </td>
-
-                                <td class="text-center">
-
-                                    <span class="stock-badge unit-badge text-capitalize">
-                                        <i class="fas fa-id-badge me-1"></i>
-                                        <?= htmlspecialchars($d['role']) ?>
-                                    </span>
-
-                                </td>
-
-                                <td class="text-center">
-
-                                    <span class="unit-badge">
-                                        <i class="fas fa-cubes me-1"></i>
-                                        <?php
-                                        $bulan = [
-                                            1 => 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-                                            'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
-                                        ];
-
-                                        $tgl = strtotime($d['created_at']);
-                                        echo date('d', $tgl) . ' ' . $bulan[(int)date('n', $tgl)] . ' ' . date('Y', $tgl);
-                                        ?>
-                                    </span>
-
-                                </td>
-
-                                <td class="text-center">
-                                    <button class="action-btn btn-edit editStaffBtn" data-id="<?= $d['id'] ?>">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-
-                                    <button class="action-btn btn-delete deleteStaffBtn"
-                                        data-id="<?= $d['id'] ?>"
-                                        data-fullname="<?= $d['fullname'] ?>">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-
-                            <?php endwhile; ?>
-
-                            </tbody>
-                        </table>
+                    <div class="table-responsive-wrap" id="cashierTableContainer">
+                        <!-- Loaded via AJAX -->
                     </div>
                 </div>
             </div>
@@ -227,46 +136,65 @@ include '../../sessions/session.php';
 <?php include '../../script/footscript.php'; ?>
 
 <script>
-    $(document).ready(function(){
-        $('#stockTable').DataTable({
-            pageLength: 5,
-            lengthMenu:[[5,10,25,50],[5,10,25,50]],
-            responsive: true,
-            autoWidth: false,
-            language:{
-                search:"",
-                searchPlaceholder:"Cari staff kasir...",
+    function loadCashierTable(){
+        $('#btnContainer').hide().insertBefore('#cashierTableContainer');
+        fetch('cashier-table.php')
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById('cashierTableContainer').innerHTML = html;
 
-                zeroRecords: `
-                    <div class="empty-search">
-                        <img src="../../assets/img/illustrations/empty-data.png" class="empty-img">
-                        <div class="empty-title">Staff kasir tidak ditemukan</div>
-                        <div class="empty-sub">
-                            Coba gunakan kata kunci lain
-                        </div>
-                    </div>
-                `,
-
-                emptyTable: `
-                    <div class="empty-search">
-                        <img src="../../assets/img/illustrations/empty-data.png" class="empty-img">
-                        <div class="empty-title">Belum ada data staff kasir</div>
-                        <div class="empty-sub">
-                            Silakan tambahkan staff kasir terlebih dahulu
-                        </div>
-                    </div>
-                `
+            // Destroy old DataTable first
+            if($.fn.DataTable.isDataTable('#stockTable')){
+                $('#stockTable').DataTable().destroy();
             }
+
+            // Reinit DataTable
+            setTimeout(()=>{
+            $('#stockTable').DataTable({
+                pageLength: 5,
+                lengthMenu:[[5,10,25,50],[5,10,25,50]],
+                responsive: true,
+                autoWidth: false,
+                language:{
+                    search:"",
+                    searchPlaceholder:"Cari staff kasir...",
+
+                    zeroRecords: `
+                        <div class="empty-search">
+                            <img src="../../assets/img/illustrations/empty-data.png" class="empty-img">
+                            <div class="empty-title">Staff kasir tidak ditemukan</div>
+                            <div class="empty-sub">
+                                Coba gunakan kata kunci lain
+                            </div>
+                        </div>
+                    `,
+
+                    emptyTable: `
+                        <div class="empty-search">
+                            <img src="../../assets/img/illustrations/empty-data.png" class="empty-img">
+                            <div class="empty-title">Belum ada data staff kasir</div>
+                            <div class="empty-sub">
+                                Silakan tambahkan staff kasir terlebih dahulu
+                            </div>
+                        </div>
+                    `
+                }
+            });
+
+            // Buat wrapper untuk search + button
+            $('#stockTable_filter')
+                .wrap('<div class="table-action-wrapper"></div>');
+
+            // Pindahkan tombol ke wrapper
+            $('#btnContainer')
+                .show()
+                .appendTo('.table-action-wrapper');
+            },100);
         });
+    }
 
-        // Buat wrapper untuk search + button
-        $('#stockTable_filter')
-            .wrap('<div class="table-action-wrapper"></div>');
-
-        // Pindahkan tombol ke wrapper
-        $('#btnContainer')
-            .show()
-            .appendTo('.table-action-wrapper');
+    $(document).ready(function(){
+        loadCashierTable();
     });
 </script>
 
@@ -310,9 +238,7 @@ include '../../sessions/session.php';
 
                 $('#addStaffModal').modal('hide');
 
-                setTimeout(() => {
-                    location.reload();
-                }, 1000);
+                loadCashierTable();
 
             }else{
 
@@ -370,9 +296,7 @@ include '../../sessions/session.php';
 
                 $('#editStaffModal').modal('hide');
 
-                setTimeout(() => {
-                    location.reload();
-                }, 1000);
+                loadCashierTable();
 
             }else{
 
@@ -395,20 +319,22 @@ include '../../sessions/session.php';
         let id = $(this).data('id');
         let fullname = $(this).data('fullname');
 
-        fetch('cashier-action.php?action=destroy', {
-            method: 'POST',
-            body: new URLSearchParams({ id: id })
-        })
-        .then(res=>res.json())
-        .then(res=>{
+        QConfirm('Hapus Staff Kasir?', 'Data ' + fullname + ' akan dihapus secara permanen.').then(function(ok){
+            if(ok){
+                fetch('cashier-action.php?action=destroy', {
+                    method: 'POST',
+                    body: new URLSearchParams({ id: id })
+                })
+                .then(res=>res.json())
+                .then(res=>{
 
-            if(res.status==='success'){
+                    if(res.status==='success'){
 
-                QToast('Terhapus', 'Data berhasil dihapus', 'success');
+                        QToast('Terhapus', 'Data berhasil dihapus', 'success');
 
-                setTimeout(() => {
-                    location.reload();
-                }, 1000);
+                        loadCashierTable();
+                    }
+                });
             }
         });
     });

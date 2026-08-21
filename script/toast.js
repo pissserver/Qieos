@@ -117,3 +117,71 @@
         return d.innerHTML;
     }
 })();
+
+/* ============================================
+   QIEOS CONFIRM DIALOG
+   QConfirm(title, message, opts?).then(ok => {...})
+   opts: { confirmText, cancelText, icon, confirmClass }
+   ============================================ */
+(function () {
+    if (window.QConfirm) return;
+
+    function QConfirm(title, message, opts) {
+        opts = opts || {};
+        var confirmText = opts.confirmText || 'Hapus';
+        var cancelText = opts.cancelText || 'Batal';
+        var icon = opts.icon || 'fa-trash-can';
+        var confirmClass = opts.confirmClass || 'q-confirm-btn-danger';
+
+        return new Promise(function (resolve) {
+            var overlay = document.createElement('div');
+            overlay.className = 'q-confirm-overlay';
+            overlay.innerHTML =
+                '<div class="q-confirm-card">' +
+                    '<div class="q-confirm-icon"><i class="fas ' + icon + '"></i></div>' +
+                    '<div class="q-confirm-title">' + escapeHtml(title) + '</div>' +
+                    '<div class="q-confirm-msg">' + escapeHtml(message) + '</div>' +
+                    '<div class="q-confirm-actions">' +
+                        '<button class="q-confirm-btn q-confirm-btn-cancel" data-action="cancel">' + escapeHtml(cancelText) + '</button>' +
+                        '<button class="q-confirm-btn ' + confirmClass + '" data-action="confirm">' + escapeHtml(confirmText) + '</button>' +
+                    '</div>' +
+                '</div>';
+
+            document.body.appendChild(overlay);
+
+            requestAnimationFrame(function () {
+                requestAnimationFrame(function () {
+                    overlay.classList.add('show');
+                });
+            });
+
+            function close(result) {
+                overlay.classList.remove('show');
+                setTimeout(function () {
+                    if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+                    resolve(result);
+                }, 300);
+            }
+
+            overlay.addEventListener('click', function (e) {
+                if (e.target === overlay) close(false);
+            });
+
+            overlay.querySelector('[data-action="cancel"]').addEventListener('click', function () {
+                close(false);
+            });
+
+            overlay.querySelector('[data-action="confirm"]').addEventListener('click', function () {
+                close(true);
+            });
+
+            function escapeHtml(str) {
+                var d = document.createElement('div');
+                d.appendChild(document.createTextNode(str || ''));
+                return d.innerHTML;
+            }
+        });
+    }
+
+    window.QConfirm = QConfirm;
+})();

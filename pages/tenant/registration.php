@@ -65,103 +65,7 @@ include '../../sessions/session.php';
                     </div>
                     
                     <!-- TABLE -->
-                    <div class="table-responsive-wrap">
-                        <table class="table table-hover align-middle" id="stockTable">
-                            <thead>
-                                <tr style="font-size:13px;color:#64748b;">
-                                    <th>Nama Tenant</th>
-                                    <th class="text-center">Pemilik</th>
-                                    <th class="text-center">Status</th>
-                                    <th class="text-center">Tanggal Pendaftaran</th>
-                                    <th class="text-center">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-
-                            <?php
-                            $q = mysqli_query($conn,"
-                            SELECT
-                                *
-                            FROM tenants
-                            WHERE deleted_at IS NULL
-                            ORDER BY tenant_name ASC
-                            ");
-                            while($d=mysqli_fetch_assoc($q)): ?>
-
-                            <tr class="stock-row">
-
-                                <td>
-                                    <div class="product-wrap">
-
-                                        <div class="avatar">
-                                            <i class="fas fa-store"></i>
-                                        </div>
-
-                                        <div>
-                                            <div class="fw-bold">
-                                                <?= htmlspecialchars($d['tenant_name']) ?>
-                                            </div>
-
-                                            <small class="text-muted">
-                                                Tenant PISS
-                                            </small>
-                                        </div>
-
-                                    </div>
-                                </td>
-
-                                <td class="text-center">
-
-                                    <span class="stock-badge unit-badge text-capitalize">
-                                        <i class="fas fa-user me-1"></i>
-                                        <?= htmlspecialchars($d['tenant_owner']) ?>
-                                    </span>
-
-                                </td>
-                                
-
-                                <td class="text-center">
-
-                                    <span class="stock-badge status-badge text-capitalize">
-                                        <i class="fas fa-check me-1"></i>
-                                        <?= htmlspecialchars($d['status']) ?>
-                                    </span>
-
-                                </td>
-
-                                <td class="text-center">
-                                    <span class="unit-badge">
-                                        <i class="fas fa-calendar-alt me-1"></i>
-                                        <?php
-                                        $bulan = [
-                                            1 => 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-                                            'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
-                                        ];
-
-                                        $tgl = strtotime($d['registration_date']);
-                                        echo date('d', $tgl) . ' ' . $bulan[(int)date('n', $tgl)] . ' ' . date('Y', $tgl);
-                                        ?>
-                                    </span>
-                                </td>
-
-                                <td class="text-center">
-                                    <button class="action-btn btn-edit editRegistrationBtn" data-id="<?= $d['id'] ?>">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-
-                                    <button class="action-btn btn-delete deleteRegistrationBtn"
-                                        data-id="<?= $d['id'] ?>"
-                                        data-name="<?= $d['tenant_name'] ?>">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-
-                            <?php endwhile; ?>
-
-                            </tbody>
-                        </table>
-                    </div>
+                    <div id="regTableContainer"></div>
                 </div>
             </div>
         </div>
@@ -230,46 +134,56 @@ include '../../sessions/session.php';
 <?php include '../../script/footscript.php'; ?>
 
 <script>
-    $(document).ready(function(){
-        $('#stockTable').DataTable({
-            pageLength: 5,
-            lengthMenu:[[5,10,25,50],[5,10,25,50]],
-            responsive: true,
-            autoWidth: false,
-            language:{
-                search:"",
-                searchPlaceholder:"Cari tenant...",
+    function loadRegTable() {
+        $('#btnContainer').hide().insertBefore('#regTableContainer');
+        fetch('registration-table.php')
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById('regTableContainer').innerHTML = html;
 
-                zeroRecords: `
-                    <div class="empty-search">
-                        <img src="../../assets/img/illustrations/empty-data.png" class="empty-img">
-                        <div class="empty-title">Tenant tidak ditemukan</div>
-                        <div class="empty-sub">
-                            Coba gunakan kata kunci lain
-                        </div>
-                    </div>
-                `,
-
-                emptyTable: `
-                    <div class="empty-search">
-                        <img src="../../assets/img/illustrations/empty-data.png" class="empty-img">
-                        <div class="empty-title">Belum ada data Tenant</div>
-                        <div class="empty-sub">
-                            Silakan tambahkan tenant terlebih dahulu
-                        </div>
-                    </div>
-                `
+            if($.fn.DataTable.isDataTable('#stockTable')){
+                $('#stockTable').DataTable().destroy();
             }
+
+            setTimeout(()=>{
+            $('#stockTable').DataTable({
+                pageLength: 5,
+                lengthMenu:[[5,10,25,50],[5,10,25,50]],
+                responsive: true,
+                autoWidth: false,
+                language:{
+                    search:"",
+                    searchPlaceholder:"Cari tenant...",
+                    zeroRecords: `
+                        <div class="empty-search">
+                            <img src="../../assets/img/illustrations/empty-data.png" class="empty-img">
+                            <div class="empty-title">Tenant tidak ditemukan</div>
+                            <div class="empty-sub">
+                                Coba gunakan kata kunci lain
+                            </div>
+                        </div>
+                    `,
+                    emptyTable: `
+                        <div class="empty-search">
+                            <img src="../../assets/img/illustrations/empty-data.png" class="empty-img">
+                            <div class="empty-title">Belum ada data Tenant</div>
+                            <div class="empty-sub">
+                                Silakan tambahkan tenant terlebih dahulu
+                            </div>
+                        </div>
+                    `
+                }
+            });
+            if ($('#stockTable_filter').parent('.table-action-wrapper').length === 0) {
+                $('#stockTable_filter').wrap('<div class="table-action-wrapper"></div>');
+            }
+            $('#btnContainer').show().appendTo('.table-action-wrapper');
+            },100);
         });
+    }
 
-        // Buat wrapper untuk search + button
-        $('#stockTable_filter')
-            .wrap('<div class="table-action-wrapper"></div>');
-
-        // Pindahkan tombol ke wrapper
-        $('#btnContainer')
-            .show()
-            .appendTo('.table-action-wrapper');
+    $(document).ready(function(){
+        loadRegTable();
     });
 </script>
 
@@ -314,7 +228,7 @@ include '../../sessions/session.php';
                 $('#addRegistrationModal').modal('hide');
 
                 setTimeout(() => {
-                    location.reload();
+                    loadRegTable();
                 }, 1000);
 
             }else{
@@ -374,7 +288,7 @@ include '../../sessions/session.php';
                 $('#editRegistrationModal').modal('hide');
 
                 setTimeout(() => {
-                    location.reload();
+                    loadRegTable();
                 }, 1000);
 
             }else{
@@ -398,20 +312,24 @@ include '../../sessions/session.php';
         let id = $(this).data('id');
         let name = $(this).data('name');
 
-        fetch('registration-action.php?action=destroy', {
-            method: 'POST',
-            body: new URLSearchParams({ id: id })
-        })
-        .then(res=>res.json())
-        .then(res=>{
+        QConfirm('Hapus Tenant?', 'Data tenant "' + name + '" akan dihapus permanen.').then(function(ok){
+            if(ok){
+                fetch('registration-action.php?action=destroy', {
+                    method: 'POST',
+                    body: new URLSearchParams({ id: id })
+                })
+                .then(res=>res.json())
+                .then(res=>{
 
-            if(res.status==='success'){
+                    if(res.status==='success'){
 
-                QToast('Terhapus', 'Data berhasil dihapus', 'success');
+                        QToast('Terhapus', 'Data berhasil dihapus', 'success');
 
-                setTimeout(() => {
-                    location.reload();
-                }, 1000);
+                        setTimeout(() => {
+                            loadRegTable();
+                        }, 1000);
+                    }
+                });
             }
         });
     });

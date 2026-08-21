@@ -87,6 +87,10 @@ $query = mysqli_query($conn, "SELECT * FROM products ORDER BY id DESC");
 
 <script>
     function deleteProduct(id) {
-        window.location = "product-action.php?action=delete&id=" + id;
+        QConfirm('Hapus Produk?', 'Produk akan dihapus permanen dari sistem.').then(function(ok){
+            if(ok){
+                window.location = "product-action.php?action=delete&id=" + id;
+            }
+        });
     }
 </script>

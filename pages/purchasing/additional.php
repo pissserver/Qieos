@@ -316,20 +316,24 @@ include '../../sessions/session.php';
         let id = $(this).data('id');
         let name = $(this).data('name');
 
-        fetch('additional-action.php?action=destroy', {
-            method: 'POST',
-            body: new URLSearchParams({ id: id })
-        })
-        .then(res=>res.json())
-        .then(res=>{
+        QConfirm('Hapus Produk?', 'Data "' + name + '" akan dihapus permanen.').then(function(ok){
+            if(ok){
+                fetch('additional-action.php?action=destroy', {
+                    method: 'POST',
+                    body: new URLSearchParams({ id: id })
+                })
+                .then(res=>res.json())
+                .then(res=>{
 
-            if(res.status==='success'){
+                    if(res.status==='success'){
 
-                QToast('Terhapus', 'Data berhasil dihapus', 'success');
+                        QToast('Terhapus', 'Data berhasil dihapus', 'success');
 
-                setTimeout(() => {
-                    location.reload();
-                }, 1000);
+                        setTimeout(() => {
+                            loadTable();
+                        }, 1000);
+                    }
+                });
             }
         });
     });

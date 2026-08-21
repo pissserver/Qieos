@@ -6,7 +6,7 @@
     $result = mysqli_query($conn, $query);
     $tenant = mysqli_fetch_assoc($result);
 
-    $query2 = "SELECT * FROM tenants ORDER BY tenant_name ASC";
+    $query2 = "SELECT * FROM tenants WHERE status = 'active' ORDER BY tenant_name ASC";
     $result2 = mysqli_query($conn, $query2);
 ?>
 
@@ -323,12 +323,12 @@
                     });
                 }
 
-                QToast('Berhasil', 'Data berhasil diperbarui', 'success');
+                QToast('Berhasil', 'Data berhasil ditambahkan', 'success');
 
                 $('#addPaymentModal').modal('hide');
 
                 setTimeout(() => {
-                    location.reload();
+                    loadPayment(type);
                 }, 1000);
 
             }else{
@@ -393,7 +393,7 @@
                 $('#editPaymentModal').modal('hide');
 
                 setTimeout(() => {
-                    location.reload();
+                    loadPayment(type);
                 }, 1000);
 
             }else{
@@ -430,20 +430,24 @@
             year: 'numeric'
         });
 
-        fetch('tenant-payment-action.php?action=destroy', {
-            method: 'POST',
-            body: new URLSearchParams({ id: id, type: type })
-        })
-        .then(res=>res.json())
-        .then(res=>{
+        QConfirm('Hapus Pembayaran?', 'Pembayaran "' + typeName + ' (' + formattedDate + ')" akan dihapus permanen.').then(function(ok){
+            if(ok){
+                fetch('tenant-payment-action.php?action=destroy', {
+                    method: 'POST',
+                    body: new URLSearchParams({ id: id, type: type })
+                })
+                .then(res=>res.json())
+                .then(res=>{
 
-            if(res.status==='success'){
+                    if(res.status==='success'){
 
-                QToast('Terhapus', 'Data berhasil dihapus', 'success');
+                        QToast('Terhapus', 'Data berhasil dihapus', 'success');
 
-                setTimeout(() => {
-                    location.reload();
-                }, 1000);
+                        setTimeout(() => {
+                            loadPayment(type);
+                        }, 1000);
+                    }
+                });
             }
         });
     });

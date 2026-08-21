@@ -50,24 +50,33 @@
         $password = $_POST['password'];
         $confirm_password = $_POST['confirm_password'];
 
-        // Cek confirm password
-        if ($password != $confirm_password) {
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Konfirmasi password tidak sesuai.'
-            ]);
-            exit;
+        // Update password hanya jika diisi
+        if (!empty($password)) {
+            if ($password != $confirm_password) {
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => 'Konfirmasi password tidak sesuai.'
+                ]);
+                exit;
+            }
+
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+            mysqli_query($conn,"
+                UPDATE users
+                SET fullname='$fullname',
+                    username='$username',
+                    password='$hashed_password'
+                WHERE id = '$id'
+            ");
+        } else {
+            mysqli_query($conn,"
+                UPDATE users
+                SET fullname='$fullname',
+                    username='$username'
+                WHERE id = '$id'
+            ");
         }
-
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-
-        mysqli_query($conn,"
-            UPDATE users 
-            SET fullname='$fullname',
-                username='$username',
-                password='$hashed_password'
-            WHERE id = '$id'
-        ");
 
         echo json_encode([
             'status' => 'success',

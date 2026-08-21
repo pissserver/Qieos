@@ -283,3 +283,152 @@
         border-color: rgba(129,140,248,0.3);
     }
 }
+
+/* ============================================
+   QIEOS CONFIRM DIALOG (QConfirm)
+   ============================================ */
+
+.q-confirm-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99998;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+    padding: 20px;
+}
+
+.q-confirm-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.q-confirm-card {
+    background: #1e293b;
+    border: 1px solid rgba(148,163,184,0.15);
+    border-radius: 18px;
+    padding: 28px 24px 20px;
+    max-width: 380px;
+    width: 100%;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+    transform: scale(0.9) translateY(20px);
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    text-align: center;
+}
+
+.q-confirm-overlay.show .q-confirm-card {
+    transform: scale(1) translateY(0);
+}
+
+.q-confirm-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: rgba(251,113,133,0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: #fb7185;
+    margin: 0 auto 16px;
+    animation: qConfirmIconPop 0.4s cubic-bezier(0.34,1.56,0.64,1) 0.15s both;
+}
+
+@keyframes qConfirmIconPop {
+    0% { transform: scale(0); }
+    100% { transform: scale(1); }
+}
+
+.q-confirm-title {
+    font-size: 17px;
+    font-weight: 800;
+    color: #f1f5f9;
+    margin-bottom: 6px;
+}
+
+.q-confirm-msg {
+    font-size: 13.5px;
+    color: #94a3b8;
+    line-height: 1.5;
+    margin-bottom: 22px;
+}
+
+.q-confirm-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.q-confirm-btn {
+    flex: 1;
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: none;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.q-confirm-btn-cancel {
+    background: rgba(148,163,184,0.1);
+    color: #94a3b8;
+    border: 1px solid rgba(148,163,184,0.15);
+}
+
+.q-confirm-btn-cancel:hover {
+    background: rgba(148,163,184,0.2);
+    color: #e2e8f0;
+}
+
+.q-confirm-btn-danger {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(239,68,68,0.3);
+}
+
+.q-confirm-btn-danger:hover {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    box-shadow: 0 6px 20px rgba(239,68,68,0.4);
+    transform: translateY(-1px);
+}
+
+.q-confirm-btn-success {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(16,185,129,0.3);
+}
+
+.q-confirm-btn-success:hover {
+    background: linear-gradient(135deg, #059669, #047857);
+    box-shadow: 0 6px 20px rgba(16,185,129,0.4);
+    transform: translateY(-1px);
+}
+
+/* QConfirm light mode */
+@media (prefers-color-scheme: light) {
+    .q-confirm-card {
+        background: #ffffff;
+        border-color: rgba(0,0,0,0.08);
+        box-shadow: 0 25px 60px rgba(0,0,0,0.15);
+    }
+    .q-confirm-title {
+        color: #1e293b;
+    }
+    .q-confirm-msg {
+        color: #64748b;
+    }
+}
+
+@media (max-width: 480px) {
+    .q-confirm-card {
+        padding: 24px 20px 16px;
+        border-radius: 16px;
+    }
+    .q-confirm-title { font-size: 16px; }
+    .q-confirm-msg { font-size: 13px; }
+}
