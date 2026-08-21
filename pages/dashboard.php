@@ -36,7 +36,7 @@ if (!isset($_SESSION['welcome_shown'])) {
 
         <div class="flt fi" id="fltBar">
             <div class="flt-icon"><i class="fas fa-calendar-check"></i></div>
-            <div class="fg"><span class="fl">Dari</span><input type="date" class="fi" id="fS" value="<?php echo date('Y-01-01'); ?>"></div>
+            <div class="fg"><span class="fl">Dari</span><input type="date" class="fi" id="fS" value="<?php echo date('Y-m-01'); ?>"></div>
             <span class="fs">—</span>
             <div class="fg"><span class="fl">Sampai</span><input type="date" class="fi" id="fE" value="<?php echo date('Y-m-d'); ?>"></div>
             <button class="fb" id="fBtn" onclick="go()"><i class="fas fa-filter"></i>Terapkan<div class="fb-load" id="fLd"></div></button>
@@ -141,7 +141,7 @@ if (!isset($_SESSION['welcome_shown'])) {
 
         // 3 SECONDARY CARDS
         h+='<div class="st3">';
-        h+=scard('ic-violet','fa-store','Pembayaran Sewa',rp(st.bayar_tenant),'bayar_tenant');
+        h+=scard('ic-violet','fa-store','Pembayaran Sewa Tenant',rp(st.bayar_tenant),'bayar_tenant');
         h+=scard('ic-cyan','fa-bolt','Air & Listrik',rp(st.bayar_utility),'bayar_utility');
         h+=scard('ic-indigo','fa-boxes','Total Produk',fmt(st.produk),'produk');
         h+='</div>';

@@ -2,45 +2,52 @@
 
 include '../../../sessions/session.php';
 
-$type = $_GET['type'];
-
-$tenant_id  = $_GET['tenant_id'];
-$first_date = $_GET['first_date'];
-$last_date  = $_GET['last_date'];
+$type       = isset($_GET['type']) ? $_GET['type'] : 'tenant';
+$tenant_id  = isset($_GET['tenant_id']) ? $_GET['tenant_id'] : '';
+$first_date = isset($_GET['first_date']) ? $_GET['first_date'] : '';
+$last_date  = isset($_GET['last_date']) ? $_GET['last_date'] : '';
 
 $table = ($type == 'tenant')
     ? 'tenant_payments'
     : 'utility_payments';
 
-$query = mysqli_query($conn,"
+$escTenant = mysqli_real_escape_string($conn, $tenant_id);
+$escFirst  = mysqli_real_escape_string($conn, $first_date);
+$escLast   = mysqli_real_escape_string($conn, $last_date);
+
+$query = mysqli_query($conn, "
 SELECT
     p.*,
     t.tenant_name
 FROM $table p
 JOIN tenants t
 ON p.tenant_id = t.id
-WHERE tenant_id = '$tenant_id' AND
+WHERE tenant_id = '$escTenant' AND
 DATE(payment_date)
-BETWEEN '$first_date'
-AND '$last_date'
+BETWEEN '$escFirst'
+AND '$escLast'
 ORDER BY payment_date DESC
 ");
 
 $no = 1;
+$totalPayment = 0;
+$hasData = false;
 
-while($row=mysqli_fetch_assoc($query)){
-?>
+if ($query && mysqli_num_rows($query) > 0) {
+    $hasData = true;
+    while ($row = mysqli_fetch_assoc($query)) {
+        $cost = (float) $row['cost_payment'];
+        $totalPayment += $cost;
+        ?>
 
 <tr>
 
     <td class="text-center"><?= $no++ ?></td>
 
-    <td class="text-center"><?= $row['tenant_name'] ?></td>
+    <td class="text-center"><?= date('d M Y', strtotime($row['payment_date'])) ?></td>
 
-    <td class="text-center"><?= date('d M Y',strtotime($row['payment_date'])) ?></td>
-
-    <td class="text-center">
-        Rp <?= number_format($row['cost_payment'],0,',','.') ?>
+    <td class="text-center fw-semibold">
+        Rp <?= number_format($cost, 0, ',', '.') ?>
     </td>
 
     <td class="text-center">
@@ -51,4 +58,18 @@ while($row=mysqli_fetch_assoc($query)){
 
 </tr>
 
-<?php } ?>
+<?php
+    }
+} else {
+    ?>
+<tr>
+    <td colspan="4" class="text-center py-4 text-muted">
+        <i class="fas fa-calendar-alt mb-2" style="font-size:24px;"></i>
+        <div>Tidak ada data pembayaran untuk tenant pada periode ini.</div>
+    </td>
+</tr>
+<?php
+}
+
+echo "<!--SPLIT_FOOT-->";
+echo "Rp " . number_format($totalPayment, 0, ',', '.');

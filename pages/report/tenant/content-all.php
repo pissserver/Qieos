@@ -108,8 +108,29 @@
 
             </tbody>
 
+            <tfoot id="reportAllFoot">
+            </tfoot>
+
         </table>
 
+    </div>
+
+    <!-- SUMMARY BANNER CARD -->
+    <div id="reportAllSummaryCard" class="mt-4" style="display:none; background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: #fff; border: 1.5px solid rgba(99,102,241,0.4); border-radius: 16px; box-shadow: 0 8px 24px rgba(30, 27, 75, 0.15); padding: 18px 24px;">
+        <div class="d-flex align-items-center justify-content-between px-2 flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-3">
+                <div style="width:42px; height:42px; border-radius:12px; background:rgba(255,255,255,0.12); display:flex; align-items:center; justify-content:center; font-size:18px; color:#818cf8;">
+                    <i class="fas fa-calculator"></i>
+                </div>
+                <div>
+                    <div style="font-size:11px; text-transform:uppercase; letter-spacing:1px; color:#c7d2fe; font-weight:700;">Total Pembayaran</div>
+                    <div style="font-size:12px; color:#94a3b8;">Akumulasi seluruh pembayaran tenant</div>
+                </div>
+            </div>
+            <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); color: #fbbf24; font-size: 18px; font-weight: 800; padding: 8px 22px; border-radius: 14px; letter-spacing: 0.5px;" id="totalAllAmountLabel">
+                Rp 0
+            </div>
+        </div>
     </div>
 
 </div>

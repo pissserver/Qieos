@@ -186,6 +186,7 @@
         // jika tanggal belum dipilih
         if(first == "" || last == ""){
 
+            $("#reportAllSummaryCard").hide();
             $("#reportAllBody").html(`
 
                 <tr>
@@ -224,9 +225,17 @@
                 last_date: last
             },
             function(res){
+                let parts = res.split("<!--SPLIT_FOOT-->");
+                $("#reportAllBody").html(parts[0]);
 
-                $("#reportAllBody").html(res);
-
+                let footText = parts[1] || "";
+                let match = footText.match(/Rp\s*[\d\.\,]+/i);
+                if (match) {
+                    $("#totalAllAmountLabel").text(match[0]);
+                    $("#reportAllSummaryCard").show();
+                } else {
+                    $("#reportAllSummaryCard").hide();
+                }
             }
         );
 
@@ -248,6 +257,7 @@
         // belum pilih tenant
         if(id == ""){
 
+            $("#reportSingleSummaryCard").hide();
             $("#reportSingleBody").html(`
 
                 <tr>
@@ -280,6 +290,7 @@
         // tenant sudah dipilih tapi tanggal belum lengkap
         if(first == "" || last == ""){
 
+            $("#reportSingleSummaryCard").hide();
             $("#reportSingleBody").html(`
 
                 <tr>
@@ -319,9 +330,17 @@
                 last_date: last
             },
             function(res){
+                let parts = res.split("<!--SPLIT_FOOT-->");
+                $("#reportSingleBody").html(parts[0]);
 
-                $("#reportSingleBody").html(res);
-
+                let footText = parts[1] || "";
+                let match = footText.match(/Rp\s*[\d\.\,]+/i);
+                if (match) {
+                    $("#totalSingleAmountLabel").text(match[0]);
+                    $("#reportSingleSummaryCard").show();
+                } else {
+                    $("#reportSingleSummaryCard").hide();
+                }
             }
         );
 
