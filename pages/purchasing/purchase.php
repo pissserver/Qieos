@@ -348,18 +348,12 @@ $hasPrevious = $currentFormId > 1;
         .then(res=>res.json())
         .then(res=>{
             if(res.status==="success"){
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil',
-                    text: res.msg,
-                    timer: 1500,
-                    showConfirmButton: false
-                });
+                QToast('Berhasil', res.msg, 'success');
                 this.reset();
                 document.getElementById('productCode').focus();
                 loadTable();
             }else{
-                Swal.fire("Error",res.msg,"error");
+                QToast("Error", res.msg, "error");
             }
         });
     });
@@ -606,12 +600,7 @@ $hasPrevious = $currentFormId > 1;
 
             if(res.status === 'success'){
 
-                Swal.fire({
-                    icon:'success',
-                    title:'Berhasil',
-                    text:'Data berhasil diperbarui',
-                    showConfirmButton:false
-                });
+                QToast('Berhasil', 'Data berhasil diperbarui', 'success');
 
                 $('#editPurchaseModal').modal('hide');
 
@@ -620,21 +609,13 @@ $hasPrevious = $currentFormId > 1;
 
             }else{
 
-                Swal.fire({
-                    icon:'error',
-                    title:'Gagal',
-                    text:res.msg || 'Terjadi kesalahan'
-                });
+                QToast('Gagal', res.msg || 'Terjadi kesalahan', 'error');
 
             }
 
         })
         .catch(() => {
-            Swal.fire(
-                'Error',
-                'Gagal memproses update',
-                'error'
-            );
+            QToast('Error', 'Gagal memproses update', 'error');
         });
     });
 
@@ -646,46 +627,20 @@ $hasPrevious = $currentFormId > 1;
         let qty = $(this).data('qty');
         let unit = $(this).data('unit');
 
-        Swal.fire({
-            title:'Hapus Purchase?',
-            html:`
-                <div style="text-align:center">
-                    <b>${form}</b><br><br>
-                    <small style="color:#94a3b8">Produk:</small><br>
-                    ${products} (${qty} ${unit})
-                </div>
-            `,
-            icon:'warning',
-            showCancelButton:true,
-            confirmButtonText:'Ya, Hapus',
-            cancelButtonText:'Batal',
-            confirmButtonColor:'#dc2626'
-        }).then((result)=>{
+        fetch('purchase-action.php?action=destroy&id='+id)
+        .then(res=>res.json())
+        .then(res=>{
 
-            if(result.isConfirmed){
+            if(res.status==='success'){
 
-                fetch('purchase-action.php?action=destroy&id='+id)
-                .then(res=>res.json())
-                .then(res=>{
+                QToast('Terhapus', 'Data berhasil dihapus', 'success');
 
-                    if(res.status==='success'){
-
-                        Swal.fire({
-                            icon:'success',
-                            title:'Terhapus',
-                            text:'Data berhasil dihapus',
-                            timer:1500,
-                            showConfirmButton:false
-                        });
-
-                        loadPurchaseTable();
-                        loadTable();
-
-                    }
-
-                });
+                loadPurchaseTable();
+                loadTable();
 
             }
+
+        });
 
         });
 

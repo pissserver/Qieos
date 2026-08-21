@@ -492,7 +492,7 @@
     function showLatestUpdate() {
         $.get("/qieos/pages/other/update-detail.php", function(res) {
             if (res.status != "success") {
-                Swal.fire("Error", "Tidak dapat memuat update terbaru", "error");
+                QToast("Error", "Tidak dapat memuat update terbaru", "error");
                 return;
             }
 
@@ -546,7 +546,7 @@
             qty = parseInt(input.value || 0);
 
             if(qty <= 0){
-                Swal.fire('Tambahkan qty produk terlebih dahulu!', '', 'warning');
+                QToast('Tambahkan qty produk terlebih dahulu!', '', 'warning');
                 return;
             }
         }
@@ -560,7 +560,7 @@
             if (category !== 'additional') {
                 existing.qty += qty;
             } else {
-                Swal.fire(name + ' sudah ditambahkan!', '', 'warning');
+                QToast(name + ' sudah ditambahkan!', '', 'warning');
                 return;
             }
         } else {
@@ -580,13 +580,7 @@
             input.value = 0;
         }
 
-        Swal.fire({
-            icon:'success',
-            title:'Ditambahkan',
-            text:name+' masuk keranjang',
-            timer:1000,
-            showConfirmButton:false
-        });
+        QToast('Ditambahkan', name+' masuk keranjang', 'success');
     }
 
     function updateCart() {
@@ -731,7 +725,8 @@
     // Checkout
     function checkout() {
         if (cart.length === 0) {
-            return Swal.fire('Keranjang kosong', '', 'warning');
+            QToast('Keranjang kosong', '', 'warning');
+            return;
         }
 
         fetch('../checkout.php', {
@@ -745,7 +740,7 @@
             .then(res => {
                 if (res.status === 'success') {
 
-                    Swal.fire('Berhasil!', 'Pesanan berhasil dibuat', 'success');
+                    QToast('Berhasil!', 'Pesanan berhasil dibuat', 'success');
 
                     const receiptUrl = `../receipt.php?id=${res.order_id}`;
                     window.open(receiptUrl, '_blank');

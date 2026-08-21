@@ -87,18 +87,6 @@ $query = mysqli_query($conn, "SELECT * FROM products ORDER BY id DESC");
 
 <script>
     function deleteProduct(id) {
-        Swal.fire({
-            title: 'Yakin hapus?',
-            text: "Data produk akan dihapus!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Ya Hapus'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location = "product-action.php?action=delete&id=" + id;
-            }
-        });
+        window.location = "product-action.php?action=delete&id=" + id;
     }
 </script>

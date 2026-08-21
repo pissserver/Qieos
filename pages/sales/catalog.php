@@ -531,15 +531,7 @@ $query = mysqli_query($conn,
                 target.classList.add('highlight-target');
                 var nameEl = target.querySelector('.product-title');
                 var productName = nameEl ? nameEl.textContent.trim() : 'Produk';
-                Swal.fire({
-                    icon:'info',
-                    title:'Produk Ditemukan',
-                    text:'Anda diarahkan ke "'+productName+'" dari pencarian.',
-                    timer:2500,
-                    showConfirmButton:false,
-                    toast:true,
-                    position:'top-end'
-                });
+                QToast('Produk Ditemukan', 'Anda diarahkan ke "'+productName+'" dari pencarian.', 'info');
                 setTimeout(function(){ target.classList.remove('highlight-target'); },4000);
                 history.replaceState(null,'',window.location.pathname);
             },400);

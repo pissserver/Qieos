@@ -309,12 +309,7 @@ include '../../sessions/session.php';
 
             if(res.status === 'success'){
 
-                Swal.fire({
-                    icon:'success',
-                    title:'Berhasil',
-                    text:'Data berhasil ditambahkan',
-                    showConfirmButton:false
-                });
+                QToast('Berhasil', 'Data berhasil ditambahkan', 'success');
 
                 $('#addRegistrationModal').modal('hide');
 
@@ -324,21 +319,13 @@ include '../../sessions/session.php';
 
             }else{
 
-                Swal.fire({
-                    icon:'error',
-                    title:'Gagal',
-                    text:res.message || 'Terjadi kesalahan'
-                });
+                QToast('Gagal', res.message || 'Terjadi kesalahan', 'error');
 
             }
 
         })
         .catch(() => {
-            Swal.fire(
-                'Error',
-                'Gagal memproses tambah data',
-                'error'
-            );
+            QToast('Error', 'Gagal memproses tambah data', 'error');
         });
     });
 </script>
@@ -382,12 +369,7 @@ include '../../sessions/session.php';
 
             if(res.status === 'success'){
 
-                Swal.fire({
-                    icon:'success',
-                    title:'Berhasil',
-                    text:'Data berhasil diperbarui',
-                    showConfirmButton:false
-                });
+                QToast('Berhasil', 'Data berhasil diperbarui', 'success');
 
                 $('#editRegistrationModal').modal('hide');
 
@@ -397,21 +379,13 @@ include '../../sessions/session.php';
 
             }else{
 
-                Swal.fire({
-                    icon:'error',
-                    title:'Gagal',
-                    text:res.message || 'Terjadi kesalahan'
-                });
+                QToast('Gagal', res.message || 'Terjadi kesalahan', 'error');
 
             }
 
         })
         .catch(() => {
-            Swal.fire(
-                'Error',
-                'Gagal memproses update',
-                'error'
-            );
+            QToast('Error', 'Gagal memproses update', 'error');
         });
     });
 </script>
@@ -424,45 +398,20 @@ include '../../sessions/session.php';
         let id = $(this).data('id');
         let name = $(this).data('name');
 
-        Swal.fire({
-            title:'Hapus Tenant?',
-            html:`
-                <div style="text-align:center">
-                    <small style="color:#94a3b8">Nama tenant:</small><br>
-                    ${name}
-                </div>
-            `,
-            icon:'warning',
-            showCancelButton:true,
-            confirmButtonText:'Ya, Hapus',
-            cancelButtonText:'Batal',
-            confirmButtonColor:'#dc2626'
-        }).then((result)=>{
+        fetch('registration-action.php?action=destroy', {
+            method: 'POST',
+            body: new URLSearchParams({ id: id })
+        })
+        .then(res=>res.json())
+        .then(res=>{
 
-            if(result.isConfirmed){
+            if(res.status==='success'){
 
-                fetch('registration-action.php?action=destroy', {
-                    method: 'POST',
-                    body: new URLSearchParams({ id: id })
-                })
-                .then(res=>res.json())
-                .then(res=>{
+                QToast('Terhapus', 'Data berhasil dihapus', 'success');
 
-                    if(res.status==='success'){
-
-                        Swal.fire({
-                            icon:'success',
-                            title:'Terhapus',
-                            text:'Data berhasil dihapus',
-                            timer:1500,
-                            showConfirmButton:false
-                        });
-
-                        setTimeout(() => {
-                            location.reload();
-                        }, 1000);
-                    }
-                });
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
             }
         });
     });

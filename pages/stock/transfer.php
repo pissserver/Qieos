@@ -159,60 +159,38 @@
 
             // ðŸ”¥ APPROVE
             function approve(id){
-                Swal.fire({
-                    title: 'Approve Request?',
-                    text: "Stok akan dipindahkan dari gudang (FIFO)",
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'ACC',
-                    confirmButtonColor: '#16a34a'
-                }).then((result)=>{
-                    if(result.isConfirmed){
 
-                        fetch('transfer-action.php?action=approve',{
-                            method:'POST',
-                            headers:{'Content-Type':'application/x-www-form-urlencoded'},
-                            body:'id='+id
-                        })
-                        .then(res=>res.json())
-                        .then(res=>{
-                            Swal.fire(res.status,res.msg,res.status);
-                            loadTable();
-                            loadHistory();
-                        });
-
-                    }
+                fetch('transfer-action.php?action=approve',{
+                    method:'POST',
+                    headers:{'Content-Type':'application/x-www-form-urlencoded'},
+                    body:'id='+id
+                })
+                .then(res=>res.json())
+                .then(res=>{
+                    QToast(res.status,res.msg,res.status);
+                    loadTable();
+                    loadHistory();
                 });
+
             }
 
             // ðŸ”¥ REJECT
             function reject(id){
-                Swal.fire({
-                    title: 'Tolak Request?',
-                    text:'Request tidak akan diproses',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Tolak',
-                    confirmButtonColor:'#ef4444'
-                }).then((result)=>{
-                    if(result.isConfirmed){
 
-                        fetch('transfer-action.php?action=reject',{
-                            method:'POST',
-                            headers:{'Content-Type':'application/x-www-form-urlencoded'},
-                            body:'id='+id
-                        })
-                        .then(res=>res.json())
-                        .then(res=>{
-                            console.log(res);
-                            console.log(id);
-                            Swal.fire(res.status,res.msg,res.status);
-                            loadTable();
-                            loadHistory();
-                        });
-
-                    }
+                fetch('transfer-action.php?action=reject',{
+                    method:'POST',
+                    headers:{'Content-Type':'application/x-www-form-urlencoded'},
+                    body:'id='+id
+                })
+                .then(res=>res.json())
+                .then(res=>{
+                    console.log(res);
+                    console.log(id);
+                    QToast(res.status,res.msg,res.status);
+                    loadTable();
+                    loadHistory();
                 });
+
             }
         </script>
     </body>

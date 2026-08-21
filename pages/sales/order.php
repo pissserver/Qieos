@@ -162,55 +162,32 @@ include '../../sessions/session.php';
     <!-- Action -->
     <script>
         function payOrder(id, name) {
-            Swal.fire({
-                title: 'Bayar Pesanan?',
-                html: `Yakin ingin menandai pesanan dari pelanggan <strong class="text-capitalize">${name}</strong> sebagai terbayar?`,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, Bayar!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.post('order-pay.php', {
-                        order_id: id
-                    }, function(response) {
-                        // pastikan response sudah di-parse JSON
-                        if (response.status === 'success') {
-                            Swal.fire('Berhasil!', 'Pesanan telah terbayar.', 'success');
-                            loadPage(1); // reload halaman pertama
-                            updateOmzet(); // update omzet di navbar
-                        } else {
-                            Swal.fire('Gagal!', response.message || 'Terjadi kesalahan saat memproses pembayaran.', 'error');
-                        }
-                    }, 'json');
+            $.post('order-pay.php', {
+                order_id: id
+            }, function(response) {
+                // pastikan response sudah di-parse JSON
+                if (response.status === 'success') {
+                    QToast('Berhasil!', 'Pesanan telah terbayar.', 'success');
+                    loadPage(1); // reload halaman pertama
+                    updateOmzet(); // update omzet di navbar
+                } else {
+                    QToast('Gagal!', response.message || 'Terjadi kesalahan saat memproses pembayaran.', 'error');
                 }
-            });
+            }, 'json');
         }
 
         function cancelOrder(id, name) {
-            Swal.fire({
-                title: 'Cancel Pesanan?',
-                html: `Yakin ingin membatalkan pesanan dari pelanggan <strong class="text-capitalize">${name}</strong>?`,
-                icon: 'warning',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, Cancel!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.post('order-cancel.php', {
-                        order_id: id
-                    }, function(response) {
-                        if (response.status === 'success') {
-                            Swal.fire('Berhasil!', 'Pesanan telah dibatalkan.', 'success');
-                            loadPage(1); // reload halaman pertama
-                            updateOmzet(); // update omzet di navbar
-                        } else {
-                            Swal.fire('Gagal!', response.message || 'Terjadi kesalahan saat membatalkan pesanan.', 'error');
-                        }
-                    }, 'json');
+            $.post('order-cancel.php', {
+                order_id: id
+            }, function(response) {
+                if (response.status === 'success') {
+                    QToast('Berhasil!', 'Pesanan telah dibatalkan.', 'success');
+                    loadPage(1); // reload halaman pertama
+                    updateOmzet(); // update omzet di navbar
+                } else {
+                    QToast('Gagal!', response.message || 'Terjadi kesalahan saat membatalkan pesanan.', 'error');
                 }
-            });
+            }, 'json');
         }
 
         let orderDetailModalInstance = null;

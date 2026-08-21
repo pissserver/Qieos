@@ -47,6 +47,9 @@
 <!-- Volt CSS -->
 <link type="text/css" href="/qieos/css/volt.css" rel="stylesheet" />
 
+<!-- Qieos Toast -->
+<link type="text/css" href="/qieos/css/components/toast.css" rel="stylesheet" />
+
 <!-- Font Awesome -->
 <link
     rel="stylesheet"

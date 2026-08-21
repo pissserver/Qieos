@@ -219,7 +219,7 @@
                 let val = parseInt(qtyInput.value || 0);
 
                 if (val > max) {
-                    Swal.fire(
+                    QToast(
                         "Error",
                         "Qty melebihi stok (" + max + ")",
                         "error",
@@ -239,7 +239,7 @@
 
                     let data = await res.json();
 
-                    Swal.fire(data.status, data.msg, data.status);
+                    QToast(data.status, data.msg, data.status);
 
                     form.reset();
                     stockInfo.innerHTML = "";
@@ -247,7 +247,7 @@
                     loadTable();
                     loadHistory();
                 } catch {
-                    Swal.fire("error", "Server error", "error");
+                    QToast("error", "Server error", "error");
                 }
 
                 btn.disabled = false;

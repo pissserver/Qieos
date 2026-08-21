@@ -185,10 +185,10 @@ $hasPrevious = $currentFormId > 1;
         .then(res=>res.json())
         .then(res=>{
             if(res.status==="success"){
-                Swal.fire("Berhasil",res.msg,"success");
+                QToast("Berhasil", res.msg, "success");
                 this.reset();
             }else{
-                Swal.fire("Error",res.msg,"error");
+                QToast("Error", res.msg, "error");
             }
         });
     });
@@ -415,12 +415,7 @@ $hasPrevious = $currentFormId > 1;
 
             if(res.status === 'success'){
 
-                Swal.fire({
-                    icon:'success',
-                    title:'Berhasil',
-                    text:'Data berhasil diperbarui',
-                    showConfirmButton:false
-                });
+                QToast('Berhasil', 'Data berhasil diperbarui', 'success');
 
                 $('#editPurchaseModal').modal('hide');
 
@@ -428,21 +423,13 @@ $hasPrevious = $currentFormId > 1;
 
             }else{
 
-                Swal.fire({
-                    icon:'error',
-                    title:'Gagal',
-                    text:res.msg || 'Terjadi kesalahan'
-                });
+                QToast('Gagal', res.msg || 'Terjadi kesalahan', 'error');
 
             }
 
         })
         .catch(() => {
-            Swal.fire(
-                'Error',
-                'Gagal memproses update',
-                'error'
-            );
+            QToast('Error', 'Gagal memproses update', 'error');
         });
     });
 
@@ -457,45 +444,18 @@ $hasPrevious = $currentFormId > 1;
             year: 'numeric'
         });
 
-        Swal.fire({
-            title:'Hapus Daftar Belanja?',
-            html:`
-                <div style="text-align:center">
-                    <small style="color:#94a3b8">Tanggal pembuatan daftar belanja:</small><br>
-                    ${formattedDate}
-                </div>
-            `,
-            icon:'warning',
-            showCancelButton:true,
-            confirmButtonText:'Ya, Hapus',
-            cancelButtonText:'Batal',
-            confirmButtonColor:'#dc2626'
-        }).then((result)=>{
+        fetch('list-action.php?action=destroy', {
+            method: 'POST',
+            body: new URLSearchParams({ id: id })
+        })
+        .then(res=>res.json())
+        .then(res=>{
 
-            if(result.isConfirmed){
+            if(res.status==='success'){
 
-                fetch('list-action.php?action=destroy', {
-                    method: 'POST',
-                    body: new URLSearchParams({ id: id })
-                })
-                .then(res=>res.json())
-                .then(res=>{
+                QToast('Terhapus', 'Data berhasil dihapus', 'success');
 
-                    if(res.status==='success'){
-
-                        Swal.fire({
-                            icon:'success',
-                            title:'Terhapus',
-                            text:'Data berhasil dihapus',
-                            timer:1500,
-                            showConfirmButton:false
-                        });
-
-                        loadPurchaseTable();
-
-                    }
-
-                });
+                loadPurchaseTable();
 
             }
 

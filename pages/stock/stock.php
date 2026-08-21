@@ -339,28 +339,27 @@ include '../../sessions/session.php';
 
             if(res.status === 'success'){
 
-                Swal.fire({
-                    icon:'success',
+                QToast({
                     title:'Berhasil',
-                    text:'Data berhasil diperbarui',
-                    showConfirmButton:false
+                    message:'Data berhasil diperbarui',
+                    type:'success'
                 });
 
                 $('#editStockModal').modal('hide');
 
             }else{
 
-                Swal.fire({
-                    icon:'error',
+                QToast({
                     title:'Gagal',
-                    text:res.msg || 'Terjadi kesalahan'
+                    message:res.msg || 'Terjadi kesalahan',
+                    type:'error'
                 });
 
             }
 
         })
         .catch(() => {
-            Swal.fire(
+            QToast(
                 'Error',
                 'Gagal memproses update',
                 'error'

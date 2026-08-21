@@ -432,11 +432,10 @@ include '../../sessions/session.php';
 
             if(res.status === 'success'){
 
-                Swal.fire({
-                    icon:'success',
+                QToast({
                     title:'Berhasil',
-                    text:'Data berhasil ditambahkan',
-                    showConfirmButton:false
+                    message:'Data berhasil ditambahkan',
+                    type:'success'
                 });
 
                 $('#addUpdateModal').modal('hide');
@@ -447,17 +446,17 @@ include '../../sessions/session.php';
 
             }else{
 
-                Swal.fire({
-                    icon:'error',
+                QToast({
                     title:'Gagal',
-                    text:res.message || 'Terjadi kesalahan'
+                    message:res.message || 'Terjadi kesalahan',
+                    type:'error'
                 });
 
             }
 
         })
         .catch(() => {
-            Swal.fire(
+            QToast(
                 'Error',
                 'Gagal memproses tambah data',
                 'error'
@@ -555,11 +554,10 @@ include '../../sessions/session.php';
 
             if(res.status === 'success'){
 
-                Swal.fire({
-                    icon:'success',
+                QToast({
                     title:'Berhasil',
-                    text:'Data berhasil diperbarui',
-                    showConfirmButton:false
+                    message:'Data berhasil diperbarui',
+                    type:'success'
                 });
 
                 $('#editUpdateModal').modal('hide');
@@ -570,17 +568,17 @@ include '../../sessions/session.php';
 
             }else{
 
-                Swal.fire({
-                    icon:'error',
+                QToast({
                     title:'Gagal',
-                    text:res.message || 'Terjadi kesalahan'
+                    message:res.message || 'Terjadi kesalahan',
+                    type:'error'
                 });
 
             }
 
         })
         .catch(() => {
-            Swal.fire(
+            QToast(
                 'Error',
                 'Gagal memproses update',
                 'error'
@@ -598,45 +596,24 @@ include '../../sessions/session.php';
         let name = $(this).data('name');
         let version = $(this).data('version');
 
-        Swal.fire({
-            title:'Hapus Update Log?',
-            html:`
-                <div style="text-align:center">
-                    <small style="color:#94a3b8">Update Log:</small><br>
-                    ${name} - ${version}
-                </div>
-            `,
-            icon:'warning',
-            showCancelButton:true,
-            confirmButtonText:'Ya, Hapus',
-            cancelButtonText:'Batal',
-            confirmButtonColor:'#dc2626'
-        }).then((result)=>{
+        fetch('update-action.php?action=destroy', {
+            method: 'POST',
+            body: new URLSearchParams({ id: id })
+        })
+        .then(res=>res.json())
+        .then(res=>{
 
-            if(result.isConfirmed){
+            if(res.status==='success'){
 
-                fetch('update-action.php?action=destroy', {
-                    method: 'POST',
-                    body: new URLSearchParams({ id: id })
-                })
-                .then(res=>res.json())
-                .then(res=>{
-
-                    if(res.status==='success'){
-
-                        Swal.fire({
-                            icon:'success',
-                            title:'Terhapus',
-                            text:'Data berhasil dihapus',
-                            timer:1500,
-                            showConfirmButton:false
-                        });
-
-                        setTimeout(() => {
-                            location.reload();
-                        }, 1000);
-                    }
+                QToast({
+                    title:'Terhapus',
+                    message:'Data berhasil dihapus',
+                    type:'success'
                 });
+
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
             }
         });
     });
@@ -652,7 +629,7 @@ include '../../sessions/session.php';
         $.get("update-detail.php", { id: id }, function (res) {
 
             if (res.status != "success") {
-                Swal.fire("Error", res.message, "error");
+                QToast("Error", res.message, "error");
                 return;
             }
 

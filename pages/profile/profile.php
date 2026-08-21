@@ -244,10 +244,10 @@ include '../../sessions/session.php';
         const msg = urlParams.get('msg');
 
         if (status && msg) {
-            Swal.fire({
-                icon: status === 'success' ? 'success' : 'error',
+            QToast({
+                type: status === 'success' ? 'success' : 'error',
                 title: status === 'success' ? 'Berhasil!' : 'Error',
-                text: msg,
+                message: msg,
             });
 
             // 🔥 hapus parameter dari URL setelah tampil

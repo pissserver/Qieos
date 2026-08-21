@@ -197,17 +197,11 @@ include '../../sessions/session.php';
         .then(res=>res.json())
         .then(res=>{
             if(res.status==="success"){
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil',
-                    text: res.msg,
-                    timer: 1500,
-                    showConfirmButton: false
-                });
+                QToast('Berhasil', res.msg, 'success');
                 this.reset();
                 loadTable();
             }else{
-                Swal.fire("Error",res.msg,"error");
+                QToast("Error", res.msg, "error");
             }
         });
     });
@@ -295,12 +289,7 @@ include '../../sessions/session.php';
 
             if(res.status === 'success'){
 
-                Swal.fire({
-                    icon:'success',
-                    title:'Berhasil',
-                    text:'Data berhasil diperbarui',
-                    showConfirmButton:false
-                });
+                QToast('Berhasil', 'Data berhasil diperbarui', 'success');
 
                 $('#editAdditionalModal').modal('hide');
 
@@ -308,21 +297,13 @@ include '../../sessions/session.php';
 
             }else{
 
-                Swal.fire({
-                    icon:'error',
-                    title:'Gagal',
-                    text:res.msg || 'Terjadi kesalahan'
-                });
+                QToast('Gagal', res.msg || 'Terjadi kesalahan', 'error');
 
             }
 
         })
         .catch(() => {
-            Swal.fire(
-                'Error',
-                'Gagal memproses update',
-                'error'
-            );
+            QToast('Error', 'Gagal memproses update', 'error');
         });
     });
 </script>
@@ -335,44 +316,20 @@ include '../../sessions/session.php';
         let id = $(this).data('id');
         let name = $(this).data('name');
 
-        Swal.fire({
-            title:'Hapus Produk Tambahan?',
-            html:`
-                <div style="text-align:center">
-                    ${name}
-                </div>
-            `,
-            icon:'warning',
-            showCancelButton:true,
-            confirmButtonText:'Ya, Hapus',
-            cancelButtonText:'Batal',
-            confirmButtonColor:'#dc2626'
-        }).then((result)=>{
+        fetch('additional-action.php?action=destroy', {
+            method: 'POST',
+            body: new URLSearchParams({ id: id })
+        })
+        .then(res=>res.json())
+        .then(res=>{
 
-            if(result.isConfirmed){
+            if(res.status==='success'){
 
-                fetch('additional-action.php?action=destroy', {
-                    method: 'POST',
-                    body: new URLSearchParams({ id: id })
-                })
-                .then(res=>res.json())
-                .then(res=>{
+                QToast('Terhapus', 'Data berhasil dihapus', 'success');
 
-                    if(res.status==='success'){
-
-                        Swal.fire({
-                            icon:'success',
-                            title:'Terhapus',
-                            text:'Data berhasil dihapus',
-                            timer:1500,
-                            showConfirmButton:false
-                        });
-
-                        setTimeout(() => {
-                            location.reload();
-                        }, 1000);
-                    }
-                });
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
             }
         });
     });

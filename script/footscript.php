@@ -39,6 +39,9 @@
 <!-- Volt JS -->
 <script src="/qieos/assets/js/volt.js"></script>
 
+<!-- Qieos Toast -->
+<script src="/qieos/script/toast.js"></script>
+
 <!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
