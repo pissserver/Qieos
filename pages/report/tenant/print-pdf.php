@@ -117,7 +117,7 @@ ob_start();
     <title><?= pdfEscape($title2) ?> - Qieos</title>
     <style>
         @page {
-            margin: 18px 22px 42px 22px;
+            margin: 20px 30px 42px 30px;
         }
 
         * {
@@ -414,7 +414,7 @@ ob_start();
     </table>
 
     <div class="title-block">
-        <div class="report-kicker">Laporan Keuangan</div>
+        <div class="report-kicker">Laporan Tenant</div>
         <div class="report-title"><?= pdfEscape($title) ?></div>
         <div class="report-period">Periode <?= pdfEscape($periodLabel) ?></div>
     </div>

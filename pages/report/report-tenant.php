@@ -9,7 +9,7 @@
     <title>Laporan Tenant - Qieos</title>
     <?php include '../../script/headscript.php'; ?>
 
-    <link rel="stylesheet" href="/qieos/css/pages/report-tenant.css">
+    <link rel="stylesheet" href="/qieos/css/pages/report-tenant.css?v=<?= filemtime($_SERVER['DOCUMENT_ROOT'] . '/qieos/css/pages/report-tenant.css') ?>">
 </head>
 
 <body>
@@ -402,6 +402,25 @@
         window.open(url, "_self");
 
     }
+
+    $(function(){
+        const now = new Date();
+        const y = now.getFullYear();
+        const m = String(now.getMonth() + 1).padStart(2, "0");
+        const d = String(now.getDate()).padStart(2, "0");
+        const firstDay = y + "-" + m + "-01";
+        const today = y + "-" + m + "-" + d;
+
+        $("#first_date_all, #first_date_single").each(function(){
+            if (!$(this).val()) $(this).val(firstDay);
+        });
+
+        $("#last_date_all, #last_date_single").each(function(){
+            if (!$(this).val()) $(this).val(today);
+        });
+
+        loadReportAll();
+    });
 </script>
 
 </body>

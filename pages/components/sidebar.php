@@ -167,8 +167,8 @@
                 <!-- LAPORAN -->
                 <li class="nav-title">LAPORAN</li>
 
-                <li class="nav-item <?= ($current_page == 'report.php') ? 'active' : ''; ?>">
-                    <a href="/qieos/pages/coming-soon.php" class="nav-link" data-tooltip="Laporan Penjualan">
+                <li class="nav-item <?= ($current_page == 'report-sales.php') ? 'active' : ''; ?>">
+                    <a href="/qieos/pages/report/report-sales.php" class="nav-link" data-tooltip="Laporan Penjualan">
                         <span class="sidebar-icon"><i class="fas fa-chart-line"></i></span>
                         <span class="sidebar-text">Laporan Penjualan</span>
                     </a>

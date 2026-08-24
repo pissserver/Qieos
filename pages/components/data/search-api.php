@@ -19,7 +19,7 @@ $pages = [
     ['name' => 'Stok Penjualan', 'url' => '/qieos/pages/coming-soon.php', 'icon' => 'fas fa-boxes-stacked', 'category' => 'Penjualan'],
     ['name' => 'Tenant', 'url' => '/qieos/pages/tenant/tenant.php', 'icon' => 'fas fa-store', 'category' => 'Tenant'],
     ['name' => 'Pendaftaran Tenant', 'url' => '/qieos/pages/tenant/registration.php', 'icon' => 'fas fa-file-signature', 'category' => 'Tenant'],
-    ['name' => 'Laporan Penjualan', 'url' => '/qieos/pages/coming-soon.php', 'icon' => 'fas fa-chart-bar', 'category' => 'Laporan'],
+    ['name' => 'Laporan Penjualan', 'url' => '/qieos/pages/report/report-sales.php', 'icon' => 'fas fa-chart-bar', 'category' => 'Laporan'],
     ['name' => 'Laporan Tenant', 'url' => '/qieos/pages/report/report-tenant.php', 'icon' => 'fas fa-file-invoice-dollar', 'category' => 'Laporan'],
     ['name' => 'Rekap', 'url' => '/qieos/pages/recap/recap.php', 'icon' => 'fas fa-clipboard-list', 'category' => 'Laporan'],
     ['name' => 'Stok Gudang', 'url' => '/qieos/pages/coming-soon.php', 'icon' => 'fas fa-warehouse', 'category' => 'Persediaan'],

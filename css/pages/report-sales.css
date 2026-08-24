@@ -1,0 +1,255 @@
+@import url('report-tenant.css');
+
+#reportAllSummaryCard,
+#reportProductSummaryCard,
+#reportCategorySummaryCard,
+#reportCashierSummaryCard,
+#reportBestSummaryCard,
+#reportSummarySummaryCard,
+#reportOmzetSummaryCard,
+#reportExpenseSummaryCard,
+#reportProfitSummaryCard,
+#reportMarginSummaryCard {
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+    color: #fff;
+    border: 1.5px solid rgba(99,102,241,0.4);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(30, 27, 75, 0.15);
+    padding: 18px 24px;
+}
+
+.report-panel {
+    animation: fadeReport .35s;
+}
+
+.rank-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    background: #eef2ff;
+    color: #4338ca;
+    font-weight: 800;
+    font-size: 13px;
+}
+
+.rank-badge.gold {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.rank-badge.silver {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.rank-badge.bronze {
+    background: #ffedd5;
+    color: #c2410c;
+}
+
+.report-menu-group {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #94a3b8;
+    padding: 4px 6px 2px;
+}
+
+.report-menu-group:not(:first-child) {
+    margin-top: 10px;
+}
+
+.money-stat {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    border-radius: 22px;
+    padding: 24px 22px;
+    min-height: 120px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid transparent;
+    backdrop-filter: blur(20px);
+    transition: transform .3s, box-shadow .3s;
+}
+
+.money-stat:hover {
+    transform: translateY(-4px);
+}
+
+.money-stat::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -30%;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    opacity: .08;
+    pointer-events: none;
+}
+
+.money-stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 8px 20px rgba(0,0,0,.18);
+}
+
+.money-stat small {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    position: relative;
+    z-index: 1;
+}
+
+.money-stat h5 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: -.3px;
+    color: #fff;
+    position: relative;
+    z-index: 1;
+}
+
+.money-stat span {
+    display: block;
+    font-size: 12px;
+    margin-top: 6px;
+    opacity: .7;
+    position: relative;
+    z-index: 1;
+}
+
+.money-stat-in {
+    background: linear-gradient(135deg, rgba(16,185,129,.12) 0%, rgba(5,150,105,.08) 50%, rgba(16,185,129,.04) 100%);
+    color: #d1fae5;
+    border-color: rgba(16,185,129,.2);
+    box-shadow: 0 8px 32px rgba(16,185,129,.12), inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+.money-stat-in::before {
+    background: radial-gradient(circle, #10b981, transparent);
+}
+
+.money-stat-in:hover {
+    box-shadow: 0 16px 48px rgba(16,185,129,.22), inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+.money-stat-in .money-stat-icon {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(16,185,129,.35);
+}
+
+.money-stat-out {
+    background: linear-gradient(135deg, rgba(239,68,68,.12) 0%, rgba(220,38,38,.08) 50%, rgba(239,68,68,.04) 100%);
+    color: #fee2e2;
+    border-color: rgba(239,68,68,.2);
+    box-shadow: 0 8px 32px rgba(239,68,68,.12), inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+.money-stat-out::before {
+    background: radial-gradient(circle, #ef4444, transparent);
+}
+
+.money-stat-out:hover {
+    box-shadow: 0 16px 48px rgba(239,68,68,.22), inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+.money-stat-out .money-stat-icon {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(239,68,68,.35);
+}
+
+.money-stat-profit {
+    background: linear-gradient(135deg, rgba(99,102,241,.12) 0%, rgba(67,56,202,.08) 50%, rgba(99,102,241,.04) 100%);
+    color: #c7d2fe;
+    border-color: rgba(99,102,241,.2);
+    box-shadow: 0 8px 32px rgba(99,102,241,.12), inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+.money-stat-profit::before {
+    background: radial-gradient(circle, #6366f1, transparent);
+}
+
+.money-stat-profit:hover {
+    box-shadow: 0 16px 48px rgba(99,102,241,.22), inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+.money-stat-profit .money-stat-icon {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(99,102,241,.35);
+}
+
+.money-grid {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+    border-radius: 24px;
+    padding: 24px 16px;
+    border: 1px solid rgba(255,255,255,.06);
+}
+
+@media (max-width: 575.98px) {
+    #reportAllSummaryCard,
+    #reportProductSummaryCard,
+    #reportCategorySummaryCard,
+    #reportCashierSummaryCard,
+    #reportBestSummaryCard,
+    #reportSummarySummaryCard,
+    #reportOmzetSummaryCard,
+    #reportExpenseSummaryCard,
+    #reportProfitSummaryCard,
+    #reportMarginSummaryCard {
+        padding: 14px 16px !important;
+        border-radius: 12px !important;
+    }
+
+    #reportAllSummaryCard .d-flex,
+    #reportProductSummaryCard .d-flex,
+    #reportCategorySummaryCard .d-flex,
+    #reportCashierSummaryCard .d-flex,
+    #reportBestSummaryCard .d-flex,
+    #reportSummarySummaryCard .d-flex,
+    #reportOmzetSummaryCard .d-flex,
+    #reportExpenseSummaryCard .d-flex,
+    #reportProfitSummaryCard .d-flex,
+    #reportMarginSummaryCard .d-flex {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 12px !important;
+    }
+
+    #totalAllAmountLabel,
+    #totalProductAmountLabel,
+    #totalCategoryAmountLabel,
+    #totalCashierAmountLabel,
+    #totalBestAmountLabel,
+    #totalSummaryAmountLabel,
+    #totalOmzetAmountLabel,
+    #totalExpenseAmountLabel,
+    #totalProfitAmountLabel,
+    #totalMarginAmountLabel {
+        width: 100%;
+        text-align: center;
+        font-size: 16px !important;
+        padding: 10px 16px !important;
+    }
+}
