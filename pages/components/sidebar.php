@@ -1,5 +1,6 @@
 <?php
     $current_page = basename($_SERVER['PHP_SELF']);
+    $menu = isset($_GET['menu']) ? $_GET['menu'] : '';
 
     // Ambil versi update terbaru dari database jika koneksi $conn tersedia
     $latest_version = 'v1.0.0';
@@ -102,22 +103,22 @@
                 <!-- PEMBELIAN STOK -->
                 <li class="nav-title">PURCHASING</li>
 
-                <li class="nav-item <?= ($current_page == 'list.php') ? 'active' : ''; ?>">
-                    <a href="/qieos/pages/coming-soon.php" class="nav-link" data-tooltip="Daftar Belanja">
+                <li class="nav-item <?= ($current_page == 'list.php' || ($current_page == 'coming-soon.php' && $menu == 'list')) ? 'active' : ''; ?>">
+                    <a href="/qieos/pages/coming-soon.php?menu=list" class="nav-link" data-tooltip="Daftar Belanja">
                         <span class="sidebar-icon"><i class="fas fa-file-alt"></i></span>
                         <span class="sidebar-text">Daftar Belanja</span>
                     </a>
                 </li>
 
-                <li class="nav-item <?= ($current_page == 'purchase.php') ? 'active' : ''; ?>">
-                    <a href="/qieos/pages/coming-soon.php" class="nav-link" data-tooltip="Input Pembelian">
+                <li class="nav-item <?= ($current_page == 'purchase.php' || ($current_page == 'coming-soon.php' && $menu == 'purchase')) ? 'active' : ''; ?>">
+                    <a href="/qieos/pages/coming-soon.php?menu=purchase" class="nav-link" data-tooltip="Input Pembelian">
                         <span class="sidebar-icon"><i class="fas fa-cart-plus"></i></span>
                         <span class="sidebar-text">Input Pembelian</span>
                     </a>
                 </li>
 
-                <li class="nav-item <?= ($current_page == 'additional.php') ? 'active' : ''; ?>">
-                    <a href="/qieos/pages/coming-soon.php" class="nav-link" data-tooltip="Produk Tambahan">
+                <li class="nav-item <?= ($current_page == 'additional.php' || ($current_page == 'coming-soon.php' && $menu == 'additional')) ? 'active' : ''; ?>">
+                    <a href="/qieos/pages/coming-soon.php?menu=additional" class="nav-link" data-tooltip="Produk Tambahan">
                         <span class="sidebar-icon"><i class="fas fa-box-open"></i></span>
                         <span class="sidebar-text">Produk Tambahan</span>
                     </a>
@@ -126,22 +127,22 @@
                 <!-- GUDANG STOK (SUMBER BARANG / FIFO) -->
                 <li class="nav-title">GUDANG STOK</li>
 
-                <li class="nav-item <?= ($current_page == 'stock.php') ? 'active' : ''; ?>">
-                    <a href="/qieos/pages/coming-soon.php" class="nav-link" data-tooltip="Stok Gudang">
+                <li class="nav-item <?= ($current_page == 'stock.php' || ($current_page == 'coming-soon.php' && $menu == 'stock')) ? 'active' : ''; ?>">
+                    <a href="/qieos/pages/coming-soon.php?menu=stock" class="nav-link" data-tooltip="Stok Gudang">
                         <span class="sidebar-icon"><i class="fas fa-warehouse"></i></span>
                         <span class="sidebar-text">Stok Gudang</span>
                     </a>
                 </li>
 
-                <li class="nav-item <?= ($current_page == 'mutation.php') ? 'active' : ''; ?>">
-                    <a href="/qieos/pages/coming-soon.php" class="nav-link" data-tooltip="Mutasi Stok">
+                <li class="nav-item <?= ($current_page == 'mutation.php' || ($current_page == 'coming-soon.php' && $menu == 'mutation')) ? 'active' : ''; ?>">
+                    <a href="/qieos/pages/coming-soon.php?menu=mutation" class="nav-link" data-tooltip="Mutasi Stok">
                         <span class="sidebar-icon"><i class="fas fa-truck-ramp-box"></i></span>
                         <span class="sidebar-text">Mutasi Stok</span>
                     </a>
                 </li>
 
-                <li class="nav-item <?= ($current_page == 'transfer.php') ? 'active' : ''; ?>">
-                    <a href="/qieos/pages/coming-soon.php" class="nav-link" data-tooltip="Transfer ke Penjualan">
+                <li class="nav-item <?= ($current_page == 'transfer.php' || ($current_page == 'coming-soon.php' && $menu == 'transfer')) ? 'active' : ''; ?>">
+                    <a href="/qieos/pages/coming-soon.php?menu=transfer" class="nav-link" data-tooltip="Transfer ke Penjualan">
                         <span class="sidebar-icon"><i class="fas fa-exchange-alt"></i></span>
                         <span class="sidebar-text">Transfer ke Penjualan</span>
                     </a>
@@ -167,8 +168,8 @@
                 <!-- LAPORAN -->
                 <li class="nav-title">LAPORAN</li>
 
-                <li class="nav-item <?= ($current_page == 'report-sales.php') ? 'active' : ''; ?>">
-                    <a href="/qieos/pages/report/report-sales.php" class="nav-link" data-tooltip="Laporan Penjualan">
+                <li class="nav-item <?= ($current_page == 'report-sales.php' || ($current_page == 'coming-soon.php' && $menu == 'report-sales')) ? 'active' : ''; ?>">
+                    <a href="/qieos/pages/coming-soon.php?menu=report-sales" class="nav-link" data-tooltip="Laporan Penjualan">
                         <span class="sidebar-icon"><i class="fas fa-chart-line"></i></span>
                         <span class="sidebar-text">Laporan Penjualan</span>
                     </a>
@@ -184,15 +185,15 @@
                 <!-- MANAJEMEN STAFF -->
                 <li class="nav-title">MANAJEMEN USER</li>
 
-                <li class="nav-item <?= ($current_page == 'administrator.php') ? 'active' : ''; ?>">
-                    <a href="/qieos/pages/coming-soon.php" class="nav-link" data-tooltip="Administrator">
+                <li class="nav-item <?= ($current_page == 'administrator.php' || ($current_page == 'administrator.php' && $menu == 'administrator')) ? 'active' : ''; ?>">
+                    <a href="/qieos/pages/management/administrator.php" class="nav-link" data-tooltip="Administrator">
                         <span class="sidebar-icon"><i class="fas fa-users"></i></span>
                         <span class="sidebar-text">Administrator</span>
                     </a>
                 </li>
 
-                <li class="nav-item <?= ($current_page == 'cashier.php') ? 'active' : ''; ?>">
-                    <a href="/qieos/pages/coming-soon.php" class="nav-link" data-tooltip="Staff Kasir">
+                <li class="nav-item <?= ($current_page == 'cashier.php' || ($current_page == 'cashier.php' && $menu == 'cashier')) ? 'active' : ''; ?>">
+                    <a href="/qieos/pages/management/cashier.php" class="nav-link" data-tooltip="Staff Kasir">
                         <span class="sidebar-icon"><i class="fas fa-users"></i></span>
                         <span class="sidebar-text">Staff Kasir</span>
                     </a>
@@ -213,22 +214,22 @@
                 <!-- GUDANG PENJUALAN -->
                 <li class="nav-title">PENJUALAN</li>
 
-                <li class="nav-item <?= ($current_page == 'sales-stock.php') ? 'active' : ''; ?>">
-                    <a href="/qieos/pages/coming-soon.php" class="nav-link" data-tooltip="Stok Penjualan">
+                <li class="nav-item <?= ($current_page == 'sales-stock.php' || ($current_page == 'coming-soon.php' && $menu == 'sales-stock')) ? 'active' : ''; ?>">
+                    <a href="/qieos/pages/coming-soon.php?menu=sales-stock" class="nav-link" data-tooltip="Stok Penjualan">
                         <span class="sidebar-icon"><i class="fas fa-store"></i></span>
                         <span class="sidebar-text">Stok Penjualan</span>
                     </a>
                 </li>
 
-                <li class="nav-item <?= ($current_page == 'catalog.php') ? 'active' : ''; ?>">
-                    <a href="/qieos/pages/coming-soon.php" class="nav-link" data-tooltip="Katalog Produk">
+                <li class="nav-item <?= ($current_page == 'catalog.php' || ($current_page == 'coming-soon.php' && $menu == 'catalog')) ? 'active' : ''; ?>">
+                    <a href="/qieos/pages/coming-soon.php?menu=catalog" class="nav-link" data-tooltip="Katalog Produk">
                         <span class="sidebar-icon"><i class="fas fa-book-open"></i></span>
                         <span class="sidebar-text">Katalog Produk</span>
                     </a>
                 </li>
 
-                <li class="nav-item <?= ($current_page == 'order.php') ? 'active' : ''; ?>">
-                    <a href="/qieos/pages/coming-soon.php" class="nav-link" data-tooltip="Pesanan">
+                <li class="nav-item <?= ($current_page == 'order.php' || ($current_page == 'coming-soon.php' && $menu == 'order')) ? 'active' : ''; ?>">
+                    <a href="/qieos/pages/coming-soon.php?menu=order" class="nav-link" data-tooltip="Pesanan">
                         <span class="sidebar-icon"><i class="fas fa-receipt"></i></span>
                         <span class="sidebar-text">Pesanan</span>
                     </a>
