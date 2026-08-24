@@ -118,7 +118,7 @@
                 </div>
                 <div>
                     <div style="font-size:11px; text-transform:uppercase; letter-spacing:1px; color:#c7d2fe; font-weight:700;">Total Omzet Kasir</div>
-                    <div style="font-size:12px; color:#94a3b8;">Akumulasi transaksi kasir yang dipilih</div>
+                    <div style="font-size:12px; color:#94a3b8;">Hanya dari transaksi kasir yang sudah terbayar</div>
                 </div>
             </div>
             <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); color: #fbbf24; font-size: 18px; font-weight: 800; padding: 8px 22px; border-radius: 14px; letter-spacing: 0.5px;" id="totalCashierAmountLabel">

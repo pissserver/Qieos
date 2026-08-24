@@ -27,11 +27,13 @@ $query = mysqli_query($conn, "
 
 $rank = 1;
 $totalQty = 0;
+$totalOmzet = 0;
 $hasData = $query && mysqli_num_rows($query) > 0;
 
 if ($hasData) {
     while ($row = mysqli_fetch_assoc($query)) {
         $totalQty += (int) $row['qty_sold'];
+        $totalOmzet += (float) $row['omzet'];
         $rankClass = '';
         if ($rank === 1) {
             $rankClass = ' gold';
@@ -59,4 +61,7 @@ if ($hasData) {
 }
 
 echo '<!--SPLIT_FOOT-->';
-echo number_format($totalQty, 0, ',', '.');
+echo json_encode(array(
+    'qty'   => number_format($totalQty, 0, ',', '.'),
+    'omzet' => report_rp($totalOmzet)
+));

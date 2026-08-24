@@ -235,12 +235,19 @@
             }
         }
 
-        if (cfg === reportTabs.best) {
-            let qty = (footText || "").trim();
-            if (qty !== "") {
-                $(cfg.label).text(qty);
+        if (cfg === reportTabs.best || cfg === reportTabs.category || cfg === reportTabs.product) {
+            try {
+                let parsed = JSON.parse(footText || "{}");
+                let qLabel = cfg === reportTabs.best ? "#totalBestQtyLabel"
+                    : cfg === reportTabs.category ? "#totalCategoryQtyLabel"
+                    : "#totalProductQtyLabel";
+                let aLabel = cfg === reportTabs.best ? "#totalBestAmountLabel"
+                    : cfg === reportTabs.category ? "#totalCategoryAmountLabel"
+                    : "#totalProductAmountLabel";
+                $(qLabel).text((parsed.qty || "0") + " Unit");
+                $(aLabel).text(parsed.omzet || "Rp 0");
                 $(cfg.card).show();
-            } else {
+            } catch(e) {
                 $(cfg.card).hide();
             }
             return;

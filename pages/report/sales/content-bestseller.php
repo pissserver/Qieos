@@ -105,12 +105,17 @@
                     <i class="fas fa-fire"></i>
                 </div>
                 <div>
-                    <div style="font-size:11px; text-transform:uppercase; letter-spacing:1px; color:#c7d2fe; font-weight:700;">Total Qty Terjual</div>
-                    <div style="font-size:12px; color:#94a3b8;">Akumulasi penjualan produk terlaris</div>
+                    <div style="font-size:11px; text-transform:uppercase; letter-spacing:1px; color:#c7d2fe; font-weight:700;">Total Produk Terlaris</div>
+                    <div style="font-size:12px; color:#94a3b8;">Akumulasi jumlah unit terjual dan nilai omzet</div>
                 </div>
             </div>
-            <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); color: #fbbf24; font-size: 18px; font-weight: 800; padding: 8px 22px; border-radius: 14px; letter-spacing: 0.5px;" id="totalBestAmountLabel">
-                0
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <div style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: #c7d2fe; font-size: 14px; font-weight: 700; padding: 6px 16px; border-radius: 12px;" id="totalBestQtyLabel">
+                    0 Unit
+                </div>
+                <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); color: #fbbf24; font-size: 18px; font-weight: 800; padding: 8px 22px; border-radius: 14px; letter-spacing: 0.5px;" id="totalBestAmountLabel">
+                    Rp 0
+                </div>
             </div>
         </div>
     </div>

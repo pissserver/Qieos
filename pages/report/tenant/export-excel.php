@@ -310,7 +310,9 @@ $lastDataRow  = $row - 1;
 
 $sheet->setCellValue(
     "D$row",
-    "=SUM(D$firstDataRow:D$lastDataRow)"
+    ($lastDataRow >= $firstDataRow)
+        ? "=SUM(D$firstDataRow:D$lastDataRow)"
+        : "=0"
 );
 
 

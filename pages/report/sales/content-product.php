@@ -117,15 +117,20 @@
         <div class="d-flex align-items-center justify-content-between px-2 flex-wrap gap-2">
             <div class="d-flex align-items-center gap-3">
                 <div style="width:42px; height:42px; border-radius:12px; background:rgba(255,255,255,0.12); display:flex; align-items:center; justify-content:center; font-size:18px; color:#818cf8;">
-                    <i class="fas fa-calculator"></i>
+                    <i class="fas fa-box"></i>
                 </div>
                 <div>
                     <div style="font-size:11px; text-transform:uppercase; letter-spacing:1px; color:#c7d2fe; font-weight:700;">Total Penjualan Produk</div>
-                    <div style="font-size:12px; color:#94a3b8;">Akumulasi omzet produk yang dipilih</div>
+                    <div style="font-size:12px; color:#94a3b8;">Akumulasi jumlah unit terjual dan nilai omzet</div>
                 </div>
             </div>
-            <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); color: #fbbf24; font-size: 18px; font-weight: 800; padding: 8px 22px; border-radius: 14px; letter-spacing: 0.5px;" id="totalProductAmountLabel">
-                Rp 0
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <div style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: #c7d2fe; font-size: 14px; font-weight: 700; padding: 6px 16px; border-radius: 12px;" id="totalProductQtyLabel">
+                    0 Unit
+                </div>
+                <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); color: #fbbf24; font-size: 18px; font-weight: 800; padding: 8px 22px; border-radius: 14px; letter-spacing: 0.5px;" id="totalProductAmountLabel">
+                    Rp 0
+                </div>
             </div>
         </div>
     </div>

@@ -111,7 +111,27 @@ switch ($tab) {
 }
 
 $count = ($tab === 'summary') ? 3 : count($rows);
-$endCol = chr(ord('A') + 5);
+
+$cashierName = '';
+if ($tab === 'cashier' && $cashier_id > 0) {
+    $qCashierName = mysqli_query($conn, "SELECT COALESCE(NULLIF(fullname,''), username, '-') AS name FROM users WHERE id = $cashier_id LIMIT 1");
+    if ($qCashierName && $cashierRow = mysqli_fetch_assoc($qCashierName)) {
+        $cashierName = $cashierRow['name'];
+    }
+}
+
+$productName = '';
+if ($tab === 'product' && $product_id > 0) {
+    $qProductName = mysqli_query($conn, "SELECT COALESCE(name, '-') AS name FROM products WHERE id = $product_id LIMIT 1");
+    if ($qProductName && $productRow = mysqli_fetch_assoc($qProductName)) {
+        $productName = $productRow['name'];
+    }
+}
+
+$categoryName = '';
+if ($tab === 'category' && $category !== '') {
+    $categoryName = ucfirst($category);
+}
 
 // ============================
 // CREATE EXCEL
@@ -122,45 +142,51 @@ $objPHPExcel->getProperties()->setCreator("Qieos")->setTitle($title2);
 $sheet = $objPHPExcel->setActiveSheetIndex(0);
 $sheet->setTitle("Laporan");
 
-// HEADER
-$sheet->mergeCells('A1:F1');
+$headers = [
+    'summary'  => ['No', 'Komponen', 'Keterangan', 'Jumlah'],
+    'omzet'    => ['No', 'Tanggal', 'Pesanan', 'Terbayar', 'Waiting', 'Omzet'],
+    'expense'  => ['No', 'Tanggal', 'Form Belanja', 'Total Item', 'Total Belanja'],
+    'profit'   => ['No', 'Tanggal', 'Omzet', 'Pengeluaran', 'Laba / Rugi', 'Status'],
+    'margin'   => ['No', 'Produk', 'Qty Terjual', 'Harga Beli', 'Harga Jual', 'Margin', 'Keuntungan'],
+    'all'      => ['No', 'Kode Pesanan', 'Tanggal', 'Kasir', 'Total', 'Status'],
+    'product'  => ['No', 'Tanggal', 'Kode Pesanan', 'Qty', 'Harga', 'Subtotal'],
+    'category' => ['No', 'Produk', 'Kode', 'Qty Terjual', 'Omzet'],
+    'cashier'  => ['No', 'Kode Pesanan', 'Tanggal', 'Total', 'Status'],
+    'best'     => ['Peringkat', 'Produk', 'Kategori', 'Qty Terjual', 'Omzet']
+];
+
+$hdrs = isset($headers[$tab]) ? $headers[$tab] : $headers['all'];
+$lastCol = chr(ord('A') + count($hdrs) - 1);
+
+$sheet->mergeCells("A1:{$lastCol}1");
 $sheet->setCellValue('A1', 'PT. SELARASGRIYA SARANA UTAMA');
 
-$sheet->mergeCells('A2:F2');
+$sheet->mergeCells("A2:{$lastCol}2");
 $sheet->setCellValue('A2', 'Pasar Induk Surabaya Sidotopo');
 
-$sheet->mergeCells('A4:F4');
+$sheet->mergeCells("A4:{$lastCol}4");
 $sheet->setCellValue('A4', $title);
 
 $periode = '';
 if (!empty($first_date) && !empty($last_date)) {
     $periode = 'Periode : ' . date('d M Y', strtotime($first_date)) . ' s/d ' . date('d M Y', strtotime($last_date));
 }
-$sheet->mergeCells('A5:F5');
+if ($tab === 'cashier' && $cashierName !== '') {
+    $periode = trim($periode . '  |  Kasir : ' . $cashierName);
+}
+if ($tab === 'product' && $productName !== '') {
+    $periode = trim($periode . '  |  Produk : ' . $productName);
+}
+if ($tab === 'category' && $categoryName !== '') {
+    $periode = trim($periode . '  |  Kategori : ' . $categoryName);
+}
+$sheet->mergeCells("A5:{$lastCol}5");
 $sheet->setCellValue('A5', $periode);
 
-// TABLE HEADER
 $row = 7;
-$headers = [
-    'summary'  => ['No', 'Komponen', 'Keterangan', 'Jumlah', '', ''],
-    'omzet'    => ['No', 'Tanggal', 'Pesanan', 'Terbayar', 'Waiting', 'Omzet'],
-    'expense'  => ['No', 'Tanggal', 'Form Belanja', 'Total Item', 'Total Belanja', ''],
-    'profit'   => ['No', 'Tanggal', 'Omzet', 'Pengeluaran', 'Laba / Rugi', 'Status'],
-    'margin'   => ['No', 'Produk', 'Qty Terjual', 'Harga Beli', 'Harga Jual', 'Keuntungan'],
-    'all'      => ['No', 'Kode Pesanan', 'Tanggal', 'Kasir', 'Total', 'Status'],
-    'product'  => ['No', 'Tanggal', 'Kode Pesanan', 'Qty', 'Harga', 'Subtotal'],
-    'category' => ['No', 'Produk', 'Kode', 'Qty Terjual', 'Omzet', ''],
-    'cashier'  => ['No', 'Kode Pesanan', 'Tanggal', 'Total', 'Status', ''],
-    'best'     => ['Peringkat', 'Produk', 'Kategori', 'Qty Terjual', 'Omzet', '']
-];
-
-$hdrs = isset($headers[$tab]) ? $headers[$tab] : $headers['all'];
-$lastCol = chr(ord('A') + count($hdrs) - 1);
 $colLetter = 'A';
 foreach ($hdrs as $header) {
-    if (!empty($header)) {
-        $sheet->setCellValue($colLetter . $row, $header);
-    }
+    $sheet->setCellValue($colLetter . $row, $header);
     $colLetter++;
 }
 
@@ -171,7 +197,6 @@ $sheet->getStyle("A7:{$lastCol}7")->applyFromArray([
     'borders' => ['allborders' => ['style' => PHPExcel_Style_Border::BORDER_THIN]]
 ]);
 
-// DATA
 $row = 8;
 $no = 1;
 
@@ -191,7 +216,11 @@ for ($idx = 0; $idx < $count; $idx++) {
                 $sheet->setCellValue("A$row", $no);
                 $sheet->setCellValue("B$row", $summaryData[$no - 1][0]);
                 $sheet->setCellValue("C$row", $summaryData[$no - 1][1]);
-                $sheet->setCellValue("D$row", $summaryData[$no - 1][2]);
+                if ($no === 3) {
+                    $sheet->setCellValue("D$row", '=D8-D9');
+                } else {
+                    $sheet->setCellValue("D$row", $summaryData[$no - 1][2]);
+                }
             }
             break;
 
@@ -217,21 +246,21 @@ for ($idx = 0; $idx < $count; $idx++) {
             $sheet->setCellValue("B$row", date('d M Y', strtotime($r['dt'])));
             $sheet->setCellValue("C$row", (float) $r['omzet']);
             $sheet->setCellValue("D$row", (float) $r['expense']);
-            $sheet->setCellValue("E$row", (float) $r['profit']);
-            $sheet->setCellValue("F$row", $r['profit'] >= 0 ? 'Untung' : 'Rugi');
+            $sheet->setCellValue("E$row", "=C$row-D$row");
+            $sheet->setCellValue("F$row", '=IF(E' . $row . '>=0,"Untung","Rugi")');
             break;
 
         case 'margin':
             $qty = (int) $r['qty_sold'];
             $sell = (float) $r['sell_price'];
             $buy = (float) $r['buy_price'];
-            $profit = ($sell - $buy) * $qty;
             $sheet->setCellValue("A$row", $no);
             $sheet->setCellValue("B$row", $r['name']);
             $sheet->setCellValue("C$row", $qty);
             $sheet->setCellValue("D$row", $buy);
             $sheet->setCellValue("E$row", $sell);
-            $sheet->setCellValue("F$row", $profit);
+            $sheet->setCellValue("F$row", "=IF(E$row=0,0,(E$row-D$row)/E$row)");
+            $sheet->setCellValue("G$row", "=(E$row-D$row)*C$row");
             break;
 
         case 'all':
@@ -250,6 +279,7 @@ for ($idx = 0; $idx < $count; $idx++) {
             $sheet->setCellValue("D$row", (int) $r['qty']);
             $sheet->setCellValue("E$row", (float) $r['price']);
             $sheet->setCellValue("F$row", (float) $r['subtotal']);
+            $totalQty += (int) $r['qty'];
             break;
 
         case 'category':
@@ -258,6 +288,7 @@ for ($idx = 0; $idx < $count; $idx++) {
             $sheet->setCellValue("C$row", $r['code']);
             $sheet->setCellValue("D$row", (int) $r['qty_sold']);
             $sheet->setCellValue("E$row", (float) $r['omzet']);
+            $totalQty += (int) $r['qty_sold'];
             break;
 
         case 'cashier':
@@ -281,100 +312,128 @@ for ($idx = 0; $idx < $count; $idx++) {
     $no++;
 }
 
-// TOTAL
 $totalLabels = [
     'summary'  => 'LABA BERSIH',
     'omzet'    => 'TOTAL OMZET',
     'expense'  => 'TOTAL PENGELUARAN',
     'profit'   => 'TOTAL LABA / RUGI',
     'margin'   => 'TOTAL KEUNTUNGAN',
-    'all'      => 'TOTAL OMZET',
-    'product'  => 'TOTAL PENJUALAN',
-    'category' => 'TOTAL OMZET',
-    'cashier'  => 'TOTAL OMZET',
-    'best'     => 'TOTAL QTY TERJUAL'
+    'all'      => 'TOTAL OMZET (TERBAYAR)',
+    'product'  => 'TOTAL',
+    'category' => 'TOTAL',
+    'cashier'  => 'TOTAL OMZET (TERBAYAR)',
+    'best'     => 'TOTAL'
 ];
 $totalLabel = isset($totalLabels[$tab]) ? $totalLabels[$tab] : 'TOTAL';
 
+// Kolom angka yang dijumlah, sesuai urutan header di layar
 $totalColMap = [
     'summary'  => 'D',
     'omzet'    => 'F',
     'expense'  => 'E',
     'profit'   => 'E',
-    'margin'   => 'F',
+    'margin'   => 'G',
     'all'      => 'E',
     'product'  => 'F',
     'category' => 'E',
-    'cashier'  => 'E',
+    'cashier'  => 'D',
     'best'     => 'E'
 ];
 $totalCol = isset($totalColMap[$tab]) ? $totalColMap[$tab] : 'D';
 $totalColIdx = ord($totalCol) - ord('A');
-$mergeEndCol = chr(ord('A') + $totalColIdx - 1);
+$mergeEndCol = chr(ord('A') + max(0, $totalColIdx - 1));
 
-$sheet->mergeCells("A$row:{$mergeEndCol}{$row}");
-$sheet->setCellValue("A$row", $totalLabel);
-$sheet->getStyle("A$row")->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+$firstDataRow = 8;
+$lastDataRow = $row - 1;
+$hasDataRows = $lastDataRow >= $firstDataRow;
 
-if ($tab !== 'best') {
-    $firstDataRow = 8;
-    $lastDataRow = $row - 1;
-    $sheet->setCellValue($totalCol . $row, "=SUM($totalCol$firstDataRow:$totalCol$lastDataRow)");
+if ($tab === 'best' || $tab === 'category' || $tab === 'product') {
+    $sheet->mergeCells("A$row:C$row");
+    $sheet->setCellValue("A$row", $totalLabel);
+    $sheet->getStyle("A$row")->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+    if ($tab === 'product') {
+        $sheet->setCellValue("D$row", $hasDataRows ? "=SUM(D$firstDataRow:D$lastDataRow)" : '=0');
+        $sheet->setCellValue("F$row", $hasDataRows ? "=SUM(F$firstDataRow:F$lastDataRow)" : '=0');
+    } else {
+        $sheet->setCellValue("D$row", $hasDataRows ? "=SUM(D$firstDataRow:D$lastDataRow)" : '=0');
+        $sheet->setCellValue("E$row", $hasDataRows ? "=SUM(E$firstDataRow:E$lastDataRow)" : '=0');
+    }
 } else {
-    $sheet->setCellValue($totalCol . $row, $total);
+    $sheet->mergeCells("A$row:{$mergeEndCol}{$row}");
+    $sheet->setCellValue("A$row", $totalLabel);
+    $sheet->getStyle("A$row")->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+
+    if (!$hasDataRows) {
+        $formula = '=0';
+    } elseif ($tab === 'summary') {
+        $formula = '=D8-D9';
+    } elseif ($tab === 'all') {
+        $formula = "=SUMIF(F$firstDataRow:F$lastDataRow,\"Terbayar\",E$firstDataRow:E$lastDataRow)";
+    } elseif ($tab === 'cashier') {
+        $formula = "=SUMIF(E$firstDataRow:E$lastDataRow,\"Terbayar\",D$firstDataRow:D$lastDataRow)";
+    } else {
+        $formula = "=SUM($totalCol$firstDataRow:$totalCol$lastDataRow)";
+    }
+
+    $sheet->setCellValue($totalCol . $row, $formula);
 }
 
-$sheet->getStyle("A$row:{$mergeEndCol}{$row}")->applyFromArray([
+$sheet->getStyle("A$row:{$lastCol}{$row}")->applyFromArray([
     'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
     'fill' => ['type' => PHPExcel_Style_Fill::FILL_SOLID, 'color' => ['rgb' => '1E1B4B']],
-    'borders' => [
-        'top' => ['style' => PHPExcel_Style_Border::BORDER_THIN],
-        'bottom' => ['style' => PHPExcel_Style_Border::BORDER_THIN],
-        'left' => ['style' => PHPExcel_Style_Border::BORDER_THIN],
-        'right' => ['style' => PHPExcel_Style_Border::BORDER_THIN]
-    ]
+    'borders' => ['allborders' => ['style' => PHPExcel_Style_Border::BORDER_THIN]]
 ]);
 
-$sheet->getStyle($totalCol . $row)->applyFromArray([
+$goldTotal = [
     'font' => ['bold' => true, 'color' => ['rgb' => 'C4A35A']],
     'fill' => ['type' => PHPExcel_Style_Fill::FILL_SOLID, 'color' => ['rgb' => '1E1B4B']],
-    'numberFormat' => ['formatCode' => ($tab !== 'best') ? '"Rp " #,##0' : '#,##0'],
-    'borders' => [
-        'top' => ['style' => PHPExcel_Style_Border::BORDER_THIN],
-        'bottom' => ['style' => PHPExcel_Style_Border::BORDER_THIN],
-        'left' => ['style' => PHPExcel_Style_Border::BORDER_THIN],
-        'right' => ['style' => PHPExcel_Style_Border::BORDER_THIN]
-    ]
-]);
+    'borders' => ['allborders' => ['style' => PHPExcel_Style_Border::BORDER_THIN]]
+];
 
-// Format rupiah hanya pada kolom nominal uang
+if ($tab === 'best' || $tab === 'category') {
+    $sheet->getStyle("D$row")->applyFromArray($goldTotal);
+    $sheet->getStyle("D$row")->getNumberFormat()->setFormatCode('#,##0');
+    $sheet->getStyle("E$row")->applyFromArray($goldTotal);
+    $sheet->getStyle("E$row")->getNumberFormat()->setFormatCode('"Rp " #,##0');
+} elseif ($tab === 'product') {
+    $sheet->getStyle("D$row")->applyFromArray($goldTotal);
+    $sheet->getStyle("D$row")->getNumberFormat()->setFormatCode('#,##0');
+    $sheet->getStyle("F$row")->applyFromArray($goldTotal);
+    $sheet->getStyle("F$row")->getNumberFormat()->setFormatCode('"Rp " #,##0');
+} else {
+    $sheet->getStyle($totalCol . $row)->applyFromArray($goldTotal);
+    $sheet->getStyle($totalCol . $row)->getNumberFormat()->setFormatCode('"Rp " #,##0');
+}
+
 $rpColMap = [
     'summary'  => ['D'],
     'omzet'    => ['F'],
     'expense'  => ['E'],
     'profit'   => ['C', 'D', 'E'],
-    'margin'   => ['D', 'E', 'F'],
-    'all'      => ['D'],
+    'margin'   => ['D', 'E', 'G'],
+    'all'      => ['E'],
     'product'  => ['E', 'F'],
     'category' => ['E'],
     'cashier'  => ['D'],
     'best'     => ['E']
 ];
 $rpCols = isset($rpColMap[$tab]) ? $rpColMap[$tab] : ['D'];
-foreach ($rpCols as $c) {
-    $sheet->getStyle("{$c}8:{$c}" . ($row - 1))->getNumberFormat()->setFormatCode('"Rp " #,##0');
+if ($hasDataRows) {
+    foreach ($rpCols as $c) {
+        $sheet->getStyle("{$c}8:{$c}" . ($row - 1))->getNumberFormat()->setFormatCode('"Rp " #,##0');
+    }
+    if ($tab === 'margin') {
+        $sheet->getStyle("F8:F" . ($row - 1))->getNumberFormat()->setFormatCode('0.0%');
+    }
 }
 
-// Border semua tabel
-$sheet->getStyle("A7:{$lastCol}" . ($row - 1))->applyFromArray([
+$sheet->getStyle("A7:{$lastCol}" . $row)->applyFromArray([
     'borders' => ['allborders' => ['style' => PHPExcel_Style_Border::BORDER_THIN]]
 ]);
 
-// Alignment
 $sheet->getStyle("A7:{$lastCol}" . $row)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
 $sheet->getStyle("A7:A$row")->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 
-// Auto width
 foreach (range('A', $lastCol) as $col) {
     $sheet->getColumnDimension($col)->setAutoSize(true);
 }

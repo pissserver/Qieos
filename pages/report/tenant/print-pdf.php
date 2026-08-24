@@ -117,7 +117,7 @@ ob_start();
     <title><?= pdfEscape($title2) ?> - Qieos</title>
     <style>
         @page {
-            margin: 20px 30px 42px 30px;
+            margin: 22px 48px 50px 36px;
         }
 
         * {
@@ -168,7 +168,7 @@ ob_start();
         }
 
         .title-block {
-            padding: 16px 4px 12px 14px;
+            padding: 16px 12px 12px 14px;
         }
 
         .report-kicker {
@@ -276,17 +276,22 @@ ob_start();
             font-weight: bold;
             letter-spacing: 0.8px;
             text-transform: uppercase;
-            padding: 8px 8px;
+            padding: 8px 10px;
             border: 1px solid #1e1b4b;
             text-align: center;
         }
 
         .data-table td {
-            padding: 7px 8px;
+            padding: 7px 10px;
             border: 1px solid #e2e8f0;
             font-size: 9.5px;
             color: #1e293b;
             vertical-align: middle;
+        }
+
+        .data-table th:last-child,
+        .data-table td:last-child {
+            padding-right: 14px;
         }
 
         .row-a { background: #ffffff; }
@@ -547,7 +552,7 @@ $dompdf->render();
 
 $canvas = $dompdf->getCanvas();
 $font   = $dompdf->getFontMetrics()->getFont('DejaVu Sans', 'normal');
-$canvas->page_text(472, 820, "Halaman {PAGE_NUM} dari {PAGE_COUNT}", $font, 8, [0.58, 0.63, 0.72]);
+$canvas->page_text(430, 812, "Halaman {PAGE_NUM} dari {PAGE_COUNT}", $font, 8, [0.58, 0.63, 0.72]);
 
 if (ob_get_length()) {
     ob_end_clean();

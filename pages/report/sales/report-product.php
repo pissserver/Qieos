@@ -23,11 +23,13 @@ $query = mysqli_query($conn, "
 
 $no = 1;
 $total = 0;
+$totalQty = 0;
 $hasData = $query && mysqli_num_rows($query) > 0;
 
 if ($hasData) {
     while ($row = mysqli_fetch_assoc($query)) {
         $total += (float) $row['subtotal'];
+        $totalQty += (int) $row['qty'];
         ?>
         <tr>
             <td class="text-center"><?= $no++ ?></td>
@@ -43,4 +45,8 @@ if ($hasData) {
     report_empty(6, 'Tidak ada penjualan untuk produk ini pada periode tersebut.');
 }
 
-report_foot($total);
+echo '<!--SPLIT_FOOT-->';
+echo json_encode(array(
+    'qty'   => number_format($totalQty, 0, ',', '.'),
+    'omzet' => report_rp($total)
+));

@@ -80,6 +80,27 @@ $printedAt  = sPdfDateId(date('Y-m-d')) . ' · ' . date('H:i') . ' WIB';
 $printedBy  = isset($user['fullname']) && $user['fullname'] !== '' ? $user['fullname'] : (isset($_SESSION['username']) ? $_SESSION['username'] : 'QIEOS');
 $printedRole = isset($user['role']) && $user['role'] !== '' ? ucwords((string) $user['role']) : 'Staff';
 
+$cashierName = '';
+if ($tab === 'cashier' && $cashier_id > 0) {
+    $qCashierName = mysqli_query($conn, "SELECT COALESCE(NULLIF(fullname,''), username, '-') AS name FROM users WHERE id = $cashier_id LIMIT 1");
+    if ($qCashierName && $cashierRow = mysqli_fetch_assoc($qCashierName)) {
+        $cashierName = $cashierRow['name'];
+    }
+}
+
+$productName = '';
+if ($tab === 'product' && $product_id > 0) {
+    $qProductName = mysqli_query($conn, "SELECT COALESCE(name, '-') AS name FROM products WHERE id = $product_id LIMIT 1");
+    if ($qProductName && $productRow = mysqli_fetch_assoc($qProductName)) {
+        $productName = $productRow['name'];
+    }
+}
+
+$categoryName = '';
+if ($tab === 'category' && $category !== '') {
+    $categoryName = ucfirst($category);
+}
+
 // ============================
 // QUERY DATA PER TAB
 // ============================
@@ -127,13 +148,17 @@ switch ($tab) {
     case 'product':
         $escProduct = (int) $product_id;
         $q = mysqli_query($conn, "SELECT o.code, o.tanggal, od.qty, od.price, od.subtotal FROM order_details od JOIN orders o ON od.order_id=o.id WHERE od.product_id=$escProduct AND o.status_payment!='cancelled' AND $where ORDER BY o.tanggal DESC, o.id DESC");
-        if ($q) while ($r = mysqli_fetch_assoc($q)) { $total+=(float)$r['subtotal']; $rows[]=$r; }
+        $totalQty = 0;
+        if ($q) while ($r = mysqli_fetch_assoc($q)) { $totalQty+=(int)$r['qty']; $total+=(float)$r['subtotal']; $rows[]=$r; }
+        $extra['qty'] = $totalQty;
         break;
 
     case 'category':
         $escCat = mysqli_real_escape_string($conn, $category);
         $q = mysqli_query($conn, "SELECT p.name, p.code, COALESCE(SUM(od.qty),0) AS qty_sold, COALESCE(SUM(od.subtotal),0) AS omzet FROM order_details od JOIN orders o ON od.order_id=o.id JOIN products p ON od.product_id=p.id WHERE p.category='$escCat' AND o.status_payment='paid' AND $where GROUP BY p.id, p.name, p.code ORDER BY omzet DESC, p.name ASC");
-        if ($q) while ($r = mysqli_fetch_assoc($q)) { $total+=(float)$r['omzet']; $rows[]=$r; }
+        $totalQty = 0;
+        if ($q) while ($r = mysqli_fetch_assoc($q)) { $totalQty+=(int)$r['qty_sold']; $total+=(float)$r['omzet']; $rows[]=$r; }
+        $extra['qty'] = $totalQty;
         break;
 
     case 'cashier':
@@ -144,7 +169,9 @@ switch ($tab) {
     case 'best':
         if ($limit <= 0) $limit = 10;
         $q = mysqli_query($conn, "SELECT p.name, p.category, COALESCE(SUM(od.qty),0) AS qty_sold, COALESCE(SUM(od.subtotal),0) AS omzet FROM order_details od JOIN orders o ON od.order_id=o.id JOIN products p ON od.product_id=p.id WHERE o.status_payment='paid' AND $where GROUP BY p.id, p.name, p.category ORDER BY qty_sold DESC, omzet DESC LIMIT $limit");
-        if ($q) while ($r = mysqli_fetch_assoc($q)) { $total+=(int)$r['qty_sold']; $rows[]=$r; }
+        $totalQty = 0;
+        if ($q) while ($r = mysqli_fetch_assoc($q)) { $totalQty+=(int)$r['qty_sold']; $total+=(float)$r['omzet']; $rows[]=$r; }
+        $extra['qty'] = $totalQty;
         break;
 }
 
@@ -161,7 +188,7 @@ ob_start();
     <meta charset="utf-8">
     <title><?= sPdfEscape($title2) ?> - Qieos</title>
     <style>
-        @page { margin: 20px 30px 42px 30px; }
+        @page { margin: 22px 48px 50px 36px; }
         * { margin: 0; padding: 0; }
         body { font-family: DejaVu Sans, sans-serif; font-size: 10.5px; color: #0f172a; line-height: 1.45; }
         .wrap { width: 100%; }
@@ -170,7 +197,7 @@ ob_start();
         .co-name { color: #ffffff; font-size: 14px; font-weight: bold; letter-spacing: 0.6px; }
         .co-sub { color: #c7d2fe; font-size: 8.5px; margin-top: 3px; letter-spacing: 0.2px; }
         .gold-bar { background: #c4a35a; height: 4px; font-size: 0; line-height: 0; }
-        .title-block { padding: 16px 4px 12px 14px; }
+        .title-block { padding: 16px 12px 12px 14px; }
         .report-kicker { font-size: 8px; font-weight: bold; letter-spacing: 1.6px; color: #6366f1; text-transform: uppercase; }
         .report-title { font-size: 16px; font-weight: bold; color: #1e1b4b; margin-top: 3px; letter-spacing: 0.3px; }
         .report-period { font-size: 10px; color: #64748b; margin-top: 4px; }
@@ -188,8 +215,10 @@ ob_start();
         .kpi-hint { font-size: 8px; color: #64748b; margin-top: 2px; }
         .data-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
         .data-table thead { display: table-header-group; }
-        .data-table th { background: #1e1b4b; color: #ffffff; font-size: 8px; font-weight: bold; letter-spacing: 0.8px; text-transform: uppercase; padding: 8px 8px; border: 1px solid #1e1b4b; text-align: center; overflow: hidden; }
-        .data-table td { padding: 7px 8px; border: 1px solid #e2e8f0; font-size: 9.5px; color: #1e293b; vertical-align: middle; overflow: hidden; }
+        .data-table th { background: #1e1b4b; color: #ffffff; font-size: 8px; font-weight: bold; letter-spacing: 0.8px; text-transform: uppercase; padding: 8px 10px; border: 1px solid #1e1b4b; text-align: center; overflow: hidden; }
+        .data-table td { padding: 7px 10px; border: 1px solid #e2e8f0; font-size: 9.5px; color: #1e293b; vertical-align: middle; overflow: hidden; }
+        .data-table th:last-child,
+        .data-table td:last-child { padding-right: 14px; }
         .w5  { width: 5%; }
         .w8  { width: 8%; }
         .w10 { width: 10%; }
@@ -241,7 +270,7 @@ ob_start();
     <div class="title-block">
         <div class="report-kicker">Laporan Penjualan</div>
         <div class="report-title"><?= sPdfEscape($title) ?></div>
-        <div class="report-period">Periode <?= sPdfEscape($periodLabel) ?></div>
+        <div class="report-period">Periode <?= sPdfEscape($periodLabel) ?><?= $tab === 'cashier' && $cashierName !== '' ? '  ·  Kasir ' . sPdfEscape($cashierName) : '' ?><?= $tab === 'product' && $productName !== '' ? '  ·  Produk ' . sPdfEscape($productName) : '' ?><?= $tab === 'category' && $categoryName !== '' ? '  ·  Kategori ' . sPdfEscape($categoryName) : '' ?></div>
     </div>
 
     <table class="meta-table" cellspacing="0" cellpadding="0">
@@ -251,8 +280,8 @@ ob_start();
                 <div class="meta-value"><?= sPdfEscape($title2) ?></div>
             </td>
             <td>
-                <div class="meta-label">Cakupan</div>
-                <div class="meta-value">Periode <?= sPdfEscape($periodLabel) ?></div>
+                <div class="meta-label"><?= $tab === 'cashier' && $cashierName !== '' ? 'Kasir' : ($tab === 'product' && $productName !== '' ? 'Produk' : ($tab === 'category' && $categoryName !== '' ? 'Kategori' : 'Cakupan')) ?></div>
+                <div class="meta-value"><?= $tab === 'cashier' && $cashierName !== '' ? sPdfEscape($cashierName) : ($tab === 'product' && $productName !== '' ? sPdfEscape($productName) : ($tab === 'category' && $categoryName !== '' ? sPdfEscape($categoryName) : 'Periode ' . sPdfEscape($periodLabel))) ?></div>
             </td>
             <td>
                 <div class="meta-label">Dicetak</div>
@@ -304,7 +333,7 @@ ob_start();
                     'omzet'    => ['No', 'Tanggal', 'Pesanan', 'Terbayar', 'Waiting', 'Omzet'],
                     'expense'  => ['No', 'Tanggal', 'Form Belanja', 'Total Item', 'Total Belanja'],
                     'profit'   => ['No', 'Tanggal', 'Omzet', 'Pengeluaran', 'Laba / Rugi', 'Status'],
-                    'margin'   => ['No', 'Produk', 'Qty Terjual', 'Harga Beli', 'Harga Jual', 'Keuntungan'],
+                    'margin'   => ['No', 'Produk', 'Qty Terjual', 'Harga Beli', 'Harga Jual', 'Margin', 'Keuntungan'],
                     'all'      => ['No', 'Kode Pesanan', 'Tanggal', 'Kasir', 'Total', 'Status'],
                     'product'  => ['No', 'Tanggal', 'Kode Pesanan', 'Qty', 'Harga', 'Subtotal'],
                     'category' => ['No', 'Produk', 'Kode', 'Qty Terjual', 'Omzet'],
@@ -475,17 +504,38 @@ ob_start();
                     'expense'  => 'TOTAL PENGELUARAN',
                     'profit'   => 'TOTAL LABA / RUGI',
                     'margin'   => 'TOTAL KEUNTUNGAN',
-                    'all'      => 'TOTAL OMZET',
-                    'product'  => 'TOTAL PENJUALAN',
-                    'category' => 'TOTAL OMZET',
-                    'cashier'  => 'TOTAL OMZET',
-                    'best'     => 'TOTAL QTY TERJUAL'
+                    'all'      => 'TOTAL OMZET (TERBAYAR)',
+                    'product'  => 'TOTAL',
+                    'category' => 'TOTAL',
+                    'cashier'  => 'TOTAL OMZET (TERBAYAR)',
+                    'best'     => 'TOTAL'
                 ];
                 $totalLabel = isset($labelMap[$tab]) ? $labelMap[$tab] : 'TOTAL';
-                $totalValue = $tab === 'best' ? number_format($total, 0, ',', '.') : sPdfRp($total);
+                if ($tab === 'best' || $tab === 'category'):
                 ?>
+                <td colspan="3" class="r"><?= sPdfEscape($totalLabel) ?></td>
+                <td class="c"><?= number_format(isset($extra['qty']) ? $extra['qty'] : 0, 0, ',', '.') ?></td>
+                <td class="r total-amount"><?= sPdfRp($total) ?></td>
+                <?php elseif ($tab === 'product'):
+                ?>
+                <td colspan="3" class="r"><?= sPdfEscape($totalLabel) ?></td>
+                <td class="c"><?= number_format(isset($extra['qty']) ? $extra['qty'] : 0, 0, ',', '.') ?></td>
+                <td></td>
+                <td class="r total-amount"><?= sPdfRp($total) ?></td>
+                <?php elseif ($tab === 'cashier'):
+                ?>
+                <td colspan="3" class="r"><?= sPdfEscape($totalLabel) ?></td>
+                <td class="r total-amount"><?= sPdfRp($total) ?></td>
+                <td></td>
+                <?php elseif ($tab === 'all'):
+                ?>
+                <td colspan="4" class="r"><?= sPdfEscape($totalLabel) ?></td>
+                <td class="r total-amount"><?= sPdfRp($total) ?></td>
+                <td></td>
+                <?php else: ?>
                 <td colspan="<?= $totalCols - 1 ?>" class="r"><?= sPdfEscape($totalLabel) ?></td>
-                <td class="r total-amount"><?= $totalValue ?></td>
+                <td class="r total-amount"><?= sPdfRp($total) ?></td>
+                <?php endif; ?>
             </tr>
             <?php endif; ?>
         </tbody>
@@ -537,7 +587,7 @@ try {
 
     $canvas = $dompdf->getCanvas();
     $font   = $dompdf->getFontMetrics()->getFont('DejaVu Sans', 'normal');
-    $canvas->page_text(472, 820, "Halaman {PAGE_NUM} dari {PAGE_COUNT}", $font, 8, [0.58, 0.63, 0.72]);
+    $canvas->page_text(430, 812, "Halaman {PAGE_NUM} dari {PAGE_COUNT}", $font, 8, [0.58, 0.63, 0.72]);
 
     if (ob_get_length()) {
         ob_end_clean();

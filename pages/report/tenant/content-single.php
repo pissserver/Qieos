@@ -45,6 +45,7 @@
                             SELECT *
                             FROM tenants
                             WHERE id != '$d[tenant_id]'
+                            AND status = 'active'
                             ORDER BY tenant_name ASC
                         ");
 
