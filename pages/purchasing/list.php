@@ -257,9 +257,9 @@ $hasPrevious = $currentFormId > 1;
                         emptyTable: `
                             <div class="empty-search">
                                 <img src="../../assets/img/illustrations/empty-data.png" class="empty-img">
-                                <div class="empty-title">Belum ada data purchase</div>
+                                <div class="empty-title">Belum ada data list belanja</div>
                                 <div class="empty-sub">
-                                    Silakan tambahkan purchase terlebih dahulu
+                                    Silakan buat list belanja terlebih dahulu
                                 </div>
                             </div>
                         `
