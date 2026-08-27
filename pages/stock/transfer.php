@@ -3,7 +3,7 @@
 <!doctype html>
 <html>
     <head>
-        <title>Transfer ke Penjualan - Qieos</title>
+        <title>Transfer Gudang - Qieos</title>
         <?php include '../../script/headscript.php'; ?>
 
         <link rel="stylesheet" href="/qieos/css/pages/transfer.css">
