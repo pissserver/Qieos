@@ -319,7 +319,7 @@ include '../../sessions/session.php';
         let id = $(this).data('id');
         let fullname = $(this).data('fullname');
 
-        QConfirm('Hapus Staff Kasir?', 'Data ' + fullname + ' akan dihapus secara permanen.').then(function(ok){
+        QConfirm('Hapus Staff Kasir?', 'Data ' + fullname + ' akan dihapus secara permanen.', {confirmText:'Hapus', icon:'fa-trash-can', confirmClass:'q-confirm-btn-danger', iconClass:'q-confirm-icon-danger'}).then(function(ok){
             if(ok){
                 fetch('cashier-action.php?action=destroy', {
                     method: 'POST',

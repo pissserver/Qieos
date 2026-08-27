@@ -101,16 +101,6 @@ $details = mysqli_query($conn, "
             <span>Rp <?= number_format($order['total']) ?></span>
         </div>
 
-        <div class="row">
-            <span>Diskon</span>
-            <span>Rp 0</span>
-        </div>
-
-        <div class="row">
-            <span>Pajak</span>
-            <span>Rp 0</span>
-        </div>
-
         <hr>
 
         <div class="row total">

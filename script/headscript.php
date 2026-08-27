@@ -48,7 +48,7 @@
 <link type="text/css" href="/qieos/css/volt.css" rel="stylesheet" />
 
 <!-- Qieos Toast -->
-<link type="text/css" href="/qieos/css/components/toast.css" rel="stylesheet" />
+<link type="text/css" href="/qieos/css/components/toast.css?v=<?php echo filemtime(__DIR__ . '/../css/components/toast.css'); ?>" rel="stylesheet" />
 
 <!-- Font Awesome -->
 <link
@@ -119,7 +119,7 @@
 <script>
     if ("serviceWorker" in navigator) {
         window.addEventListener("load", function () {
-            navigator.serviceWorker.register("/qieos/sw.js").catch(function (err) {
+            navigator.serviceWorker.register("/qieos/sw.js?v=2").catch(function (err) {
                 console.warn("SW registration failed:", err);
             });
         });

@@ -162,7 +162,7 @@ include '../../sessions/session.php';
     <!-- Action -->
     <script>
         function payOrder(id, name) {
-            QConfirm('Konfirmasi Pembayaran?', 'Pesanan ' + name + ' akan ditandai sebagai lunas.', {confirmText:'Bayar', icon:'fa-money-bill-wave', confirmClass:'q-confirm-btn-success'}).then(function(ok){
+            QConfirm('Konfirmasi Pembayaran?', 'Pesanan ' + name + ' akan ditandai sebagai lunas.', {confirmText:'Bayar', icon:'fa-money-bill-wave', confirmClass:'q-confirm-btn-success', iconClass:'q-confirm-icon-success'}).then(function(ok){
                 if(ok){
                     $.post('order-pay.php', {
                         order_id: id
@@ -181,7 +181,7 @@ include '../../sessions/session.php';
         }
 
         function cancelOrder(id, name) {
-            QConfirm('Batalkan Pesanan?', 'Pesanan ' + name + ' akan dibatalkan. Stok akan dikembalikan.').then(function(ok){
+            QConfirm('Batalkan Pesanan?', 'Pesanan ' + name + ' akan dibatalkan. Stok akan dikembalikan.', {confirmText:'Batalkan', icon:'fa-ban', confirmClass:'q-confirm-btn-danger', iconClass:'q-confirm-icon-danger'}).then(function(ok){
                 if(ok){
                     $.post('order-cancel.php', {
                         order_id: id

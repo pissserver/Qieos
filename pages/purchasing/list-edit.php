@@ -64,9 +64,9 @@ if(!$q){
                 <input type="number"
                        name="price[]"
                        class="form-control"
-                       placeholder="0"
-                       value="<?= $d['price'] ?>"
-                       >
+                       placeholder="Harga"
+                       min="0"
+                       value="<?= $d['price'] !== null && $d['price'] !== '' ? (int)$d['price'] : '' ?>">
             </div>
 
             <div class="col-md-1">

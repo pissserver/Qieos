@@ -40,19 +40,19 @@
 </li>
 
 <li class="nav-item <?= ($current_page == 'transfer.php') ? 'active' : ''; ?>">
-    <a href="/qieos/pages/stock/transfer.php" class="nav-link" data-tooltip="Transfer ke Penjualan">
+    <a href="/qieos/pages/stock/transfer.php" class="nav-link" data-tooltip="Transfer Gudang">
         <span class="sidebar-icon"><i class="fas fa-exchange-alt"></i></span>
-        <span class="sidebar-text">Transfer ke Penjualan</span>
+        <span class="sidebar-text">Transfer Gudang</span>
     </a>
 </li>
 
-<!-- GUDANG PENJUALAN -->
-<li class="nav-title">PENJUALAN</li>
+<!-- GUDANG KANTIN -->
+<li class="nav-title">KANTIN</li>
 
 <li class="nav-item <?= ($current_page == 'sales-stock.php') ? 'active' : ''; ?>">
-    <a href="/qieos/pages/sales/sales-stock.php" class="nav-link" data-tooltip="Stok Penjualan">
+    <a href="/qieos/pages/sales/sales-stock.php" class="nav-link" data-tooltip="Stok Kantin">
         <span class="sidebar-icon"><i class="fas fa-store"></i></span>
-        <span class="sidebar-text">Stok Penjualan</span>
+        <span class="sidebar-text">Stok Kantin</span>
     </a>
 </li>
 

@@ -495,7 +495,7 @@ include '../../sessions/session.php';
         let name = $(this).data('name');
         let version = $(this).data('version');
 
-        QConfirm('Hapus Log Update?', 'Update "' + name + ' v' + version + '" akan dihapus permanen.').then(function(ok){
+        QConfirm('Hapus Log Update?', 'Update "' + name + ' v' + version + '" akan dihapus permanen.', {confirmText:'Hapus', icon:'fa-trash-can', confirmClass:'q-confirm-btn-danger', iconClass:'q-confirm-icon-danger'}).then(function(ok){
             if(ok){
                 fetch('update-action.php?action=destroy', {
                     method: 'POST',

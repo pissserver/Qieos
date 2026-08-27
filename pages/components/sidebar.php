@@ -142,9 +142,9 @@
                 </li>
 
                 <li class="nav-item <?= ($current_page == 'transfer.php' || ($current_page == 'coming-soon.php' && $menu == 'transfer')) ? 'active' : ''; ?>">
-                    <a href="/qieos/pages/coming-soon.php?menu=transfer" class="nav-link" data-tooltip="Transfer ke Penjualan">
+                    <a href="/qieos/pages/coming-soon.php?menu=transfer" class="nav-link" data-tooltip="Transfer Gudang">
                         <span class="sidebar-icon"><i class="fas fa-exchange-alt"></i></span>
-                        <span class="sidebar-text">Transfer ke Penjualan</span>
+                        <span class="sidebar-text">Transfer Gudang</span>
                     </a>
                 </li>
 
@@ -211,13 +211,13 @@
             <?php } ?>
 
             <?php if ($user['role'] == 'staff kasir') { ?>
-                <!-- GUDANG PENJUALAN -->
-                <li class="nav-title">PENJUALAN</li>
+                <!-- GUDANG KANTIN -->
+                <li class="nav-title">KANTIN</li>
 
                 <li class="nav-item <?= ($current_page == 'sales-stock.php' || ($current_page == 'coming-soon.php' && $menu == 'sales-stock')) ? 'active' : ''; ?>">
-                    <a href="/qieos/pages/coming-soon.php?menu=sales-stock" class="nav-link" data-tooltip="Stok Penjualan">
+                    <a href="/qieos/pages/coming-soon.php?menu=sales-stock" class="nav-link" data-tooltip="Stok Kantin">
                         <span class="sidebar-icon"><i class="fas fa-store"></i></span>
-                        <span class="sidebar-text">Stok Penjualan</span>
+                        <span class="sidebar-text">Stok Kantin</span>
                     </a>
                 </li>
 

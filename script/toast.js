@@ -121,24 +121,25 @@
 /* ============================================
    QIEOS CONFIRM DIALOG
    QConfirm(title, message, opts?).then(ok => {...})
-   opts: { confirmText, cancelText, icon, confirmClass }
+   opts: { confirmText, cancelText, icon, confirmClass, iconClass }
    ============================================ */
 (function () {
     if (window.QConfirm) return;
 
     function QConfirm(title, message, opts) {
         opts = opts || {};
-        var confirmText = opts.confirmText || 'Hapus';
+        var confirmText = opts.confirmText || 'Ya';
         var cancelText = opts.cancelText || 'Batal';
-        var icon = opts.icon || 'fa-trash-can';
-        var confirmClass = opts.confirmClass || 'q-confirm-btn-danger';
+        var icon = opts.icon || 'fa-circle-question';
+        var confirmClass = opts.confirmClass || 'q-confirm-btn-success';
+        var iconClass = opts.iconClass || 'q-confirm-icon-info';
 
         return new Promise(function (resolve) {
             var overlay = document.createElement('div');
             overlay.className = 'q-confirm-overlay';
             overlay.innerHTML =
                 '<div class="q-confirm-card">' +
-                    '<div class="q-confirm-icon"><i class="fas ' + icon + '"></i></div>' +
+                    '<div class="q-confirm-icon ' + iconClass + '"><i class="fas ' + icon + '"></i></div>' +
                     '<div class="q-confirm-title">' + escapeHtml(title) + '</div>' +
                     '<div class="q-confirm-msg">' + escapeHtml(message) + '</div>' +
                     '<div class="q-confirm-actions">' +

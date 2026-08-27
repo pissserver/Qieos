@@ -338,15 +338,16 @@ $hasPrevious = $currentFormId > 1;
                         required>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <input type="number"
                         name="qty[]"
                         class="form-control"
                         placeholder="Qty"
+                        min="0"
                         required>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <input type="text"
                         name="unit[]"
                         class="form-control"
@@ -354,7 +355,16 @@ $hasPrevious = $currentFormId > 1;
                         required>
                 </div>
 
-                <div class="col-md-2">
+                <div class="col-md-3">
+                    <input type="number"
+                        name="price[]"
+                        class="form-control"
+                        placeholder="Harga"
+                        min="0"
+                        value="">
+                </div>
+
+                <div class="col-md-1">
                     <button type="button"
                             class="btn btn-danger w-100"
                             onclick="removeItem(this)">
@@ -444,7 +454,7 @@ $hasPrevious = $currentFormId > 1;
             year: 'numeric'
         });
 
-        QConfirm('Hapus Daftar Belanja?', 'Daftar belanja tanggal ' + formattedDate + ' akan dihapus permanen.').then(function(ok){
+        QConfirm('Hapus Daftar Belanja?', 'Daftar belanja tanggal ' + formattedDate + ' akan dihapus permanen.', {confirmText:'Hapus', icon:'fa-trash-can', confirmClass:'q-confirm-btn-danger', iconClass:'q-confirm-icon-danger'}).then(function(ok){
             if(ok){
                 fetch('list-action.php?action=destroy', {
                     method: 'POST',

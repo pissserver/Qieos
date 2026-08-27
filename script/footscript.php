@@ -40,7 +40,7 @@
 <script src="/qieos/assets/js/volt.js"></script>
 
 <!-- Qieos Toast -->
-<script src="/qieos/script/toast.js"></script>
+<script src="/qieos/script/toast.js?v=<?php echo filemtime(__DIR__ . '/toast.js'); ?>"></script>
 
 <!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

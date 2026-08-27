@@ -430,7 +430,7 @@
             year: 'numeric'
         });
 
-        QConfirm('Hapus Pembayaran?', 'Pembayaran "' + typeName + ' (' + formattedDate + ')" akan dihapus permanen.').then(function(ok){
+        QConfirm('Hapus Pembayaran?', 'Pembayaran "' + typeName + ' (' + formattedDate + ')" akan dihapus permanen.', {confirmText:'Hapus', icon:'fa-trash-can', confirmClass:'q-confirm-btn-danger', iconClass:'q-confirm-icon-danger'}).then(function(ok){
             if(ok){
                 fetch('tenant-payment-action.php?action=destroy', {
                     method: 'POST',

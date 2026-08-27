@@ -316,7 +316,7 @@ include '../../sessions/session.php';
         let id = $(this).data('id');
         let name = $(this).data('name');
 
-        QConfirm('Hapus Produk?', 'Data "' + name + '" akan dihapus permanen.').then(function(ok){
+        QConfirm('Hapus Produk?', 'Data "' + name + '" akan dihapus permanen.', {confirmText:'Hapus', icon:'fa-trash-can', confirmClass:'q-confirm-btn-danger', iconClass:'q-confirm-icon-danger'}).then(function(ok){
             if(ok){
                 fetch('additional-action.php?action=destroy', {
                     method: 'POST',

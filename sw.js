@@ -1,4 +1,4 @@
-const CACHE_VERSION = "qieos-v1";
+const CACHE_VERSION = "qieos-v2";
 const APP_SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 
@@ -67,36 +67,31 @@ self.addEventListener("fetch", event => {
     // Abaikan request lintas-origin (CDN, dll) — biarkan browser menanganinya
     if (url.origin !== self.location.origin) return;
 
-    // Navigasi halaman (HTML PHP) → network-first, fallback cache lalu offline page
+    // Navigasi halaman (HTML PHP) → selalu ambil dari server.
+    // Jangan cache halaman dinamis supaya teks/UI tidak nyangkut versi lama.
     if (isHtmlRequest(request)) {
         event.respondWith(
-            fetch(request)
-                .then(response => {
-                    const copy = response.clone();
-                    caches.open(RUNTIME_CACHE).then(cache => cache.put(request, copy));
-                    return response;
-                })
-                .catch(() =>
-                    caches.match(request).then(
-                        cached => cached || caches.match(`${BASE}/offline.html`)
-                    )
+            fetch(request).catch(() =>
+                caches.match(request).then(
+                    cached => cached || caches.match(`${BASE}/offline.html`)
                 )
+            )
         );
         return;
     }
 
-    // Aset statis → cache-first, isi cache saat pertama kali diambil
+    // Aset statis → stale-while-revalidate (tampilkan cache, update di background)
     if (isStaticAsset(url)) {
         event.respondWith(
             caches.match(request).then(cached => {
-                if (cached) return cached;
-                return fetch(request).then(response => {
+                const fetched = fetch(request).then(response => {
                     if (response && response.status === 200 && response.type === "basic") {
                         const copy = response.clone();
                         caches.open(RUNTIME_CACHE).then(cache => cache.put(request, copy));
                     }
                     return response;
-                });
+                }).catch(() => cached);
+                return cached || fetched;
             })
         );
         return;

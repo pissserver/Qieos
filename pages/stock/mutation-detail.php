@@ -36,7 +36,7 @@ $bulan = [
 
         <div class="stock-header-detail">
             <i class="fa-solid fa-boxes-stacked"></i>
-            Detail Pengeluaran Stok
+            Detail Penjualan Stok kantin
         </div>
 
         <div class="card-body p-0 mb-3">

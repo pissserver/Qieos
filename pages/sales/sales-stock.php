@@ -3,7 +3,7 @@
 <!doctype html>
 <html>
     <head>
-        <title>Stok Penjualan - Qieos</title>
+        <title>Stok Kantin - Qieos</title>
         <?php include '../../script/headscript.php'; ?>
 
         <link rel="stylesheet" href="/qieos/css/pages/sales-stock.css">
@@ -19,9 +19,9 @@
                 <!-- Header -->
                 <!-- <div class="sales-header mt-5">
                     <div>
-                        <h3>Stok Penjualan</h3>
+                        <h3>Stok Kantin</h3>
                         <p class="mb-0">
-                            Monitoring stok produk yang tersedia untuk penjualan
+                            Monitoring stok produk yang tersedia untuk kantin
                         </p>
                     </div>
 
@@ -44,7 +44,7 @@
                                 </div>
 
                                 <div class="panel-subtitle">
-                                    Ajukan permintaan stok penjualan ke gudang
+                                    Ajukan permintaan stok kantin ke gudang
                                 </div>
                             </div>
                         </div>
@@ -140,7 +140,7 @@
                     </div>
                 </div>
 
-                <!-- STOK PENJUALAN -->
+                <!-- STOK Kantin -->
                 <div class="section-card mb-4">
                     <div class="panel-header panel-primary">
                         <div class="panel-left">
@@ -150,7 +150,7 @@
 
                             <div>
                                 <div class="panel-title">
-                                    Stok Penjualan
+                                    Stok Kantin
                                 </div>
                                 <div class="panel-subtitle">
                                     List stok produk yang siap dijual

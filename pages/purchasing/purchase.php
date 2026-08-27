@@ -641,7 +641,7 @@ $hasPrevious = $currentFormId > 1;
         let qty = $(this).data('qty');
         let unit = $(this).data('unit');
 
-        QConfirm('Hapus Data Pembelian?', 'Data pembelian form ' + form + ' akan dihapus permanen.').then(function(ok){
+        QConfirm('Hapus Data Pembelian?', 'Data pembelian form ' + form + ' akan dihapus permanen.', {confirmText:'Hapus', icon:'fa-trash-can', confirmClass:'q-confirm-btn-danger', iconClass:'q-confirm-icon-danger'}).then(function(ok){
             if(ok){
                 fetch('purchase-action.php?action=destroy&id='+id)
                 .then(res=>res.json())

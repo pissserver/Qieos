@@ -14,8 +14,6 @@ ORDER BY r.id DESC
 ");
 ?>
 
-<link rel="stylesheet" href="/qieos/css/pages/transfer-table.css">
-
 <?php if(mysqli_num_rows($q)==0): ?>
 
 <div class="empty-state">
@@ -36,7 +34,7 @@ ORDER BY r.id DESC
 
 <?php while($d=mysqli_fetch_assoc($q)): ?>
 
-<div class="request-card">
+<div class="request-card" data-request-id="<?= (int)$d['id'] ?>">
 
     <div class="request-left">
 

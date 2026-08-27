@@ -7,6 +7,7 @@
         <?php include '../../script/headscript.php'; ?>
 
         <link rel="stylesheet" href="/qieos/css/pages/transfer.css">
+        <link rel="stylesheet" href="/qieos/css/pages/transfer-table.css">
     </head>
 
     <body>
@@ -84,14 +85,39 @@
         <?php include '../../script/footscript.php'; ?>
 
         <script>
-            function loadTable(){
-                fetch('transfer-table.php')
+            var lastPendingHtml = '';
+            var pendingLoading = false;
+
+            function normalizeHtml(html){
+                return (html || '').replace(/\s+/g, ' ').trim();
+            }
+
+            function canPollPending(){
+                if (document.hidden) return false;
+                if (document.querySelector('.q-confirm-overlay')) return false;
+                return true;
+            }
+
+            function loadTable(force){
+                if (pendingLoading) return;
+                if (!force && !canPollPending()) return;
+
+                pendingLoading = true;
+
+                fetch('transfer-table.php', { cache: 'no-store' })
                 .then(res=>res.text())
                 .then(html=>{
+                    var next = normalizeHtml(html);
+                    if (!force && next === lastPendingHtml) return;
+
+                    lastPendingHtml = next;
                     document.getElementById("transfer-table").innerHTML = html;
                 })
                 .catch(err=>{
                     console.error("Load table error:", err);
+                })
+                .then(function(){
+                    pendingLoading = false;
                 });
             }
 
@@ -147,20 +173,22 @@
                 });
             }
 
-            // First init
-            loadTable();
-            // Auto refresh setiap 1 detik
-            setInterval(() => {
-                loadTable();
-            }, 3000);
-
+            loadTable(true);
             loadHistory();
+
+            setInterval(function(){
+                loadTable();
+            }, 4000);
+
+            document.addEventListener('visibilitychange', function(){
+                if (!document.hidden) loadTable();
+            });
 
 
             // APPROVE
             function approve(id){
 
-                QConfirm('Setujui Transfer?', 'Stok akan dipindahkan dari gudang ke penjualan.').then(function(ok){
+                QConfirm('Setujui Transfer?', 'Stok akan dipindahkan dari gudang ke penjualan.', {confirmText:'Setujui', icon:'fa-check', confirmClass:'q-confirm-btn-success', iconClass:'q-confirm-icon-success'}).then(function(ok){
                     if(ok){
                         fetch('transfer-action.php?action=approve',{
                             method:'POST',
@@ -181,7 +209,7 @@
             // REJECT
             function reject(id){
 
-                QConfirm('Tolak Transfer?', 'Permintaan transfer ini akan ditolak.').then(function(ok){
+                QConfirm('Tolak Transfer?', 'Permintaan transfer ini akan ditolak.', {confirmText:'Tolak', icon:'fa-xmark', confirmClass:'q-confirm-btn-danger', iconClass:'q-confirm-icon-danger'}).then(function(ok){
                     if(ok){
                         fetch('transfer-action.php?action=reject',{
                             method:'POST',

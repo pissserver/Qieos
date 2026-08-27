@@ -37,12 +37,19 @@
             WHERE list_purchase_id = '$id'
         ");
 
-        foreach($_POST['product_name'] as $key => $name){
+        $names = isset($_POST['product_name']) ? $_POST['product_name'] : [];
 
-            $name = mysqli_real_escape_string($conn,$name);
-            $qty  = (int)$_POST['qty'][$key];
-            $unit = mysqli_real_escape_string($conn,$_POST['unit'][$key]);
-            $price= (int)$_POST['price'][$key];
+        foreach($names as $key => $name){
+
+            $name = trim($name);
+            if($name === '') continue;
+
+            $name  = mysqli_real_escape_string($conn, $name);
+            $qty   = isset($_POST['qty'][$key]) ? (int)$_POST['qty'][$key] : 0;
+            $unit  = mysqli_real_escape_string($conn, isset($_POST['unit'][$key]) ? $_POST['unit'][$key] : '');
+            $price = isset($_POST['price'][$key]) && $_POST['price'][$key] !== ''
+                ? (int)$_POST['price'][$key]
+                : 0;
 
             mysqli_query($conn,"
             INSERT INTO list_purchase_items(

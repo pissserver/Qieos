@@ -60,7 +60,7 @@ include '../../sessions/session.php';
                                 <tr style="font-size:13px;color:#64748b;">
                                     <th>Produk</th>
                                     <th class="text-center">Gudang</th>
-                                    <th class="text-center">Penjualan</th>
+                                    <th class="text-center">Kantin</th>
                                     <th class="text-center">Total Stok</th>
                                 </tr>
                             </thead>
