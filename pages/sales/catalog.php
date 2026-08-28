@@ -1,6 +1,6 @@
-﻿<?php
+<?php
 include '../../sessions/session.php';
-$query = mysqli_query($conn, 
+$query = mysqli_query($conn,
             "SELECT p.*, COALESCE(SUM(ss.qty), 0) as stock FROM products p LEFT JOIN sales_stock ss ON p.id = ss.product_id
             WHERE p.catalog = 'active'
             GROUP BY p.id ORDER BY p.starred DESC, p.name ASC"
@@ -14,7 +14,6 @@ $query = mysqli_query($conn,
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <!-- Primary Meta Tags -->
     <title>Katalog Produk - Qieos</title>
 
     <?php include '../../script/headscript.php'; ?>
@@ -58,12 +57,12 @@ $query = mysqli_query($conn,
                             class="hidden-select"
                             onchange="applyFilters()">
 
-                            <option value="all">ðŸ“¦ Semua Kategori</option>
-                            <option value="makanan">ðŸ” Makanan</option>
-                            <option value="minuman">ðŸ¥¤ Minuman</option>
-                            <option value="jajanan">ðŸª Jajanan</option>
-                            <option value="pelengkap">ðŸ½ï¸ Pelengkap</option>
-                            <option value="additional">âž• Tambahan</option>
+                            <option value="all">📦 Semua Kategori</option>
+                            <option value="makanan">🍜 Makanan</option>
+                            <option value="minuman">🧋 Minuman</option>
+                            <option value="jajanan">🍪 Jajanan</option>
+                            <option value="pelengkap">🥄 Pelengkap</option>
+                            <option value="additional">➕ Tambahan</option>
 
                         </select>
 
@@ -81,10 +80,10 @@ $query = mysqli_query($conn,
                             class="hidden-select"
                             onchange="sortProduct(this.value)">
 
-                            <option value="name">ðŸ”¤ Nama</option>
-                            <option value="latest">âœ¨ Terbaru</option>
-                            <option value="low">â¬‡ Harga Terendah</option>
-                            <option value="high">â¬† Harga Tertinggi</option>
+                            <option value="name">🔥 Nama</option>
+                            <option value="latest">✨ Terbaru</option>
+                            <option value="low">⬇ Harga Terendah</option>
+                            <option value="high">⬆ Harga Tertinggi</option>
 
                         </select>
 
@@ -123,6 +122,12 @@ $query = mysqli_query($conn,
                                 Rp <?php echo number_format($row['sell_price'],0,',','.'); ?>
                             </div>
 
+                            <button
+                                class="star-btn <?= $row['starred'] ? 'active' : '' ?>"
+                                onclick="toggleStar(<?= $row['id'] ?>,this)">
+                                <i class="<?= $row['starred'] ? 'fas' : 'far' ?> fa-star"></i>
+                            </button>
+
                         </div>
 
                         <div class="product-content">
@@ -132,100 +137,83 @@ $query = mysqli_query($conn,
                                     <i class="fas fa-tag"></i>
                                     <?php echo ucfirst($row['category']); ?>
                                 </div>
-
-                                <button
-                                    class="star-btn <?= $row['starred'] ? 'active' : '' ?>"
-                                    onclick="toggleStar(<?= $row['id'] ?>,this)">
-                                    <i class="<?= $row['starred'] ? 'fas' : 'far' ?> fa-star"></i>
-                                </button>
                             </div>
 
                             <h4 class="product-title">
                                 <?php echo ucwords(strtolower($row['name'])); ?>
                             </h4>
 
-                            <?php if($row['category'] !== 'additional'): ?>
                             <p class="product-desc">
-                                <?php if($row['stock'] > 0): ?>
-                                    <i class="fas fa-circle text-success"></i>
-                                    Stok tersedia
+                                <?php if($row['category'] !== 'additional'): ?>
+                                    <?php if($row['stock'] > 0): ?>
+                                        <i class="fas fa-circle text-success"></i>
+                                        Stok tersedia
+                                    <?php else: ?>
+                                        <i class="fas fa-circle text-danger"></i>
+                                        Stok habis
+                                    <?php endif; ?>
                                 <?php else: ?>
-                                    <i class="fas fa-circle text-danger"></i>
-                                    Stok habis
+                                    <i class="fas fa-circle text-secondary"></i>
+                                    Tanpa stok
                                 <?php endif; ?>
                             </p>
 
-                            <div class="qty-box">
+                            <!-- ACTION ROW: QTY + BUTTON -->
+                            <div class="action-row">
 
-                                <?php if($row['stock'] > 0): ?>
+                                <?php if($row['stock'] > 0 || $row['category'] === 'additional'): ?>
 
-                                    <div class="qty-control">
-
-                                        <button class="qty-btn"
+                                    <?php if($row['category'] !== 'additional'): ?>
+                                    <div class="qty-mini">
+                                        <button class="qty-mini-btn"
                                             onclick="decreaseQty('<?php echo $row['id']; ?>')">
-                                            -
+                                            <i class="fas fa-minus"></i>
                                         </button>
 
                                         <input
                                             type="text"
                                             id="qty-<?php echo $row['id']; ?>"
                                             value="0"
-                                            class="qty-input"
+                                            class="qty-mini-input"
                                             data-stock="<?php echo $row['stock']; ?>"
                                             readonly>
 
-                                        <button class="qty-btn qty-plus"
+                                        <button class="qty-mini-btn qty-mini-plus"
                                             onclick="increaseQty('<?php echo $row['id']; ?>')">
-                                            +
+                                            <i class="fas fa-plus"></i>
                                         </button>
-
                                     </div>
+                                    <?php endif; ?>
+
+                                    <button
+                                        class="btn-add"
+                                        onclick="addToCart(
+                                            this,
+                                            '<?php echo $row['id']; ?>',
+                                            '<?php echo addslashes($row['name']); ?>',
+                                            '<?php echo $row['sell_price']; ?>',
+                                            '<?php echo $row['category']; ?>'
+                                        )">
+                                        <i class="fas fa-cart-plus"></i>
+                                        <span>Tambah</span>
+                                    </button>
 
                                 <?php else: ?>
 
-                                    <div class="out-stock-box">
-
-                                        <i class="fas fa-box-open"></i>
-
-                                        Tidak Ada Stok
-
+                                    <div class="qty-mini" style="opacity:0.5;pointer-events:none">
+                                        <span class="qty-mini-btn"><i class="fas fa-minus"></i></span>
+                                        <span class="qty-mini-input">0</span>
+                                        <span class="qty-mini-btn"><i class="fas fa-plus"></i></span>
                                     </div>
+
+                                    <button class="btn-add btn-disabled" disabled>
+                                        <i class="fas fa-ban"></i>
+                                        <span>Habis</span>
+                                    </button>
 
                                 <?php endif; ?>
 
                             </div>
-                            <?php endif; ?>
-
-                            <?php if($row['stock'] > 0 || $row['category'] === 'additional'): ?>
-
-                            <button
-                                class="btn-checkout"
-                                onclick="addToCart(
-                                    this,
-                                    '<?php echo $row['id']; ?>',
-                                    '<?php echo addslashes($row['name']); ?>',
-                                    '<?php echo $row['sell_price']; ?>',
-                                    '<?php echo $row['category']; ?>'
-                                )">
-
-                                <i class="fas fa-cart-plus"></i>
-                                Tambah
-                                <i class="fas fa-arrow-right"></i>
-
-                            </button>
-
-                            <?php else: ?>
-
-                            <button
-                                class="btn-checkout btn-disabled"
-                                disabled>
-
-                                <i class="fas fa-ban"></i>
-                                Stok Habis
-
-                            </button>
-
-                            <?php endif; ?>
 
                         </div>
 
@@ -299,7 +287,7 @@ $query = mysqli_query($conn,
             });
 
         }
-        
+
         function increaseQty(id) {
             let input = document.getElementById('qty-' + id);
             let stock = parseInt(input.dataset.stock || 0);
@@ -540,5 +528,4 @@ $query = mysqli_query($conn,
     </script>
 
 </body>
-
 </html>
