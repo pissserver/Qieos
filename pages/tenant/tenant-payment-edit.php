@@ -11,7 +11,7 @@ if($type === 'utility'){
 }
 
 $sql = "
-SELECT 
+SELECT
     p.*,
     t.tenant_name
 FROM $table p
@@ -36,34 +36,39 @@ $d = mysqli_fetch_assoc($q);
 <div class="section-title">Informasi Pembayaran</div>
 
 <div class="row">
-    <div class="col-md-6">
-        <div class="input-group-modern">
-            <div class="input-icon"><i class="fas fa-store"></i></div>
-            <select name="tenant_id" class="form-control">
-                <option value="<?= $d['tenant_id'] ?>"><?= $d['tenant_name'] ?></option>
-                <?php
-                    $qTenant = mysqli_query($conn,"
-                        SELECT *
-                        FROM tenants
-                        WHERE id != '$d[tenant_id]'
-                        ORDER BY tenant_name ASC
-                    ");
 
-                    while($tenant = mysqli_fetch_assoc($qTenant)){
+    <div class="col-md-6">
+        <label style="display:block;font-size:13px;font-weight:600;color:#334155;margin-bottom:6px;">
+            <i class="fas fa-store" style="color:#6366f1;margin-right:4px"></i> Nama Tenant
+        </label>
+        <select name="tenant_id" class="form-control" style="height:46px;border-radius:10px;font-size:14px;padding:0 14px;cursor:pointer;">
+            <option value="<?= $d['tenant_id'] ?>"><?= $d['tenant_name'] ?></option>
+            <?php
+                $qTenant = mysqli_query($conn,"
+                    SELECT *
+                    FROM tenants
+                    WHERE status = 'active' AND deleted_at IS NULL
+                    ORDER BY tenant_name ASC
+                ");
+
+                while($tenant = mysqli_fetch_assoc($qTenant)){
+                    if($tenant['id'] != $d['tenant_id']){
                         echo '<option value="'.$tenant['id'].'">'.$tenant['tenant_name'].'</option>';
                     }
-                ?>
-            </select>   
-        </div>
+                }
+            ?>
+        </select>
     </div>
 
     <div class="col-md-6">
-        <div class="input-group-modern">
-            <div class="input-icon"><i class="fas fa-user"></i></div>
-            <input type="date" name="payment_date" class="form-control"
-                value="<?= $d['payment_date'] ?>">
-        </div>
+        <label style="display:block;font-size:13px;font-weight:600;color:#334155;margin-bottom:6px;">
+            <i class="fas fa-calendar" style="color:#6366f1;margin-right:4px"></i> Tanggal Pembayaran
+        </label>
+        <input type="date" name="payment_date" class="form-control"
+            value="<?= $d['payment_date'] ?>"
+            style="height:46px;border-radius:10px;font-size:14px;padding:0 14px;cursor:pointer;">
     </div>
+
 </div>
 
 <div class="text-end mt-4 mb-3">

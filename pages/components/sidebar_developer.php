@@ -73,13 +73,6 @@
 <!-- TENANT -->
 <li class="nav-title">TENANT</li>
 
-<li class="nav-item <?= ($current_page == 'registration.php') ? 'active' : ''; ?>">
-    <a href="/qieos/pages/tenant/registration.php" class="nav-link" data-tooltip="Pendaftaran Tenant">
-        <span class="sidebar-icon"><i class="fas fa-pen-to-square"></i></span>
-        <span class="sidebar-text">Pendaftaran Tenant</span>
-    </a>
-</li>
-
 <li class="nav-item <?= ($current_page == 'tenant.php' || $current_page == 'tenant-detail.php') ? 'active' : ''; ?>">
     <a href="/qieos/pages/tenant/tenant.php" class="nav-link" data-tooltip="Tenant">
         <span class="sidebar-icon"><i class="fas fa-store"></i></span>

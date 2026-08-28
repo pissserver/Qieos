@@ -49,7 +49,7 @@ include '../../sessions/session.php';
             <?= $title ?>
         </div>
 
-        <?php if($user['role'] == 'staff kasir'): ?>
+        <?php if(in_array($user['role'], ['staff kasir', 'developer'])): ?>
         <div class="d-flex justify-content-between align-items-center px-4 pb-3 flex-wrap gap-2">
 
             <!-- <div>

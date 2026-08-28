@@ -123,6 +123,7 @@
                                             name="qty"
                                             class="form-control form-qty"
                                             placeholder="0"
+                                            min="1"
                                             required>
                                     </div>
 
@@ -206,7 +207,7 @@
                     this.options[this.selectedIndex].dataset.stock || 0,
                 );
 
-                qtyInput.max = stock;
+                qtyInput.dataset.maxStock = stock;
                 qtyInput.value = "";
                 qtyInput.placeholder = stock != 0 ? "Max: " + stock : "Stok kosong";
             });
@@ -215,7 +216,7 @@
             form.addEventListener("submit", async function (e) {
                 e.preventDefault();
 
-                let max = parseInt(qtyInput.max || 0);
+                let max = parseInt(qtyInput.dataset.maxStock || 0);
                 let val = parseInt(qtyInput.value || 0);
 
                 if (val > max) {
