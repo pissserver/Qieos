@@ -232,39 +232,46 @@ $query = mysqli_query($conn,
 
                         <!-- MOBILE: Action bar below card -->
                         <div class="mobile-action">
-                            <?php if($row['stock'] > 0 || $row['category'] === 'additional'): ?>
+                            <div class="mobile-cat-pill">
+                                <i class="fas fa-tag"></i>
+                                <?php echo ucfirst($row['category']); ?>
+                            </div>
 
-                                <?php if($row['category'] !== 'additional'): ?>
-                                <div class="mobile-qty">
-                                    <button class="mobile-qty-btn" onclick="decreaseQty('<?php echo $row['id']; ?>')">
-                                        <i class="fas fa-minus"></i>
+                            <div class="mobile-act-row">
+                                <?php if($row['stock'] > 0 || $row['category'] === 'additional'): ?>
+
+                                    <?php if($row['category'] !== 'additional'): ?>
+                                    <div class="mobile-qty">
+                                        <button class="mobile-qty-btn" onclick="decreaseQty('<?php echo $row['id']; ?>')">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                        <input type="text" id="mqty-<?php echo $row['id']; ?>" value="0"
+                                            class="mobile-qty-val" data-stock="<?php echo $row['stock']; ?>" readonly>
+                                        <button class="mobile-qty-btn mobile-qty-plus" onclick="increaseQtyMobile('<?php echo $row['id']; ?>')">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                    <?php endif; ?>
+
+                                    <button class="mobile-add-btn"
+                                        onclick="addToCartMobile(this,'<?php echo $row['id']; ?>','<?php echo addslashes($row['name']); ?>','<?php echo $row['sell_price']; ?>','<?php echo $row['category']; ?>')">
+                                        <i class="fas fa-cart-plus"></i>
+                                        <span>Tambah</span>
                                     </button>
-                                    <input type="text" id="mqty-<?php echo $row['id']; ?>" value="0"
-                                        class="mobile-qty-val" data-stock="<?php echo $row['stock']; ?>" readonly>
-                                    <button class="mobile-qty-btn mobile-qty-plus" onclick="increaseQtyMobile('<?php echo $row['id']; ?>')">
-                                        <i class="fas fa-plus"></i>
+
+                                <?php else: ?>
+
+                                    <div class="mobile-qty" style="opacity:0.4;pointer-events:none">
+                                        <span class="mobile-qty-btn"><i class="fas fa-minus"></i></span>
+                                        <span class="mobile-qty-val">0</span>
+                                        <span class="mobile-qty-btn"><i class="fas fa-plus"></i></span>
+                                    </div>
+                                    <button class="mobile-add-btn mobile-add-disabled" disabled>
+                                        <i class="fas fa-ban"></i> Habis
                                     </button>
-                                </div>
+
                                 <?php endif; ?>
-
-                                <button class="mobile-add-btn"
-                                    onclick="addToCartMobile(this,'<?php echo $row['id']; ?>','<?php echo addslashes($row['name']); ?>','<?php echo $row['sell_price']; ?>','<?php echo $row['category']; ?>')">
-                                    <i class="fas fa-cart-plus"></i>
-                                    <span>Tambah</span>
-                                </button>
-
-                            <?php else: ?>
-
-                                <div class="mobile-qty" style="opacity:0.4;pointer-events:none">
-                                    <span class="mobile-qty-btn"><i class="fas fa-minus"></i></span>
-                                    <span class="mobile-qty-val">0</span>
-                                    <span class="mobile-qty-btn"><i class="fas fa-plus"></i></span>
-                                </div>
-                                <button class="mobile-add-btn mobile-add-disabled" disabled>
-                                    <i class="fas fa-ban"></i> Habis
-                                </button>
-
-                            <?php endif; ?>
+                            </div>
                         </div>
 
                     </div>
