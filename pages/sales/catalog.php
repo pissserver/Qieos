@@ -122,6 +122,19 @@ $query = mysqli_query($conn,
                                 Rp <?php echo number_format($row['sell_price'],0,',','.'); ?>
                             </div>
 
+                            <!-- MOBILE: Glass name overlay on image -->
+                            <div class="card-name-wrap">
+                                <div class="card-name-glass">
+                                    <span class="card-name-text"><?php echo ucwords(strtolower($row['name'])); ?></span>
+                                    <button
+                                        class="card-name-star <?= $row['starred'] ? 'active' : '' ?>"
+                                        onclick="event.stopPropagation();toggleStar(<?= $row['id'] ?>,this)">
+                                        <i class="<?= $row['starred'] ? 'fas' : 'far' ?> fa-star"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- DESKTOP: star on image -->
                             <button
                                 class="star-btn <?= $row['starred'] ? 'active' : '' ?>"
                                 onclick="toggleStar(<?= $row['id'] ?>,this)">
@@ -217,6 +230,43 @@ $query = mysqli_query($conn,
 
                         </div>
 
+                        <!-- MOBILE: Action bar below card -->
+                        <div class="mobile-action">
+                            <?php if($row['stock'] > 0 || $row['category'] === 'additional'): ?>
+
+                                <?php if($row['category'] !== 'additional'): ?>
+                                <div class="mobile-qty">
+                                    <button class="mobile-qty-btn" onclick="decreaseQty('<?php echo $row['id']; ?>')">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <input type="text" id="mqty-<?php echo $row['id']; ?>" value="0"
+                                        class="mobile-qty-val" data-stock="<?php echo $row['stock']; ?>" readonly>
+                                    <button class="mobile-qty-btn mobile-qty-plus" onclick="increaseQtyMobile('<?php echo $row['id']; ?>')">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                                <?php endif; ?>
+
+                                <button class="mobile-add-btn"
+                                    onclick="addToCartMobile(this,'<?php echo $row['id']; ?>','<?php echo addslashes($row['name']); ?>','<?php echo $row['sell_price']; ?>','<?php echo $row['category']; ?>')">
+                                    <i class="fas fa-cart-plus"></i>
+                                    <span>Tambah</span>
+                                </button>
+
+                            <?php else: ?>
+
+                                <div class="mobile-qty" style="opacity:0.4;pointer-events:none">
+                                    <span class="mobile-qty-btn"><i class="fas fa-minus"></i></span>
+                                    <span class="mobile-qty-val">0</span>
+                                    <span class="mobile-qty-btn"><i class="fas fa-plus"></i></span>
+                                </div>
+                                <button class="mobile-add-btn mobile-add-disabled" disabled>
+                                    <i class="fas fa-ban"></i> Habis
+                                </button>
+
+                            <?php endif; ?>
+                        </div>
+
                     </div>
 
                 </div>
@@ -302,6 +352,38 @@ $query = mysqli_query($conn,
             let input = document.getElementById('qty-' + id);
             let val = parseInt(input.value);
             if (val > 0) input.value = val - 1;
+
+            // sync mobile qty
+            let mInput = document.getElementById('mqty-' + id);
+            if (mInput) mInput.value = input.value;
+        }
+
+        function increaseQtyMobile(id) {
+            let mInput = document.getElementById('mqty-' + id);
+            let dInput = document.getElementById('qty-' + id);
+            let stock = parseInt(mInput.dataset.stock || 0);
+            let currentVal = parseInt(mInput.value || 0);
+
+            if (currentVal < stock) {
+                mInput.value = currentVal + 1;
+                if (dInput) dInput.value = mInput.value;
+            }
+        }
+
+        function addToCartMobile(btn, id, name, price, category) {
+            let mInput = document.getElementById('mqty-' + id);
+            let dInput = document.getElementById('qty-' + id);
+
+            // sync qty from mobile to desktop
+            if (dInput && mInput) {
+                dInput.value = mInput.value;
+            }
+
+            // call original addToCart
+            addToCart(btn, id, name, price, category);
+
+            // reset mobile qty after add
+            if (mInput) mInput.value = 0;
         }
 
         function applyFilters() {
