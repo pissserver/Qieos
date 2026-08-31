@@ -119,8 +119,16 @@
 <script>
     if ("serviceWorker" in navigator) {
         window.addEventListener("load", function () {
-            navigator.serviceWorker.register("/qieos/sw.js?v=2").catch(function (err) {
+            navigator.serviceWorker.register("/qieos/sw.js?v=4").catch(function (err) {
                 console.warn("SW registration failed:", err);
+            });
+            // Unregister old service workers
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                registrations.forEach(function(registration) {
+                    if (registration.scope.indexOf('/qieos/') !== -1) {
+                        registration.update();
+                    }
+                });
             });
         });
     }

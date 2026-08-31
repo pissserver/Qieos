@@ -100,6 +100,30 @@
 
             <?php if ($user['role'] == 'administrator') { ?>
 
+                <!-- MASTER DATA -->
+                <li class="nav-title">MASTER</li>
+
+                <li class="nav-item <?= ($current_page == 'master-product.php' || $current_page == 'master-product-detail.php') ? 'active' : ''; ?>">
+                    <a href="/qieos/pages/master/master-product.php" class="nav-link" data-tooltip="Master Produk">
+                        <span class="sidebar-icon"><i class="fas fa-boxes-stacked"></i></span>
+                        <span class="sidebar-text">Master Produk</span>
+                    </a>
+                </li>
+
+                <li class="nav-item <?= ($current_page == 'master-supplier.php') ? 'active' : ''; ?>">
+                    <a href="/qieos/pages/master/master-supplier.php" class="nav-link" data-tooltip="Master Supplier">
+                        <span class="sidebar-icon"><i class="fas fa-truck"></i></span>
+                        <span class="sidebar-text">Master Supplier</span>
+                    </a>
+                </li>
+
+                <li class="nav-item <?= ($current_page == 'master-customer.php') ? 'active' : ''; ?>">
+                    <a href="/qieos/pages/master/master-customer.php" class="nav-link" data-tooltip="Master Customer">
+                        <span class="sidebar-icon"><i class="fas fa-users"></i></span>
+                        <span class="sidebar-text">Master Customer</span>
+                    </a>
+                </li>
+
                 <!-- PEMBELIAN STOK -->
                 <li class="nav-title">PURCHASING</li>
 
