@@ -290,13 +290,17 @@ $currentPrice    = isset($d['sell_price']) ? $d['sell_price'] : 0;
 
 <script>
 // Toggle edit card
+var contentEl = document.querySelector('.content');
 document.getElementById('btnToggleEdit').addEventListener('click', function(){
     var card = document.getElementById('editCard');
     card.classList.toggle('show');
     if(card.classList.contains('show')){
         setTimeout(function(){
-            try { window.scrollTo({ top: card.offsetTop - 120, behavior: 'smooth' }); }
-            catch(e){ window.scrollTo(0, card.offsetTop - 120); }
+            var scrollTarget = window.innerWidth < 992
+                ? window.innerHeight * 2
+                : window.innerHeight * 0.8;
+            try { contentEl.scrollTo({ top: scrollTarget, behavior: 'smooth' }); }
+            catch(e){ contentEl.scrollTop = scrollTarget; }
         }, 200);
     }
 });
@@ -377,8 +381,12 @@ document.getElementById('editProductForm').addEventListener('submit', function(e
                 reader.readAsDataURL(photoFile);
             }
 
-            // Tutup edit card saja, jangan scroll ke atas
+            // Tutup edit card & scroll ke atas
             document.getElementById('editCard').classList.remove('show');
+            setTimeout(function(){
+                try { contentEl.scrollTo({ top: 0, behavior: 'smooth' }); }
+                catch(e){ contentEl.scrollTop = 0; }
+            }, 150);
             QToast('Berhasil', 'Data produk berhasil diperbarui', 'success');
         } else {
             QToast('Gagal', res.message || 'Terjadi kesalahan', 'error');
