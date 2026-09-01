@@ -2,7 +2,7 @@
 include '../../sessions/session.php';
 $query = mysqli_query($conn,
             "SELECT p.*, COALESCE(SUM(ss.qty), 0) as stock FROM products p LEFT JOIN sales_stock ss ON p.id = ss.product_id
-            WHERE p.catalog = 'active'
+            WHERE (p.catalog = 'active' OR p.category = 'additional') AND p.deleted_at IS NULL
             GROUP BY p.id ORDER BY p.starred DESC, p.name ASC"
         );
 ?>
@@ -115,7 +115,7 @@ $query = mysqli_query($conn,
 
                             <div class="stock-badge" id="stock-<?php echo $row['id']; ?>">
                                 <i class="fas fa-cube"></i>
-                                <?php echo $row['category'] !== 'additional' ? $row['stock'] : 'Tanpa' ; ?> Stok
+                                <?php echo strtolower($row['category']) !== 'additional' ? $row['stock'] : 'Tanpa' ; ?> Stok
                             </div>
 
                             <div class="price-floating">
@@ -157,26 +157,24 @@ $query = mysqli_query($conn,
                             </h4>
 
                             <p class="product-desc">
-                                <?php if($row['category'] !== 'additional'): ?>
-                                    <?php if($row['stock'] > 0): ?>
-                                        <i class="fas fa-circle text-success"></i>
-                                        Stok tersedia
-                                    <?php else: ?>
-                                        <i class="fas fa-circle text-danger"></i>
-                                        Stok habis
-                                    <?php endif; ?>
-                                <?php else: ?>
+                                <?php if(strtolower($row['category']) === 'additional'): ?>
                                     <i class="fas fa-circle text-secondary"></i>
-                                    Tanpa stok
+                                    Tersedia
+                                <?php elseif($row['stock'] > 0): ?>
+                                    <i class="fas fa-circle text-success"></i>
+                                    Stok tersedia
+                                <?php else: ?>
+                                    <i class="fas fa-circle text-danger"></i>
+                                    Stok habis
                                 <?php endif; ?>
                             </p>
 
                             <!-- ACTION ROW: QTY + BUTTON -->
                             <div class="action-row">
 
-                                <?php if($row['stock'] > 0 || $row['category'] === 'additional'): ?>
+                                <?php if($row['stock'] > 0 || strtolower($row['category']) === 'additional'): ?>
 
-                                    <?php if($row['category'] !== 'additional'): ?>
+                                    <?php if(strtolower($row['category']) !== 'additional'): ?>
                                     <div class="qty-mini">
                                         <button class="qty-mini-btn"
                                             onclick="decreaseQty('<?php echo $row['id']; ?>')">
@@ -238,9 +236,9 @@ $query = mysqli_query($conn,
                             </div>
 
                             <div class="mobile-act-row">
-                                <?php if($row['stock'] > 0 || $row['category'] === 'additional'): ?>
+                                <?php if($row['stock'] > 0 || strtolower($row['category']) === 'additional'): ?>
 
-                                    <?php if($row['category'] !== 'additional'): ?>
+                                    <?php if(strtolower($row['category']) !== 'additional'): ?>
                                     <div class="mobile-qty">
                                         <button class="mobile-qty-btn" onclick="decreaseQty('<?php echo $row['id']; ?>')">
                                             <i class="fas fa-minus"></i>
@@ -517,66 +515,64 @@ $query = mysqli_query($conn,
                     Object.keys(data).forEach(id => {
 
                         let stock = parseInt(data[id]);
-
-                        // STOCK BADGE
-                        let el = document.getElementById('stock-' + id);
-
-                        if (el) {
-                            el.innerHTML = `
-                                <i class="fas fa-cube"></i>
-                                ${stock} Stok
-                            `;
-                        }
-
-                        // PRODUCT CARD
                         let card = document.querySelector(`.product-item[data-id="${id}"]`);
 
-                        if (card) {
+                        if (!card) return;
 
-                            // CLASS STOCK
+                        let category = card.dataset.category;
+                        let isAdditional = category.toLowerCase() === 'additional';
+
+                        // STOCK BADGE - skip for additional (stays "Tanpa Stok")
+                        if (!isAdditional) {
+                            let el = document.getElementById('stock-' + id);
+                            if (el) {
+                                el.innerHTML = `
+                                    <i class="fas fa-cube"></i>
+                                    ${stock} Stok
+                                `;
+                            }
+                        }
+
+                        // CLASS STOCK - skip for additional
+                        if (!isAdditional) {
                             if (stock <= 0) {
                                 card.classList.add('out-of-stock');
                             } else {
                                 card.classList.remove('out-of-stock');
                             }
+                        }
 
-                            // STATUS TEXT
-                            let desc = card.querySelector('.product-desc');
-
-                            if (desc) {
-
-                                if (stock <= 0) {
-
-                                    desc.innerHTML = `
-                                        <i class="fas fa-circle text-danger"></i>
-                                        Stok habis
-                                    `;
-
-                                } else {
-
-                                    desc.innerHTML = `
-                                        <i class="fas fa-circle text-success"></i>
-                                        Stok tersedia
-                                    `;
-
-                                }
-
+                        // STATUS TEXT
+                        let desc = card.querySelector('.product-desc');
+                        if (desc) {
+                            if (isAdditional) {
+                                // Additional: always show "Tersedia"
+                                desc.innerHTML = `
+                                    <i class="fas fa-circle text-secondary"></i>
+                                    Tersedia
+                                `;
+                            } else if (stock <= 0) {
+                                desc.innerHTML = `
+                                    <i class="fas fa-circle text-danger"></i>
+                                    Stok habis
+                                `;
+                            } else {
+                                desc.innerHTML = `
+                                    <i class="fas fa-circle text-success"></i>
+                                    Stok tersedia
+                                `;
                             }
+                        }
 
-                            // UPDATE DATA STOCK INPUT
+                        // UPDATE DATA STOCK INPUT - skip for additional
+                        if (!isAdditional) {
                             let input = document.getElementById('qty-' + id);
-
                             if (input) {
-
                                 input.dataset.stock = stock;
-
-                                // jika stok habis reset qty
                                 if (stock <= 0) {
                                     input.value = 0;
                                 }
-
                             }
-
                         }
 
                     });

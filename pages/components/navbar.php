@@ -540,8 +540,9 @@
 
         let qty = 1;
         let input = null;
+        let isAdditional = category.toLowerCase() === 'additional';
 
-        if (category !== 'additional') {
+        if (!isAdditional) {
             input = document.getElementById('qty-' + id);
             qty = parseInt(input.value || 0);
 
@@ -557,7 +558,7 @@
         let existing = cart.find(item => item.id == id);
 
         if(existing){
-            if (category !== 'additional') {
+            if (!isAdditional) {
                 existing.qty += qty;
             } else {
                 QToast(name + ' sudah ditambahkan!', '', 'warning');
@@ -647,7 +648,7 @@
                                 </span>
 
                                 ${
-                                    item.category !== 'additional'
+                                    item.category.toLowerCase() !== 'additional'
                                     ? `
                                         <span class="badge-qty">
                                             Qty: ${item.qty}
@@ -662,7 +663,7 @@
                     <!-- CENTER -->
                     <div class="cart-qty">
                         ${
-                            item.category !== 'additional'
+                            item.category.toLowerCase() !== 'additional'
                             ? `
                                 <button onclick="changeQty(${index}, -1)">-</button>
                                 <span>${item.qty}</span>
